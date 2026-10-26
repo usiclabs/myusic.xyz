@@ -22,7 +22,7 @@ interface TopTracksTableProps {
 
 export function TopTracksTable({ tracks }: TopTracksTableProps) {
   return (
-    <Card className="bg-card/50 backdrop-blur-xl border border-border/50 p-4 sm:p-6">
+    <Card className="border border-[#1f1f1f] bg-[#090909] p-5">
       <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center gap-2">
         <Music className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
         Top Tracks by Streams

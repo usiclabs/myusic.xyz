@@ -14,8 +14,8 @@ interface PlatformAnalyticsChartsProps {
 
 export function PlatformAnalyticsCharts({ data }: PlatformAnalyticsChartsProps) {
   return (
-    <div className="grid md:grid-cols-2 gap-4 sm:gap-6 max-w-full overflow-hidden">
-      <Card className="bg-card/50 backdrop-blur-xl border border-border/50 p-4 sm:p-6 hover:bg-card/70 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 group max-w-full overflow-hidden">
+    <div className="grid max-w-full gap-4 overflow-hidden md:grid-cols-[1.65fr_1fr]">
+      <Card className="border border-[#1f1f1f] bg-[#090909] p-5 transition-colors hover:bg-[#141414] group max-w-full overflow-hidden">
         <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center gap-2">
           <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary group-hover:scale-110 transition-transform duration-300" />
           <span className="group-hover:text-primary transition-colors">Platform Streams Over Time</span>
@@ -23,7 +23,7 @@ export function PlatformAnalyticsCharts({ data }: PlatformAnalyticsChartsProps) 
         <AnalyticsChart data={data} type="plays" />
       </Card>
 
-      <Card className="bg-card/50 backdrop-blur-xl border border-border/50 p-4 sm:p-6 hover:bg-card/70 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 group max-w-full overflow-hidden">
+      <Card className="border border-[#1f1f1f] bg-[#090909] p-5 transition-colors hover:bg-[#141414] group max-w-full overflow-hidden">
         <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center gap-2">
           <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary group-hover:scale-110 transition-transform duration-300" />
           <span className="group-hover:text-primary transition-colors">Platform Revenue Over Time</span>

@@ -99,7 +99,7 @@ export function TokenMetrics() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
-      <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 p-4 sm:p-6 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 w-full">
+      <Card className="border border-[#1f1f1f] bg-[#090909] p-5 transition-colors hover:bg-[#141414] w-full">
         <div className="flex items-start justify-between mb-2">
           <div className="p-2 rounded-lg bg-primary/10">
             <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -122,7 +122,7 @@ export function TokenMetrics() {
         </div>
       </Card>
 
-      <Card className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-accent/20 p-4 sm:p-6 hover:border-accent/40 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 w-full">
+      <Card className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-accent/20 border border-[#1f1f1f] bg-[#090909] p-5 transition-colors hover:bg-[#141414] w-full">
         <div className="flex items-start justify-between mb-2">
           <div className="p-2 rounded-lg bg-accent/10">
             <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
@@ -135,7 +135,7 @@ export function TokenMetrics() {
         <div className="text-xs sm:text-sm text-muted-foreground">Market Cap</div>
       </Card>
 
-      <Card className="bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-green-500/20 p-4 sm:p-6 hover:border-green-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10 w-full">
+      <Card className="bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-green-500/20 border border-[#1f1f1f] bg-[#090909] p-5 transition-colors hover:bg-[#141414] w-full">
         <div className="flex items-start justify-between mb-2">
           <div className="p-2 rounded-lg bg-green-500/10">
             <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />

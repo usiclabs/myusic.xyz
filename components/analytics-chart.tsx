@@ -34,10 +34,12 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
     return Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date))
   }, [data])
 
+  const lineColor = type === "plays" ? "#fa003e" : "#05df72"
+
   const chartConfig = {
     value: {
       label: type === "plays" ? "Plays" : "Earnings",
-      color: "hsl(142 76% 56%)", // Bright green
+      color: type === "plays" ? "#fa003e" : "#05df72",
     },
   }
 
@@ -54,11 +56,11 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
     return (
       <g>
         {/* Outer glow pulse */}
-        <circle cx={cx} cy={cy} r={6} fill="hsl(142 76% 56%)" opacity={0.2} className="animate-ping" />
+        <circle cx={cx} cy={cy} r={6} fill={lineColor} opacity={0.2} className="animate-ping" />
         {/* Middle glow */}
-        <circle cx={cx} cy={cy} r={4} fill="hsl(142 76% 56%)" opacity={0.4} />
+        <circle cx={cx} cy={cy} r={4} fill={lineColor} opacity={0.4} />
         {/* Inner dot */}
-        <circle cx={cx} cy={cy} r={2} fill="hsl(142 76% 56%)" />
+        <circle cx={cx} cy={cy} r={2} fill={lineColor} />
       </g>
     )
   }
@@ -69,8 +71,8 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
         <AreaChart data={chartData} margin={{ left: 0, right: 0, top: 5, bottom: 5 }}>
           <defs>
             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(142 76% 56%)" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="hsl(142 76% 56%)" stopOpacity={0} />
+              <stop offset="5%" stopColor={lineColor} stopOpacity={0.4} />
+              <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
             </linearGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -100,12 +102,12 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
           <Area
             type="monotone"
             dataKey={type === "plays" ? "plays" : "earnings"}
-            stroke="hsl(142 76% 56%)"
+            stroke={lineColor}
             fill="url(#fillValue)"
             strokeWidth={2}
             filter="url(#glow)"
             dot={<CustomDot />}
-            activeDot={{ r: 5, fill: "hsl(142 76% 56%)", stroke: "hsl(142 76% 56%)", strokeWidth: 2 }}
+            activeDot={{ r: 5, fill: lineColor, stroke: lineColor, strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>
