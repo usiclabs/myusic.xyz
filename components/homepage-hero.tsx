@@ -1,10 +1,12 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import useSWR from "swr"
 import { ArrowUpRight, Music2, Pause, Play, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAudioPlayer } from "@/lib/audio-player-context"
+import type { TrackWithArtist } from "@/types/database"
 
 const fetcher = (url: string) => fetch(url).then((response) => response.json())
 
@@ -17,20 +19,40 @@ export function HomepageHero() {
   const { data: trendingTracks } = useSWR<LandingTrack[]>("/api/tracks/trending?time=all", fetcher, { revalidateOnFocus: false })
   const featuredTrack = trendingTracks?.find((track) => track.audio_url) ?? null
   const heroTracks = trendingTracks?.filter((track) => track.cover_url).slice(0, 3) ?? []
-  const [isPlaying, setIsPlaying] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const { currentTrack, isPlaying, playTrack, pause, resume } = useAudioPlayer()
 
   const toggleFeaturedTrack = () => {
     if (!featuredTrack?.audio_url) return
-    if (isPlaying) {
-      audioRef.current?.pause()
-      setIsPlaying(false)
+    if (currentTrack?.id === featuredTrack.id) {
+      if (isPlaying) pause()
+      else resume()
       return
     }
-    const audio = new Audio(featuredTrack.audio_url)
-    audio.onended = () => setIsPlaying(false)
-    audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false))
-    audioRef.current = audio
+
+    const track: TrackWithArtist = {
+      id: featuredTrack.id,
+      title: featuredTrack.title,
+      artist_id: "landing-artist",
+      content_type: "audio",
+      audio_url: featuredTrack.audio_url,
+      video_url: null,
+      cover_url: featuredTrack.cover_url ?? null,
+      thumbnail_url: featuredTrack.cover_url ?? null,
+      duration: 0,
+      price_per_chunk: 0,
+      unlock_type: "per_chunk",
+      nft_contract_address: null,
+      token_id: null,
+      created_at: new Date().toISOString(),
+      artist: {
+        wallet_address: "",
+        artist_name: featuredTrack.artist_name ?? "Independent artist",
+        bio: null,
+        avatar_url: null,
+        created_at: new Date().toISOString(),
+      },
+    }
+    playTrack(track, [track])
   }
 
   return (
@@ -54,7 +76,7 @@ export function HomepageHero() {
           </div>
           <div className="relative mx-auto h-[390px] w-full max-w-[650px] lg:-mr-8 sm:h-[500px]">
             {(heroTracks.length ? heroTracks : fallbackArtwork.map((image, index) => ({ id: `fallback-${index}`, title: ["Pulse Malone", "Nova Lane", "SYLO"][index], artist_name: ["Independent hip-hop", "A new world of pop", "Raw hunger. Real energy."][index], cover_url: image }))).map((track, index) => <Link key={track.id} href={track.id.startsWith("fallback-") ? "/explore" : `/track/${track.id}`} className={`absolute overflow-hidden rounded-2xl border border-white/10 bg-[#19191b] shadow-2xl transition-transform hover:-translate-y-2 ${index === 0 ? "left-0 top-14 h-[75%] w-[42%] -rotate-[7deg]" : index === 1 ? "left-[25%] top-0 z-10 h-[83%] w-[48%] rotate-[4deg]" : "right-0 top-20 h-[70%] w-[39%] rotate-[10deg]"}`}><img src={track.cover_url ?? fallbackArtwork[index]} alt={`${track.title} artwork`} className="h-full w-full object-cover opacity-80" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#000000] via-[#000000]/70 to-transparent px-4 pb-4 pt-16"><p className="text-sm font-medium text-[#f4f2ee]">{track.title}</p><p className="mt-1 text-[10px] text-[#96969f]">{track.artist_name || "Independent artist"}</p></div></Link>)}
-            <Link href={featuredTrack?.id ? `/track/${featuredTrack.id}` : "/explore"} className="absolute bottom-0 left-[10%] right-[4%] z-20 flex items-center gap-4 rounded-2xl border border-white/10 bg-[#19191b] p-3 shadow-2xl sm:p-4"><img src={featuredTrack?.cover_url || "/music-coin.jpg"} alt={`${featuredTrack?.title || "Featured song"} cover artwork`} className="size-12 rounded-lg object-cover" /><div className="min-w-0 flex-1"><p className="text-[9px] uppercase tracking-[0.2em] text-[#96969f]">Take a closer listen</p><p className="mt-1 truncate text-sm text-[#f4f2ee]">{featuredTrack?.title || "Explore the latest tracks"}</p><p className="text-[10px] text-[#96969f]">{featuredTrack?.artist_name || "Independent artists"}</p></div><div className="hidden gap-1 sm:flex">{[2,4,7,3,6,4,8,3].map((height, index) => <span key={index} className="w-1 rounded-full bg-[#FA003E]" style={{ height: `${height * 3}px` }} />)}</div><button type="button" aria-label={`${isPlaying ? "Pause" : "Play"} featured song`} onClick={(event) => { event.preventDefault(); event.stopPropagation(); toggleFeaturedTrack() }} disabled={!featuredTrack?.audio_url} className="flex size-10 items-center justify-center rounded-full bg-[#f4f2ee] text-[#000000] disabled:cursor-not-allowed disabled:opacity-50">{isPlaying ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}</button></Link>
+            <Link href={featuredTrack?.id ? `/track/${featuredTrack.id}` : "/explore"} className="absolute bottom-0 left-[10%] right-[4%] z-20 flex items-center gap-4 rounded-2xl border border-white/10 bg-[#19191b] p-3 shadow-2xl sm:p-4"><img src={featuredTrack?.cover_url || "/music-coin.jpg"} alt={`${featuredTrack?.title || "Featured song"} cover artwork`} className="size-12 rounded-lg object-cover" /><div className="min-w-0 flex-1"><p className="text-[9px] uppercase tracking-[0.2em] text-[#96969f]">Take a closer listen</p><p className="mt-1 truncate text-sm text-[#f4f2ee]">{featuredTrack?.title || "Explore the latest tracks"}</p><p className="text-[10px] text-[#96969f]">{featuredTrack?.artist_name || "Independent artists"}</p></div><div className="hidden gap-1 sm:flex">{[2,4,7,3,6,4,8,3].map((height, index) => <span key={index} className="w-1 rounded-full bg-[#FA003E]" style={{ height: `${height * 3}px` }} />)}</div><button type="button" aria-label={`${currentTrack?.id === featuredTrack?.id && isPlaying ? "Pause" : "Play"} featured song`} onClick={(event) => { event.preventDefault(); event.stopPropagation(); toggleFeaturedTrack() }} disabled={!featuredTrack?.audio_url} className="flex size-10 items-center justify-center rounded-full bg-[#f4f2ee] text-[#000000] disabled:cursor-not-allowed disabled:opacity-50">{currentTrack?.id === featuredTrack?.id && isPlaying ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}</button></Link>
           </div>
         </div>
       </section>

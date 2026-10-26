@@ -581,10 +581,21 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
   }
 
   const seek = (time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time
-      setCurrentTime(time)
+    if (!audioRef.current) return
+
+    const targetChunk = Math.floor(time / X402_CONFIG.CHUNK_DURATION)
+    if (!unlockedChunks.has(targetChunk)) {
+      audioRef.current.pause()
+      setIsPlaying(false)
+      setCurrentChunk(targetChunk)
+      setPaymentRequired(true)
+      setShowPaymentModal(true)
+      setError(`Payment required for chunk ${targetChunk + 1}`)
+      return
     }
+
+    audioRef.current.currentTime = time
+    setCurrentTime(time)
   }
 
   const setVolume = (newVolume: number) => {

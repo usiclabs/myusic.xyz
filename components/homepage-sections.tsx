@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import useSWR from "swr"
 import { ArrowLeft, ArrowRight, ArrowUpRight, Check, Heart, Pause, Play, Sparkles, Users, Wallet } from "lucide-react"
+import { useAudioPlayer } from "@/lib/audio-player-context"
+import type { TrackWithArtist } from "@/types/database"
 
 const fetcher = (url: string) => fetch(url).then((response) => response.json())
 
@@ -17,8 +19,7 @@ export function HomepageSections() {
   const [period, setPeriod] = useState("7d")
   const { data: tracks = [], isLoading: tracksLoading } = useSWR<LandingTrack[]>(`/api/tracks/trending?time=${period}`, fetcher)
   const [artistIndex, setArtistIndex] = useState(0)
-  const [playingId, setPlayingId] = useState<string | null>(null)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const { currentTrack, isPlaying, playTrack, pause, resume } = useAudioPlayer()
   const artistRailRef = useRef<HTMLDivElement | null>(null)
   const artistCount = artists.length
   const visibleArtists = artists.slice(artistIndex, artistIndex + 3)
@@ -35,18 +36,38 @@ export function HomepageSections() {
     return () => rail.removeEventListener("keydown", onKeyDown)
   }, [artistCount])
 
+  const toPlayableTrack = (track: LandingTrack): TrackWithArtist => ({
+    id: track.id,
+    title: track.title,
+    artist_id: "landing-artist",
+    content_type: "audio",
+    audio_url: track.audio_url ?? null,
+    video_url: null,
+    cover_url: track.cover_url ?? null,
+    thumbnail_url: track.cover_url ?? null,
+    duration: 0,
+    price_per_chunk: Number(track.unlock_price ?? 0),
+    unlock_type: "per_chunk",
+    nft_contract_address: null,
+    token_id: null,
+    created_at: new Date().toISOString(),
+    artist: {
+      wallet_address: "",
+      artist_name: track.artist_name ?? "Independent artist",
+      bio: null,
+      avatar_url: track.artist_avatar_url ?? null,
+      created_at: new Date().toISOString(),
+    },
+  })
+
   const togglePlayback = (track: LandingTrack) => {
     if (!track.audio_url) return
-    if (playingId === track.id) {
-      audioRef.current?.pause()
-      setPlayingId(null)
+    if (currentTrack?.id === track.id) {
+      if (isPlaying) pause()
+      else resume()
       return
     }
-    if (audioRef.current) audioRef.current.pause()
-    const audio = new Audio(track.audio_url)
-    audio.onended = () => setPlayingId(null)
-    audio.play().then(() => setPlayingId(track.id)).catch(() => setPlayingId(null))
-    audioRef.current = audio
+    playTrack(toPlayableTrack(track), tracks.map(toPlayableTrack))
   }
 
   return (
@@ -56,7 +77,7 @@ export function HomepageSections() {
         <div ref={artistRailRef} tabIndex={0} role="region" aria-label="Featured artists carousel" className="mt-6 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 outline-none sm:grid sm:grid-cols-3 sm:gap-[19px] sm:overflow-visible">{(artistsLoading ? Array.from({ length: 3 }, (_, index) => ({ wallet_address: `loading-${index}`, artist_name: "", avatar_url: null, bio: "", trackCount: 0, followerCount: 0, playCount: 0, totalEarnings: 0 })) : displayedArtists).map((artist) => <Link key={artist.wallet_address} href={artist.wallet_address.startsWith("loading-") ? "/artists" : `/artist/${artist.wallet_address}`} className="group min-w-[88%] snap-start overflow-hidden rounded-[15px] border border-white/[0.08] bg-[#19191b] sm:min-w-0"><div className="relative h-[240px] overflow-hidden bg-[#111113]"><img src={artist.avatar_url || "/abstract-soundscape.png"} alt={`${artist.artist_name || "Artist"} artwork`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-0 bg-gradient-to-t from-[#000000]/90 via-transparent to-transparent" /><span className="absolute left-3 top-3 rounded-full bg-[#000000]/45 px-2 py-1 text-[9px] text-[#f4f2ee]">Artist</span><div className="absolute inset-x-4 bottom-4 flex items-end justify-between"><div><h3 className="text-[26px] tracking-[-0.04em]">{artist.artist_name || "Loading artist"}</h3><p className="mt-1 max-w-[230px] text-[10px] text-white/70">{artist.bio || "Independent voice worth discovering."}</p></div><span className="flex size-9 items-center justify-center rounded-full border border-white/25 bg-white/10"><ArrowUpRight className="size-4" /></span></div></div><div className="grid grid-cols-3 border-b border-white/[0.08] px-4 py-4 text-[10px] text-[#96969f]"><span><strong className="block text-sm font-normal text-[#f4f2ee]">{artist.trackCount || "—"}</strong>Tracks</span><span><strong className="block text-sm font-normal text-[#f4f2ee]">{artist.followerCount || "—"}</strong>Followers</span><span><strong className="block text-sm font-normal text-[#f4f2ee]">{artist.playCount ? artist.playCount.toLocaleString() : "—"}</strong>Plays</span></div><div className="flex justify-between px-4 py-3 text-[10px] text-[#96969f]"><span>Artist earnings</span><span className="text-[#91aa91]">{artist.totalEarnings ? `${artist.totalEarnings.toFixed(2)} USDC` : "Unavailable"}</span></div></Link>)}</div><div className="mt-4 flex items-center gap-3 text-[9px] uppercase tracking-[0.14em] text-[#696970]"><span>{artistCount ? `${Math.min(artistIndex + 1, artistCount)} / ${artistCount}` : "0 / 0"}</span><span className="h-px w-24 bg-white/10"><span className="block h-px bg-[#FA003E]" style={{ width: `${artistCount ? ((Math.min(artistIndex + 3, artistCount) / artistCount) * 100) : 0}%` }} /></span><span className="ml-auto">More voices to discover →</span></div>
       </section>
 
-      <section id="trending" className="border-y border-white/[0.08] bg-[#000000] px-5 py-12 sm:px-[4.5%] sm:py-16"><div className="mx-auto max-w-[1512px]"><div className="flex flex-wrap items-end justify-between gap-5 border-b border-white/[0.08] pb-6"><div><p className="mb-3 text-[9px] uppercase tracking-[0.22em] text-[#96969f]">On repeat</p><h2 className="font-sans text-[27px] font-medium tracking-[-0.05em] sm:text-[33px]">Trending now.</h2><p className="mt-2 text-xs text-[#96969f]">What&apos;s finding its way into people&apos;s days.</p></div><div className="flex items-center gap-4"><div className="flex rounded-full border border-white/10 bg-[#19191b] p-1 text-[9px] text-[#96969f]">{[["24h","24H"],["7d","7D"],["30d","30D"],["all","All time"]].map(([value,label]) => <button key={value} type="button" onClick={() => setPeriod(value)} className={`rounded-full px-3 py-2 ${period === value ? "bg-[#f4f2ee] text-[#000000]" : "hover:text-[#f4f2ee]"}`}>{label}</button>)}</div><Link href="/explore" className="hidden text-xs text-[#f4f2ee] hover:text-[#FA003E] sm:inline">Full chart <ArrowUpRight className="ml-1 inline size-3" /></Link></div></div>{tracksLoading ? <div className="mt-6 h-56 animate-pulse rounded-[15px] border border-white/[0.08] bg-[#19191b]" /> : tracks.length === 0 ? <div className="mt-6 rounded-[15px] border border-white/[0.08] bg-[#19191b] p-10 text-center text-sm text-[#96969f]">No tracks found for this period.</div> : <div className="mt-6 space-y-3">{tracks.slice(0, 6).map((track, index) => <div key={`${track.id}-${period}`} className="flex overflow-hidden rounded-[15px] border border-white/[0.08] bg-[#19191b]"><img src={track.cover_url || "/abstract-soundscape.png"} alt={`${track.title} artwork`} className="h-32 w-32 object-cover sm:h-56 sm:w-56" /><div className="flex min-w-0 flex-1 flex-col justify-between p-4 sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="text-[9px] uppercase tracking-[0.18em] text-[#96969f]">{String(index + 1).padStart(2, "0")} / {period.toUpperCase()} · Independent release</p><Link href={track.id ? `/track/${track.id}` : "/explore"} className="mt-4 block truncate text-[27px] tracking-[-0.04em] hover:text-[#FA003E]">{track.title}</Link><p className="mt-1 text-xs text-[#96969f]">{track.artist_name || "Independent artist"}</p></div><button type="button" aria-label={`Save ${track.title}`} className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/10 text-[#96969f] hover:border-[#FA003E] hover:text-[#FA003E]"><Heart className="size-4" /></button></div><div className="flex flex-wrap items-end justify-between gap-4"><p className="text-xs text-[#96969f]">{track.unlock_price ? `${track.unlock_price} USDC to unlock` : "Available to listen"}</p><div className="flex items-center gap-3"><button type="button" aria-label={`${playingId === track.id ? "Pause" : "Play"} ${track.title}`} disabled={!track.audio_url} onClick={() => togglePlayback(track)} className="flex size-11 items-center justify-center rounded-full border border-white/15 text-[#f4f2ee] disabled:opacity-40">{playingId === track.id ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}</button><Link href={track.id ? `/track/${track.id}` : "/explore"} className="inline-flex h-11 items-center rounded-full bg-[#f4f2ee] px-5 text-xs text-[#000000] hover:bg-[#FA003E]">View track <ArrowUpRight className="ml-2 size-3" /></Link></div></div></div></div>)}</div>}</div></section>
+      <section id="trending" className="border-y border-white/[0.08] bg-[#000000] px-5 py-12 sm:px-[4.5%] sm:py-16"><div className="mx-auto max-w-[1512px]"><div className="flex flex-wrap items-end justify-between gap-5 border-b border-white/[0.08] pb-6"><div><p className="mb-3 text-[9px] uppercase tracking-[0.22em] text-[#96969f]">On repeat</p><h2 className="font-sans text-[27px] font-medium tracking-[-0.05em] sm:text-[33px]">Trending now.</h2><p className="mt-2 text-xs text-[#96969f]">What&apos;s finding its way into people&apos;s days.</p></div><div className="flex items-center gap-4"><div className="flex rounded-full border border-white/10 bg-[#19191b] p-1 text-[9px] text-[#96969f]">{[["24h","24H"],["7d","7D"],["30d","30D"],["all","All time"]].map(([value,label]) => <button key={value} type="button" onClick={() => setPeriod(value)} className={`rounded-full px-3 py-2 ${period === value ? "bg-[#f4f2ee] text-[#000000]" : "hover:text-[#f4f2ee]"}`}>{label}</button>)}</div><Link href="/explore" className="hidden text-xs text-[#f4f2ee] hover:text-[#FA003E] sm:inline">Full chart <ArrowUpRight className="ml-1 inline size-3" /></Link></div></div>{tracksLoading ? <div className="mt-6 h-56 animate-pulse rounded-[15px] border border-white/[0.08] bg-[#19191b]" /> : tracks.length === 0 ? <div className="mt-6 rounded-[15px] border border-white/[0.08] bg-[#19191b] p-10 text-center text-sm text-[#96969f]">No tracks found for this period.</div> : <div className="mt-6 space-y-3">{tracks.slice(0, 6).map((track, index) => <div key={`${track.id}-${period}`} className="flex overflow-hidden rounded-[15px] border border-white/[0.08] bg-[#19191b]"><img src={track.cover_url || "/abstract-soundscape.png"} alt={`${track.title} artwork`} className="h-32 w-32 object-cover sm:h-56 sm:w-56" /><div className="flex min-w-0 flex-1 flex-col justify-between p-4 sm:p-7"><div className="flex items-start justify-between gap-3"><div><p className="text-[9px] uppercase tracking-[0.18em] text-[#96969f]">{String(index + 1).padStart(2, "0")} / {period.toUpperCase()} · Independent release</p><Link href={track.id ? `/track/${track.id}` : "/explore"} className="mt-4 block truncate text-[27px] tracking-[-0.04em] hover:text-[#FA003E]">{track.title}</Link><p className="mt-1 text-xs text-[#96969f]">{track.artist_name || "Independent artist"}</p></div><button type="button" aria-label={`Save ${track.title}`} className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/10 text-[#96969f] hover:border-[#FA003E] hover:text-[#FA003E]"><Heart className="size-4" /></button></div><div className="flex flex-wrap items-end justify-between gap-4"><p className="text-xs text-[#96969f]">{track.unlock_price ? `${track.unlock_price} USDC to unlock` : "Available to listen"}</p><div className="flex items-center gap-3"><button type="button" aria-label={`${isPlaying && currentTrack?.id === track.id ? "Pause" : "Play"} ${track.title}`} disabled={!track.audio_url} onClick={() => togglePlayback(track)} className="flex size-11 items-center justify-center rounded-full border border-white/15 text-[#f4f2ee] disabled:opacity-40">{isPlaying && currentTrack?.id === track.id ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}</button><Link href={track.id ? `/track/${track.id}` : "/explore"} className="inline-flex h-11 items-center rounded-full bg-[#f4f2ee] px-5 text-xs text-[#000000] hover:bg-[#FA003E]">View track <ArrowUpRight className="ml-2 size-3" /></Link></div></div></div></div>)}</div>}</div></section>
 
       <section id="how-it-works" className="border-y border-white/[0.08] px-5 py-16 sm:px-[4.5%] lg:py-20"><div className="mx-auto grid max-w-[1512px] gap-12 lg:grid-cols-[0.8fr_1.2fr]"><h2 className="max-w-sm font-sans text-4xl font-medium tracking-[-0.05em] sm:text-5xl">A better kind of listening.</h2><div className="grid gap-8 sm:grid-cols-3">{[["01","Find your sound.","Discover new voices and follow the music that finds you."],["02","Make it matter.","Support artists directly with a small payment when you listen."],["03","Stay for the story.","Keep up with the people, process, and work behind every track."]].map(([number,title,description]) => <div key={number} className="border-t border-white/[0.12] pt-4"><p className="text-xs text-[#FA003E]">{number}</p><h3 className="mt-8 text-lg">{title}</h3><p className="mt-3 text-sm leading-6 text-[#96969f]">{description}</p></div>)}</div></div></section>
 
