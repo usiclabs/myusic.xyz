@@ -1,324 +1,75 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import { Music, DollarSign, Users, TrendingUp } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { FriendActivityBadge } from "@/components/friend-activity-badge"
 import Link from "next/link"
-import { ProfileTokenSwapModal } from "@/components/profile-token-swap-modal"
-import { VerifiedBadge } from "@/components/verified-badge"
-import type { Address } from "viem"
+import { ArrowUpRight, Plus, Music, Users, DollarSign } from "lucide-react"
 
 type Artist = {
   wallet_address: string
   artist_name: string | null
   bio: string | null
   avatar_url: string | null
-  created_at: string
   totalEarned: number
   trackCount: number
   followerCount: number
   profile_token_address?: string | null
-  verified?: boolean // Add verified field to type
 }
 
-interface ArtistsFeedProps {
-  artists: Artist[]
-}
+export function ArtistsFeed({ artists }: { artists: Artist[] }) {
+  const featured = artists.slice(0, 3)
+  const lead = featured[0]
+  const secondary = featured.slice(1)
 
-export function ArtistsFeed({ artists }: ArtistsFeedProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [scrollOffsets, setScrollOffsets] = useState<number[]>(new Array(artists.length).fill(0))
-  const [profileTokenMetrics, setProfileTokenMetrics] = useState<Record<string, { marketCap: number }>>({})
-  const [swapModalToken, setSwapModalToken] = useState<{
-    address: Address
-    name: string
-    symbol?: string
-  } | null>(null)
-
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      const tokenizedArtists = artists.filter((a) => a.profile_token_address)
-      console.log(`[v0] Fetching metrics for ${tokenizedArtists.length} tokenized artists`)
-
-      const metricsPromises = tokenizedArtists.map(async (artist) => {
-        try {
-          const tokenAddress = artist.profile_token_address
-          console.log(`[v0] Fetching metrics for token: ${tokenAddress}`)
-
-          const res = await fetch(`/api/token/metrics/${tokenAddress}`)
-          if (res.ok) {
-            const metrics = await res.json()
-            console.log(`[v0] Got metrics for ${artist.wallet_address}:`, metrics)
-            return { address: artist.wallet_address, marketCap: metrics.marketCap || 0 }
-          } else {
-            console.error(`[v0] API returned status ${res.status} for ${tokenAddress}`)
-          }
-        } catch (error) {
-          console.error(`[v0] Failed to fetch metrics for ${artist.wallet_address}:`, error)
-        }
-        return { address: artist.wallet_address, marketCap: 0 }
-      })
-
-      const results = await Promise.all(metricsPromises)
-      const metricsMap = results.reduce(
-        (acc, { address, marketCap }) => {
-          acc[address] = { marketCap }
-          return acc
-        },
-        {} as Record<string, { marketCap: number }>,
-      )
-      console.log(`[v0] Market cap metrics map:`, metricsMap)
-      setProfileTokenMetrics(metricsMap)
-    }
-
-    if (artists.length > 0) {
-      fetchMetrics()
-    }
-  }, [artists])
-
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    const handleScroll = () => {
-      const scrollTop = container.scrollTop
-      const itemHeight = window.innerHeight
-      const index = Math.round(scrollTop / itemHeight)
-      setCurrentIndex(index)
-
-      const newOffsets = artists.map((_, i) => {
-        const cardTop = i * itemHeight
-        const cardBottom = cardTop + itemHeight
-        const viewportTop = scrollTop
-        const viewportBottom = scrollTop + itemHeight
-
-        if (cardBottom < viewportTop - itemHeight || cardTop > viewportBottom + itemHeight) {
-          return 0
-        }
-
-        const cardCenter = cardTop + itemHeight / 2
-        const viewportCenter = scrollTop + itemHeight / 2
-        const distanceFromCenter = cardCenter - viewportCenter
-
-        return distanceFromCenter * 0.1
-      })
-
-      setScrollOffsets(newOffsets)
-    }
-
-    container.addEventListener("scroll", handleScroll, { passive: true })
-    return () => container.removeEventListener("scroll", handleScroll)
-  }, [artists.length])
-
-  function formatAddress(addr: string) {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-  }
-
-  if (artists.length === 0) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="text-center space-y-6 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-4 animate-pulse">
-            <Users className="h-12 w-12 text-primary" />
-          </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent">
-            No Artists Found
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-md mx-auto">
-            Try adjusting your filters or check back later for new artists!
-          </p>
-        </div>
-      </div>
-    )
+  if (!artists.length) {
+    return <div className="px-5 py-24 text-center text-muted-foreground">No artists match these filters.</div>
   }
 
   return (
-    <>
-      <div
-        ref={containerRef}
-        className="h-screen overflow-y-scroll overflow-x-clip snap-y snap-mandatory scroll-smooth hide-scrollbar"
-        style={{ scrollbarWidth: "none" }}
-      >
-        {artists.map((artist, index) => {
-          const parallaxOffset = scrollOffsets[index] || 0
+    <main className="mx-auto w-full max-w-[1512px] px-5 pb-28 pt-8 sm:px-[4.5%] md:pt-12">
+      <section className="mb-10 flex items-end justify-between gap-8">
+        <div>
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">Independent voices. Infinite possibilities.</p>
+          <h1 className="text-balance text-4xl font-semibold tracking-[-0.06em] text-foreground sm:text-5xl">Find your next favorite.</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Discover the artists moving music forward. Be part of their story.</p>
+        </div>
+        <div className="hidden items-center gap-3 pb-1 lg:flex">
+          <div className="flex -space-x-2">{artists.slice(0, 4).map((artist) => <Avatar key={artist.wallet_address} artist={artist} />)}</div>
+          <div className="text-xs text-muted-foreground"><strong className="block text-foreground">{artists.length} independent artists</strong>One world of sounds.</div>
+        </div>
+      </section>
 
-          return (
-            <div
-              key={artist.wallet_address}
-              className="relative h-screen w-full snap-start snap-always flex items-center justify-center"
-            >
-              <div
-                className="absolute inset-0 z-0"
-                style={{
-                  transform: `translateY(${parallaxOffset}px)`,
-                  willChange: "transform",
-                }}
-              >
-                {artist.avatar_url ? (
-                  <>
-                    <Image
-                      src={artist.avatar_url || "/placeholder.svg"}
-                      alt={artist.artist_name || "Artist"}
-                      fill
-                      className="object-cover"
-                      priority={index === 0}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/90" />
-                  </>
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background/80" />
-                )}
-              </div>
+      <section className="mb-12 grid snap-x snap-mandatory grid-flow-col auto-cols-[81%] gap-3 overflow-x-auto pb-2 sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-3 sm:gap-4 sm:overflow-visible">
+        {lead && <Spotlight artist={lead} lead label="In the spotlight" />}
+        {secondary.map((artist, index) => <Spotlight key={artist.wallet_address} artist={artist} label={index === 0 ? "Sound to discover" : "On our radar"} />)}
+      </section>
 
-              <div className="relative z-10 w-full h-full flex flex-col justify-between p-6 md:p-12">
-                <div className="flex items-center gap-2 text-white/90 animate-fade-in">
-                  <div className="relative">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    <div className="absolute inset-0 bg-primary/50 blur-xl" />
-                  </div>
-                  <span className="text-sm font-medium">#{index + 1} Artist</span>
-                </div>
-
-                <div className="space-y-6 pb-20 md:pb-8">
-                  <Link href={`/artist/${artist.wallet_address}`} className="block group">
-                    <div className="flex items-center gap-4 mb-4 animate-fade-in-up">
-                      <Avatar className="h-20 w-20 md:h-32 md:w-32 border-4 border-white/30 shadow-2xl group-hover:border-primary group-hover:scale-110 transition-all duration-300 relative">
-                        <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <AvatarImage src={artist.avatar_url || undefined} className="relative z-10" />
-                        <AvatarFallback className="bg-primary/20 text-primary text-3xl md:text-4xl relative z-10">
-                          {artist.artist_name?.[0]?.toUpperCase() || "A"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <FriendActivityBadge userAddress={artist.wallet_address} />
-                        </div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <h1 className="text-3xl md:text-6xl font-bold text-white text-balance leading-tight group-hover:text-primary transition-all duration-300">
-                            {artist.artist_name || "Unknown Artist"}
-                          </h1>
-                          {artist.verified && <VerifiedBadge size="lg" />}
-                        </div>
-                        <p className="text-base md:text-lg text-white/70">{formatAddress(artist.wallet_address)}</p>
-                      </div>
-                    </div>
-                  </Link>
-
-                  {artist.bio && (
-                    <p
-                      className="text-base md:text-xl text-white/90 leading-relaxed max-w-3xl text-balance animate-fade-in-up"
-                      style={{ animationDelay: "100ms" }}
-                    >
-                      {artist.bio}
-                    </p>
-                  )}
-
-                  <div
-                    className="grid grid-cols-3 gap-3 md:gap-6 max-w-2xl animate-fade-in-up"
-                    style={{ animationDelay: "200ms" }}
-                  >
-                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/15 hover:scale-110 transition-all duration-300 group">
-                      <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 mb-2 md:mb-3 group-hover:scale-110 transition-transform relative">
-                        <div className="absolute inset-0 rounded-full bg-primary/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <DollarSign className="h-5 w-5 md:h-7 md:w-7 text-primary relative z-10" />
-                      </div>
-                      <span className="font-bold text-lg md:text-3xl text-white animate-green-glow">
-                        {artist.totalEarned.toFixed(4)}
-                      </span>
-                      <span className="text-xs md:text-sm text-white/70 mt-1">USDC Earned</span>
-                    </div>
-
-                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/15 hover:scale-110 transition-all duration-300 group">
-                      <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 mb-2 md:mb-3 group-hover:scale-110 transition-transform relative">
-                        <div className="absolute inset-0 rounded-full bg-primary/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <Music className="h-5 w-5 md:h-7 md:w-7 text-primary relative z-10" />
-                      </div>
-                      <span className="font-bold text-lg md:text-3xl text-white">{artist.trackCount}</span>
-                      <span className="text-xs md:text-sm text-white/70 mt-1">Tracks</span>
-                    </div>
-
-                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/15 hover:scale-110 transition-all duration-300 group">
-                      <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 mb-2 md:mb-3 group-hover:scale-110 transition-transform relative">
-                        <div className="absolute inset-0 rounded-full bg-primary/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <Users className="h-5 w-5 md:h-7 md:w-7 text-primary relative z-10" />
-                      </div>
-                      <span className="font-bold text-lg md:text-3xl text-white">{artist.followerCount}</span>
-                      <span className="text-xs md:text-sm text-white/70 mt-1">Followers</span>
-                    </div>
-                  </div>
-
-                  {artist.profile_token_address && profileTokenMetrics[artist.wallet_address] && (
-                    <div
-                      className="flex items-center gap-3 p-4 md:p-6 rounded-2xl bg-green-500/10 backdrop-blur-xl border border-green-500/20 max-w-2xl animate-fade-in-up"
-                      style={{ animationDelay: "250ms" }}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <TrendingUp className="h-4 w-4 text-green-500" />
-                          <span className="text-xs md:text-sm text-white/70">Market Cap</span>
-                        </div>
-                        <span className="font-bold text-xl md:text-2xl text-white">
-                          {profileTokenMetrics[artist.wallet_address].marketCap >= 1000000
-                            ? `$${(profileTokenMetrics[artist.wallet_address].marketCap / 1000000).toFixed(2)}M`
-                            : profileTokenMetrics[artist.wallet_address].marketCap >= 1000
-                              ? `$${(profileTokenMetrics[artist.wallet_address].marketCap / 1000).toFixed(2)}K`
-                              : `$${profileTokenMetrics[artist.wallet_address].marketCap.toFixed(2)}`}
-                        </span>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          setSwapModalToken({
-                            address: artist.profile_token_address as Address,
-                            name: artist.artist_name || "Profile Token",
-                            symbol: artist.artist_name?.toUpperCase().slice(0, 4),
-                          })
-                        }}
-                        className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold text-sm md:text-base flex items-center gap-2 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg"
-                      >
-                        Swap
-                      </button>
-                    </div>
-                  )}
-
-                  <Link
-                    href={`/artist/${artist.wallet_address}`}
-                    className="animate-fade-in-up"
-                    style={{ animationDelay: "300ms" }}
-                  >
-                    <Button
-                      size="lg"
-                      className="h-12 md:h-14 px-6 md:px-8 rounded-full bg-black/40 hover:bg-black/60 hover:scale-110 active:scale-95 backdrop-blur-xl border border-white/10 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.8)] text-base md:text-lg font-semibold text-white w-full md:w-auto relative group"
-                    >
-                      <span className="relative z-10">View Profile</span>
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              {index < artists.length - 1 && (
-                <div className="absolute bottom-32 md:bottom-24 right-6 z-20 animate-bounce">
-                  <div className="h-8 w-0.5 bg-gradient-to-b from-white/50 to-transparent rounded-full" />
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-
-      {swapModalToken && (
-        <ProfileTokenSwapModal
-          tokenAddress={swapModalToken.address}
-          tokenName={swapModalToken.name}
-          tokenSymbol={swapModalToken.symbol}
-          onClose={() => setSwapModalToken(null)}
-        />
-      )}
-    </>
+      <section>
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold tracking-[-0.04em]">Explore artists <span className="ml-2 rounded-full border border-border px-2 py-0.5 align-middle font-mono text-[10px] text-muted-foreground">{artists.length}</span></h2>
+          <button className="rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:border-accent hover:text-foreground">Following 0</button>
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-5">
+          {artists.map((artist) => <ArtistCard key={artist.wallet_address} artist={artist} />)}
+        </div>
+      </section>
+    </main>
   )
+}
+
+function Avatar({ artist }: { artist: Artist }) { return artist.avatar_url ? <Image src={artist.avatar_url} alt="" width={28} height={28} className="size-7 rounded-full border-2 border-background object-cover" /> : <div className="flex size-7 items-center justify-center rounded-full border-2 border-background bg-card text-[10px]">{artist.artist_name?.[0] ?? "A"}</div> }
+
+function Spotlight({ artist, lead = false, label }: { artist: Artist; lead?: boolean; label: string }) {
+  return <Link href={`/artist/${artist.wallet_address}`} className={`group relative block min-h-[310px] snap-start overflow-hidden rounded-2xl border border-border bg-card sm:min-h-[338px] ${lead ? "sm:col-span-1" : ""}`}>
+    {artist.avatar_url && <Image src={artist.avatar_url} alt={artist.artist_name || "Artist"} fill className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" />}
+    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/45 to-transparent" />
+    <div className="absolute inset-x-5 top-5"><span className="rounded-full border border-white/20 bg-background/25 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-foreground/80">✦ {label}</span></div>
+    <div className="absolute inset-x-5 bottom-5"><p className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-accent">{lead ? "Meet your next repeat." : "Artist to discover."}</p><h3 className={`${lead ? "text-4xl" : "text-2xl"} font-semibold tracking-[-0.06em]`}>{artist.artist_name || "Unknown artist"}</h3><p className="mt-2 line-clamp-2 max-w-sm text-xs leading-5 text-foreground/70">{artist.bio || "Independent sound, moving forward."}</p>{lead && <span className="mt-4 inline-flex rounded-full bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground">Meet {artist.artist_name} <ArrowUpRight className="ml-2" /></span>}</div>
+  </Link>
+}
+
+function ArtistCard({ artist }: { artist: Artist }) {
+  return <Link href={`/artist/${artist.wallet_address}`} className="group overflow-hidden rounded-[14px] border border-border bg-card transition-transform duration-200 hover:-translate-y-1">
+    <div className="relative aspect-[1.05] overflow-hidden bg-muted">{artist.avatar_url ? <Image src={artist.avatar_url} alt={artist.artist_name || "Artist"} fill className="object-cover transition-transform duration-500 group-hover:scale-[1.04]" /> : <div className="flex h-full items-center justify-center text-4xl text-muted-foreground">{artist.artist_name?.[0] ?? "A"}</div>}<span className="absolute bottom-3 left-3 rounded-full border border-white/15 bg-background/70 px-2 py-1 font-mono text-[9px] text-foreground/80">Artist</span><span className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full border border-white/20 bg-background/60"><Plus /></span></div>
+    <div className="p-3 sm:p-4"><div className="flex items-center justify-between gap-2"><h3 className="truncate text-sm font-semibold">{artist.artist_name || "Unknown artist"}</h3><ArrowUpRight className="shrink-0 text-muted-foreground" /></div><p className="mt-1 truncate text-[11px] text-muted-foreground">{artist.bio || "Independent artist"}</p><div className="mt-4 flex items-center justify-between border-t border-border pt-3 font-mono text-[9px] text-muted-foreground"><span><Music className="mr-1 inline size-3" />{artist.trackCount}</span><span><Users className="mr-1 inline size-3" />{artist.followerCount}</span><span className="hidden sm:inline"><DollarSign className="mr-1 inline size-3" />{artist.totalEarned.toFixed(2)}</span></div></div>
+  </Link>
 }
