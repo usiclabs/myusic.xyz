@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useAccount, useSwitchChain } from "wagmi"
 import { base, baseSepolia, mainnet, arbitrum } from "wagmi/chains"
 import { monad, unichain } from "@/lib/web3/config"
@@ -61,44 +61,18 @@ export function ChainSwitcher() {
   const { chain } = useAccount()
   const { switchChain, isPending } = useSwitchChain()
   const [isOpen, setIsOpen] = useState(false)
-  const [isHydrated, setIsHydrated] = useState(false)
-  const [selectedChainId, setSelectedChainId] = useState<number | null>(null)
-
-  useEffect(() => {
-    setIsHydrated(true)
-    if (chain?.id) {
-      setSelectedChainId(chain.id)
-    }
-  }, [chain?.id])
 
   const allChains = [...MAINNET_CHAINS, ...TESTNET_CHAINS]
-  const currentChain = selectedChainId 
-    ? allChains.find((c) => c.chain.id === selectedChainId) || MAINNET_CHAINS[0]
-    : MAINNET_CHAINS[0]
-
-  if (!isHydrated) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-2 bg-background/50 backdrop-blur-sm border-border/50"
-        disabled
-      >
-        <span>{MAINNET_CHAINS[0].icon}</span>
-        <span className="hidden sm:inline">{MAINNET_CHAINS[0].chain.name}</span>
-        <ChevronDown className="h-4 w-4 opacity-50" />
-      </Button>
-    )
-  }
+  const currentChain = allChains.find((c) => c.chain.id === chain?.id) || MAINNET_CHAINS[0]
 
   return (
-    <DropdownMenu open={isOpen && isHydrated} onOpenChange={setIsOpen}>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
           size="sm"
           className="gap-2 bg-background/50 backdrop-blur-sm border-border/50"
-          disabled={isPending || !isHydrated}
+          disabled={isPending}
         >
           <span>{currentChain.icon}</span>
           <span className="hidden sm:inline">{currentChain.chain.name}</span>
@@ -112,7 +86,6 @@ export function ChainSwitcher() {
             key={c.id}
             onClick={() => {
               switchChain?.({ chainId: c.id })
-              setSelectedChainId(c.id)
               setIsOpen(false)
             }}
             className="flex items-center justify-between cursor-pointer"
@@ -127,7 +100,7 @@ export function ChainSwitcher() {
                 </span>
               </div>
             </div>
-            {selectedChainId === c.id && <Check className={`h-4 w-4 ${color}`} />}
+            {chain?.id === c.id && <Check className={`h-4 w-4 ${color}`} />}
           </DropdownMenuItem>
         ))}
 
@@ -138,7 +111,6 @@ export function ChainSwitcher() {
             key={c.id}
             onClick={() => {
               switchChain?.({ chainId: c.id })
-              setSelectedChainId(c.id)
               setIsOpen(false)
             }}
             className="flex items-center justify-between cursor-pointer"
@@ -150,7 +122,7 @@ export function ChainSwitcher() {
                 <span className="text-xs text-muted-foreground">{description}</span>
               </div>
             </div>
-            {selectedChainId === c.id && <Check className={`h-4 w-4 ${color}`} />}
+            {chain?.id === c.id && <Check className={`h-4 w-4 ${color}`} />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

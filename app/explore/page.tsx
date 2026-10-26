@@ -83,18 +83,6 @@ export default function ExplorePage() {
         .select("track_id, chunks_played, total_paid")
         .in("track_id", trackIds)
 
-      console.log("[v0] Fetched streams for", trackIds.length, "tracks:", streams?.length || 0, "streams found")
-      if (streams && streams.length > 0) {
-        console.log(
-          "[v0] Sample stream data:",
-          streams.slice(0, 3).map((s) => ({
-            track_id: s.track_id,
-            total_paid: s.total_paid,
-            type: typeof s.total_paid,
-          })),
-        )
-      }
-
       // Get like counts
       const { data: likes } = await supabase.from("likes").select("track_id").in("track_id", trackIds)
 
@@ -107,14 +95,8 @@ export default function ExplorePage() {
 
       streams?.forEach((stream) => {
         const stats = statsMap.get(stream.track_id)!
-        const paidAmount =
-          typeof stream.total_paid === "string"
-            ? Number.parseFloat(stream.total_paid)
-            : typeof stream.total_paid === "number"
-              ? stream.total_paid
-              : 0
-        stats.total_earned += isNaN(paidAmount) ? 0 : paidAmount
-        stats.play_count += stream.chunks_played || 0
+        stats.total_earned += Number(stream.total_paid)
+        stats.play_count += stream.chunks_played
       })
 
       likes?.forEach((like) => {
@@ -122,34 +104,11 @@ export default function ExplorePage() {
         stats.like_count += 1
       })
 
-      const tracksWithEarnings = Array.from(statsMap.entries()).filter(([_, stats]) => stats.total_earned > 0)
-      if (tracksWithEarnings.length > 0) {
-        console.log(
-          "[v0] Tracks with earnings:",
-          tracksWithEarnings.slice(0, 5).map(([id, stats]) => ({
-            id: id.slice(0, 8),
-            total_earned: stats.total_earned,
-          })),
-        )
-        console.log(
-          "[v0] All tracks with earnings count:",
-          tracksWithEarnings.length,
-          "out of",
-          trackIds.length,
-          "total tracks",
-        )
-      }
-
       // Merge stats with tracks
-      const tracksWithStats: TrackWithStats[] = tracksData.map((track) => {
-        const stats = statsMap.get(track.id)
-        return {
-          ...track,
-          total_earned: stats?.total_earned || 0,
-          play_count: stats?.play_count || 0,
-          like_count: stats?.like_count || 0,
-        }
-      })
+      const tracksWithStats: TrackWithStats[] = tracksData.map((track) => ({
+        ...track,
+        ...statsMap.get(track.id),
+      }))
 
       // Apply client-side sorting for aggregated fields
       if (sortBy === "most_played") {
@@ -176,16 +135,11 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-black pb-32">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float-delayed" />
-      </div>
-
       <main className="container relative z-10 py-12 px-4 sm:px-6">
         <div className="mb-12 animate-fade-in">
           <div className="flex items-center gap-3 mb-4">
-            <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent animate-gradient">
+            <Sparkles className="h-6 w-6 text-accent" />
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
               Explore Music
             </h1>
           </div>
@@ -198,7 +152,7 @@ export default function ExplorePage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input
                 placeholder="Search tracks, artists..."
-                className="pl-10 bg-card/50 backdrop-blur-xl border border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                className="pl-10 bg-card border-border focus:border-accent focus:ring-1 focus:ring-accent/30 transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -280,7 +234,7 @@ export default function ExplorePage() {
             ))}
           </div>
         ) : (
-          <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-12 text-center animate-fade-in">
+          <div className="bg-card border border-border p-12 text-center animate-fade-in">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6 animate-pulse">
               <Search className="h-10 w-10 text-primary" />
             </div>

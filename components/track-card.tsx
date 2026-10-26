@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Play, Heart, VideoIcon, Coins } from "lucide-react"
+import { Play, Heart, VideoIcon, Coins } from 'lucide-react'
 import Image from "next/image"
 import Link from "next/link"
 import type { TrackWithArtist } from "@/types/database"
@@ -100,8 +100,7 @@ export function TrackCard({ track, queue }: TrackCardProps) {
           method: "DELETE",
         })
 
-        if (!response.ok) {
-          console.error(`[v0] Failed to unlike: ${response.status}`, await response.text())
+        if (response.status === 503) {
           setLikesAvailable(false)
           setIsLiked(wasLiked)
           setLikeCount((prev) => (wasLiked ? prev + 1 : prev - 1))
@@ -114,8 +113,7 @@ export function TrackCard({ track, queue }: TrackCardProps) {
           body: JSON.stringify({ userAddress: address }),
         })
 
-        if (!response.ok) {
-          console.error(`[v0] Failed to like: ${response.status}`, await response.text())
+        if (response.status === 503) {
           setLikesAvailable(false)
           setIsLiked(wasLiked)
           setLikeCount((prev) => (wasLiked ? prev + 1 : prev - 1))

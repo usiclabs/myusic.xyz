@@ -62,7 +62,7 @@ export function TrendingWidget() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-accent">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-orange-500 to-red-500">
             <Flame className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -87,7 +87,7 @@ export function TrendingWidget() {
             onClick={() => setTimeFilter(filter.value)}
             className={
               timeFilter === filter.value
-                ? "bg-accent shadow-lg shadow-accent/30 text-white"
+                ? "bg-gradient-to-r from-orange-500 to-red-500 shadow-lg shadow-orange-500/30"
                 : ""
             }
           >

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Agent not found or unauthorized" }, { status: 404 })
     }
 
-    // Get agent wallet
+    // Get current wallet
     const { data: wallet } = await supabase
       .from("investment_agent_wallets")
       .select("*")
@@ -35,13 +35,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Wallet not found" }, { status: 404 })
     }
 
-    if (!txHash || txHash.startsWith("0x")) {
-      // Client has already executed the transfer, just verify and update database
-      // In production, you would verify the txHash on-chain here
-      console.log(`[API] Fund wallet - Verifying transaction: ${txHash}`)
-    }
-
-    // Update database with new balance
+    // Update balance
     const newBalance = Number(wallet.usdc_balance) + Number(amount)
     await updateInvestmentWalletBalance(agentId, newBalance)
 
@@ -53,15 +47,13 @@ export async function POST(request: NextRequest) {
       })
       .eq("id", agentId)
 
-    console.log(`[API] Agent wallet funded: ${wallet.wallet_address} with ${amount} USDC (tx: ${txHash})`)
-
     return NextResponse.json({
       success: true,
       newBalance,
       txHash,
     })
   } catch (error: any) {
-    console.error("[API] Error funding wallet:", error)
+    console.error("Error funding wallet:", error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

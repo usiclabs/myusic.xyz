@@ -1,6 +1,6 @@
 import { http, createConfig } from "wagmi"
 import { base, baseSepolia, mainnet, arbitrum } from "wagmi/chains"
-import { walletConnect, injected } from "wagmi/connectors"
+import { walletConnect, injected, coinbaseWallet } from "wagmi/connectors"
 
 // Get WalletConnect project ID from environment
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ""
@@ -122,6 +122,10 @@ export const config = createConfig({
           provider: typeof window !== "undefined" ? window.ethereum : undefined,
         }
       },
+    }),
+    coinbaseWallet({
+      appName: "USI",
+      appLogoUrl: typeof window !== "undefined" ? `${window.location.origin}/images/logo.png` : undefined,
     }),
     walletConnect({
       projectId,

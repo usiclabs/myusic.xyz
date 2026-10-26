@@ -68,25 +68,18 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (currentTrack && address) {
-      console.log("[v0] Checking track ownership for track:", currentTrack.id, "address:", address)
-      checkTrackOwnership(address, currentTrack.id)
-        .then((owns) => {
-          console.log("[v0] Ownership check result:", owns, "for track:", currentTrack.id)
-          if (owns) {
-            console.log("[v0] User already owns this track - unlocking all chunks")
-            const totalChunks = Math.ceil(currentTrack.duration / X402_CONFIG.CHUNK_DURATION)
-            const allChunks = new Set(Array.from({ length: totalChunks }, (_, i) => i))
-            setUnlockedChunks(allChunks)
-          } else {
-            console.log("[v0] User does not own track - only chunk 0 available for preview")
-            setUnlockedChunks(new Set([0]))
-          }
-        })
-        .catch((error) => {
-          console.error("[v0] Error checking track ownership:", error)
-          // On error, assume user doesn't own it - fallback to preview only
-          setUnlockedChunks(new Set([0]))
-        })
+      checkTrackOwnership(address, currentTrack.id).then((owns) => {
+        if (owns) {
+          console.log("[v0] User already owns this track - unlocking all chunks")
+          const totalChunks = Math.ceil(currentTrack.duration / X402_CONFIG.CHUNK_DURATION)
+          const allChunks = new Set(Array.from({ length: totalChunks }, (_, i) => i))
+          setUnlockedChunks(allChunks)
+          toast({
+            title: "Track Owned",
+            description: "You already purchased this track. Enjoy unlimited replays!",
+          })
+        }
+      })
     }
   }, [currentTrack, address])
 
@@ -104,25 +97,18 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
 
       const newChunkIndex = Math.floor(newTime / X402_CONFIG.CHUNK_DURATION)
       if (newChunkIndex !== currentChunk) {
-        console.log(
-          "[v0] Chunk changed from",
-          currentChunk,
-          "to",
-          newChunkIndex,
-          "- Unlocked chunks:",
-          Array.from(unlockedChunks),
-        )
         setCurrentChunk(newChunkIndex)
 
+        if (currentTrack && address) {
+          logStreamActivity(currentTrack.id, address, newChunkIndex)
+        }
+
         if (!unlockedChunks.has(newChunkIndex)) {
-          console.log("[v0] Chunk", newChunkIndex, "is NOT unlocked - triggering payment modal")
           audio.pause()
           setIsPlaying(false)
           setPaymentRequired(true)
           setError(`Payment required for chunk ${newChunkIndex + 1}. Please pay to continue listening.`)
           setShowPaymentModal(true)
-        } else {
-          console.log("[v0] Chunk", newChunkIndex, "is unlocked - continuing playback")
         }
       }
     }
@@ -323,16 +309,13 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       updateSession(address, currentTrack.id, paymentChainId)
 
       paymentJustSucceededRef.current = true
+      setUnlockedChunks((prev) => new Set([...prev, chunkIndex]))
 
       if (currentTrack.unlock_type === "full_song") {
         const totalChunks = Math.ceil(currentTrack.duration / X402_CONFIG.CHUNK_DURATION)
         const allChunks = new Set(Array.from({ length: totalChunks }, (_, i) => i))
         setUnlockedChunks(allChunks)
         console.log("[v0] Full song unlocked - all", totalChunks, "chunks available")
-      } else {
-        // Per-chunk mode: only unlock the current chunk
-        setUnlockedChunks((prev) => new Set([...prev, chunkIndex]))
-        console.log("[v0] Chunk", chunkIndex, "unlocked for per-chunk payment")
       }
 
       setPaymentRequired(false)
@@ -405,25 +388,21 @@ export function AudioPlayerProvider({ children }: { children: ReactNode }) {
       }
 
       console.log("[v0] Smart wallet payment successful! Transaction:", result.txHash)
+      onProgress?.("complete", result.txHash)
 
       paymentJustSucceededRef.current = true
+      setUnlockedChunks((prev) => new Set([...prev, chunkIndex]))
 
       if (currentTrack.unlock_type === "full_song") {
         const totalChunks = Math.ceil(currentTrack.duration / X402_CONFIG.CHUNK_DURATION)
         const allChunks = new Set(Array.from({ length: totalChunks }, (_, i) => i))
         setUnlockedChunks(allChunks)
         console.log("[v0] Full song unlocked - all", totalChunks, "chunks available")
-      } else {
-        // Per-chunk mode: only unlock the current chunk
-        setUnlockedChunks((prev) => new Set([...prev, chunkIndex]))
-        console.log("[v0] Chunk", chunkIndex, "unlocked for per-chunk payment")
       }
 
       setPaymentRequired(false)
       setError(null)
       setShowPaymentModal(false)
-
-      onProgress?.("complete", result.txHash)
 
       if (audioRef.current && currentTrack) {
         audioRef.current.play().catch((err) => {
@@ -898,21 +877,4 @@ async function logStreamActivity(trackId: string, listenerAddress: string, chunk
     console.warn("[v0] Failed to log stream activity:", err)
     // Don't throw - logging should not block playback
   }
-}
-
-async function executePayment({
-  from,
-  to,
-  amount,
-  trackId,
-  chunkIndex,
-}: {
-  from: string
-  to: string
-  amount: bigint
-  trackId: string
-  chunkIndex: number
-}): Promise<{ success: boolean; error?: string; txHash?: string; usedFallback?: boolean }> {
-  // Placeholder for payment execution logic
-  return { success: true, txHash: "0x1234567890abcdef" }
 }

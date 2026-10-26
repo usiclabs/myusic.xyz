@@ -53,8 +53,8 @@
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  /* Updated accent color to bright crimson red */
-  --accent: oklch(0.62 0.29 20.5);
+  /* launchxyz.xyz partner red */
+  --accent: #fa003e;
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
@@ -78,23 +78,22 @@
 
 @theme inline {
   --font-sans: "Geist", "Geist Fallback";
-  --font-display: "Space Grotesk", "Space Grotesk Fallback", sans-serif;
   --font-mono: "Geist Mono", "Geist Mono Fallback";
 
-  /* Updated design tokens from coral/salmon pink to bright red theme */
+  /* launchxyz.xyz partner palette */
   --color-background: #000000;
   --color-foreground: #ffffff;
   --color-card: #0a0a0a;
   --color-card-foreground: #ffffff;
   --color-popover: #0a0a0a;
   --color-popover-foreground: #ffffff;
-  --color-primary: #dc2626;
+  --color-primary: #e53e3e;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #1a1a1a;
+  --color-secondary: #1e293b;
   --color-secondary-foreground: #ffffff;
-  --color-muted: #262626;
-  --color-muted-foreground: #a0a0a0;
-  --color-accent: #dc2626;
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  --color-accent: #fa003e;
   --color-accent-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;

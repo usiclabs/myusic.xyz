@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { X, Menu, BarChart3, Coins, Video, Upload, DollarSign, Settings, Radio, Sparkles } from "lucide-react"
+import { X, Menu, BarChart3, Coins, ArrowLeftRight, Upload, DollarSign, Settings, Radio } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useWallet } from "@/lib/web3/wallet-context"
 import Image from "next/image"
@@ -10,15 +10,9 @@ import Image from "next/image"
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
-  const [isHydrated, setIsHydrated] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { address, isConnected, connect } = useWallet()
-
-  // Mark component as hydrated after first mount
-  useEffect(() => {
-    setIsHydrated(true)
-  }, [])
 
   const isActive = (path: string) => pathname === path || pathname?.startsWith(path + "/")
 
@@ -35,11 +29,11 @@ export function MobileMenu() {
 
   const menuItems = [
     { href: "/discover", icon: BarChart3, label: "Discover", color: "text-blue-400", pulseColor: "bg-blue-400" },
-    { href: "/managr", icon: Sparkles, label: "MANAGR", color: "text-red-400", pulseColor: "bg-red-400" },
     { href: "/live", icon: Radio, label: "Live", color: "text-red-400", pulseColor: "bg-red-400" },
+    { href: "/tokens", icon: Coins, label: "Tokens", color: "text-amber-400", pulseColor: "bg-amber-400" },
     { href: "/analytics", icon: BarChart3, label: "Analytics", color: "text-purple-400", pulseColor: "bg-purple-400" },
     { href: "/staking", icon: Coins, label: "Staking", color: "text-yellow-400", pulseColor: "bg-yellow-400" },
-    { href: "/videos", icon: Video, label: "Videos", color: "text-cyan-400", pulseColor: "bg-cyan-400" },
+    { href: "/swap", icon: ArrowLeftRight, label: "Swap", color: "text-cyan-400", pulseColor: "bg-cyan-400" },
     { href: "/dashboard/upload", icon: Upload, label: "Upload", color: "text-green-400", pulseColor: "bg-green-400" },
     {
       href: "/dashboard/earnings",
@@ -54,16 +48,15 @@ export function MobileMenu() {
     <>
       {/* Hamburger Menu Button - Mobile Only */}
       <button
-        onClick={() => isHydrated && setIsOpen(true)}
+        onClick={() => setIsOpen(true)}
         className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-white/10 transition-all hover:scale-110 active:scale-95"
         aria-label="Open menu"
-        disabled={!isHydrated}
       >
         <Menu className="h-5 w-5 text-foreground" />
       </button>
 
       {/* Full Screen Overlay Menu */}
-      {isOpen && isHydrated && (
+      {isOpen && (
         <div
           className={`md:hidden fixed inset-0 z-[100] h-screen flex flex-col transition-all duration-300 ${
             isClosing ? "animate-out fade-out slide-out-to-right" : "animate-in fade-in slide-in-from-right"

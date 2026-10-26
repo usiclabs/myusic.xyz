@@ -3,14 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin"
 
 export async function POST(request: Request) {
   try {
-    let body: any
-    try {
-      body = await request.json()
-    } catch (parseError) {
-      console.error("[v0] Failed to parse request body:", parseError)
-      return NextResponse.json({ error: "Invalid JSON in request body" }, { status: 400 })
-    }
-
+    const body = await request.json()
     const {
       title,
       artist_id,
@@ -33,10 +26,6 @@ export async function POST(request: Request) {
       ai_prompt,
     } = body
 
-    if (!title || !artist_id || !content_type) {
-      return NextResponse.json({ error: "Missing required fields: title, artist_id, content_type" }, { status: 400 })
-    }
-
     console.log("[v0] Creating track with metadata:", {
       title,
       artist_id,
@@ -53,13 +42,7 @@ export async function POST(request: Request) {
       has_ai_prompt: !!ai_prompt,
     })
 
-    let supabase
-    try {
-      supabase = createAdminClient()
-    } catch (clientError) {
-      console.error("[v0] Failed to create Supabase admin client:", clientError)
-      return NextResponse.json({ error: "Failed to initialize database connection" }, { status: 500 })
-    }
+    const supabase = createAdminClient()
 
     const { data: track, error: trackError } = await supabase
       .from("tracks")
@@ -87,13 +70,8 @@ export async function POST(request: Request) {
       .single()
 
     if (trackError) {
-      console.error("[v0] Track insert error:", {
-        code: trackError.code,
-        message: trackError.message,
-        details: trackError.details,
-        hint: trackError.hint,
-      })
-      return NextResponse.json({ error: `Failed to create track: ${trackError.message}` }, { status: 500 })
+      console.error("[v0] Track insert error:", trackError)
+      throw trackError
     }
 
     console.log("[v0] Track created successfully:", track.id)
@@ -109,20 +87,15 @@ export async function POST(request: Request) {
 
       if (splitsError) {
         console.error("[v0] Royalty splits insert error:", splitsError)
-        // Don't fail the entire request if royalty splits fail, just log it
-        console.warn("[v0] Warning: royalty splits creation failed, but track was created")
-      } else {
-        console.log("[v0] Royalty splits created successfully")
+        throw splitsError
       }
+
+      console.log("[v0] Royalty splits created successfully")
     }
 
     return NextResponse.json({ success: true, track })
   } catch (error) {
-    console.error("[v0] Unexpected track creation error:", {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      type: error instanceof Error ? error.constructor.name : typeof error,
-    })
+    console.error("[v0] Track creation error:", error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to create track" },
       { status: 500 },

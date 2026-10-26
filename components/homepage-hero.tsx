@@ -1,223 +1,69 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useRef, useState } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Play, Music, Sparkles, ArrowDown, Zap } from "lucide-react"
 import useSWR from "swr"
+import { ArrowUpRight, Music2, Pause, Play, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+const fetcher = (url: string) => fetch(url).then((response) => response.json())
+
+type LandingTrack = { id: string; title: string; artist_name?: string | null; cover_url?: string | null; audio_url?: string | null }
+
+const fallbackArtwork = ["/diverse-group-making-music.png", "/abstract-soundscape.png", "/music-coin.jpg"]
 
 export function HomepageHero() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [animatedStats, setAnimatedStats] = useState({
-    tracks: 0,
-    artists: 0,
-    paidOut: 0,
-  })
+  const { data: stats } = useSWR("/api/stats/homepage", fetcher, { refreshInterval: 30000 })
+  const { data: trendingTracks } = useSWR<LandingTrack[]>("/api/tracks/trending?time=all", fetcher, { revalidateOnFocus: false })
+  const featuredTrack = trendingTracks?.find((track) => track.audio_url) ?? null
+  const heroTracks = trendingTracks?.filter((track) => track.cover_url).slice(0, 3) ?? []
+  const [isPlaying, setIsPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  const { data: stats, isLoading } = useSWR("/api/stats/homepage", fetcher, {
-    refreshInterval: 30000,
-    revalidateOnFocus: true,
-  })
-
-  useEffect(() => {
-    setIsVisible(true)
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
+  const toggleFeaturedTrack = () => {
+    if (!featuredTrack?.audio_url) return
+    if (isPlaying) {
+      audioRef.current?.pause()
+      setIsPlaying(false)
+      return
     }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
-
-  useEffect(() => {
-    if (!stats) return
-
-    const duration = 2000
-    const steps = 60
-    const stepDuration = duration / steps
-
-    let currentStep = 0
-    const interval = setInterval(() => {
-      currentStep++
-      const progress = currentStep / steps
-
-      setAnimatedStats({
-        tracks: Math.floor(stats.tracks.raw * progress),
-        artists: Math.floor(stats.artists.raw * progress),
-        paidOut: Math.floor(stats.paidOut.raw * progress),
-      })
-
-      if (currentStep >= steps) {
-        clearInterval(interval)
-        setAnimatedStats({
-          tracks: stats.tracks.raw,
-          artists: stats.artists.raw,
-          paidOut: stats.paidOut.raw,
-        })
-      }
-    }, stepDuration)
-
-    return () => clearInterval(interval)
-  }, [stats])
-
-  const formatStat = (value: number, type: "tracks" | "artists" | "paidOut") => {
-    if (type === "paidOut") {
-      if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`
-      if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`
-      if (value >= 1) return `$${value.toFixed(0)}`
-      return `$${value.toFixed(2)}`
-    }
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}K+`
-    return `${value}+`
+    const audio = new Audio(featuredTrack.audio_url)
+    audio.onended = () => setIsPlaying(false)
+    audio.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false))
+    audioRef.current = audio
   }
 
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center px-4 sm:px-6">
-      <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 opacity-30 transition-all duration-300"
-          style={{
-            background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(220, 38, 38, 0.15), transparent 50%)`,
-          }}
-        />
+    <>
+      <div className="border-y border-white/[0.08] bg-[#171719] px-5 py-3 text-center text-[10px] uppercase tracking-[0.18em] text-[#96969f] sm:text-xs">
+        <span className="mr-5 text-[#FA003E]">✦</span>Independent music. A new era.
+        <a href="#discover" className="ml-5 text-[#f4f2ee] transition-colors hover:text-[#FA003E]">Find your sound ↗</a>
       </div>
-
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.02] animate-pulse-slow" />
-
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float" />
-      <div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float"
-        style={{ animationDelay: "2s", animationDuration: "8s" }}
-      />
-
-      <div className="container relative py-24 md:py-40 z-10">
-        <div className="mx-auto max-w-5xl text-center">
-          <div
-            className={`mb-12 inline-flex items-center gap-2 rounded-full bg-card/20 backdrop-blur-md border border-accent/40 px-6 py-3 text-sm shadow-lg shadow-accent/20 transition-all duration-700 hover:shadow-accent/40 hover:scale-105 hover:border-accent/60 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <Sparkles className="h-4 w-4 text-accent animate-pulse" />
-            <span className="font-medium text-foreground">
-              Built on Base • Powered by X402 • $USI Ecosystem
-            </span>
-            <Zap className="h-4 w-4 text-accent animate-pulse" style={{ animationDelay: "0.5s" }} />
+      <section className="relative overflow-hidden border-b border-white/[0.08] bg-[#000000] px-5 py-12 sm:px-[4.5%] sm:py-16 lg:py-20">
+        <div className="mx-auto grid max-w-[1512px] items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
+          <div>
+            <p className="mb-7 flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-[#96969f]"><span className="size-2 rounded-full bg-[#FA003E]" />Made for music. Built around artists.</p>
+            <h1 className="max-w-[680px] text-balance font-sans text-[clamp(3.2rem,7vw,6.1rem)] font-medium leading-[1.02] tracking-[-0.065em] text-[#f4f2ee]">Good music.<br /><span className="text-[#FA003E]">Real connection.</span></h1>
+            <p className="mt-7 max-w-[390px] text-pretty text-sm leading-7 text-[#96969f] sm:text-base">Discover independent voices. Support the people behind your next favorite song, one stream at a time.</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild className="h-12 rounded-full bg-[#FA003E] px-6 text-sm text-[#000000] hover:bg-[#ff4968]"><Link href="/explore">Find your sound <ArrowUpRight data-icon="inline-end" /></Link></Button>
+              <Button asChild variant="outline" className="h-12 rounded-full border-white/15 bg-transparent px-6 text-sm text-[#f4f2ee] hover:border-[#FA003E] hover:bg-transparent"><Link href="#for-artists">I&apos;m an artist <ArrowUpRight data-icon="inline-end" /></Link></Button>
+            </div>
+            <p className="mt-5 text-[10px] uppercase tracking-[0.12em] text-[#696970]">No subscription. &nbsp;·&nbsp; Direct artist support. &nbsp;·&nbsp; Built on Base.</p>
+            <div className="mt-10 flex items-center gap-4 text-xs text-[#96969f]"><div className="flex -space-x-2">{(heroTracks.length ? heroTracks : fallbackArtwork.map((image, index) => ({ id: `fallback-${index}`, cover_url: image }))).map((track) => <img key={track.id} src={track.cover_url ?? undefined} alt="" className="size-8 rounded-full border-2 border-[#000000] object-cover" />)}</div><span>A world of independent voices.<br /><span className="text-[#696970]">Your next favorite is already here.</span></span></div>
           </div>
-
-          <h1
-            className={`font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-8 text-balance leading-[0.95] transition-all duration-700 delay-100 uppercase tracking-tight ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            Music that{" "}
-            <span className="text-accent drop-shadow-[0_0_20px_rgba(220,38,38,0.4)]">
-              pays artists
-            </span>
-          </h1>
-
-          <p
-            className={`text-2xl md:text-3xl text-foreground/90 mb-6 text-pretty leading-relaxed max-w-3xl mx-auto transition-all duration-700 delay-200 font-medium ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            Micropayments that move at the speed of sound.
-          </p>
-
-          <p
-            className={`text-lg md:text-xl text-foreground/70 mb-12 text-pretty leading-relaxed max-w-2xl mx-auto transition-all duration-700 delay-300 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            No subscriptions. No platform fees. Artists get 100% of what you pay.
-          </p>
-
-          <div
-            className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transition-all duration-700 delay-400 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <Button
-              size="lg"
-              asChild
-              className="gap-2 text-base px-8 py-2.5 h-auto rounded-full bg-accent text-white hover:bg-accent/90 hover:scale-105 hover:shadow-xl hover:shadow-accent/40 transition-all duration-300 group relative overflow-hidden shadow-lg shadow-accent/30"
-            >
-              <Link href="/explore">
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Play className="h-5 w-5 group-hover:scale-110 transition-transform relative z-10 fill-current" />
-                <span className="relative z-10 font-semibold">Listen Now</span>
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
-              className="gap-2 text-base px-8 py-2.5 h-auto rounded-full bg-background border-2 border-accent/40 text-accent hover:bg-accent/5 hover:border-accent/70 hover:scale-105 hover:shadow-lg hover:shadow-accent/20 transition-all duration-300 group relative overflow-hidden"
-            >
-              <Link href="/dashboard">
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Music className="h-5 w-5 group-hover:rotate-12 transition-transform relative z-10" />
-                <span className="relative z-10 font-semibold">Upload Your Music</span>
-              </Link>
-            </Button>
-          </div>
-
-          <div
-            className={`grid grid-cols-3 gap-6 sm:gap-8 max-w-3xl mx-auto transition-all duration-700 delay-500 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            {[
-              {
-                value: isLoading ? "..." : formatStat(animatedStats.tracks, "tracks"),
-                label: "Tracks",
-                color: "accent",
-                icon: Music,
-              },
-              {
-                value: isLoading ? "..." : formatStat(animatedStats.artists, "artists"),
-                label: "Artists",
-                color: "accent",
-                icon: Sparkles,
-              },
-              {
-                value: isLoading ? "..." : formatStat(animatedStats.paidOut, "paidOut"),
-                label: "Paid Out",
-                color: "accent",
-                icon: Zap,
-              },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="text-center group cursor-default bg-background border border-accent/20 rounded-2xl p-4 sm:p-6 md:p-8 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/15 transition-all duration-300 hover:scale-105"
-              >
-                <stat.icon
-                  className={`h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-${stat.color} mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform`}
-                />
-                <div
-                  className={`text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold text-white mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300 ${
-                    isLoading ? "animate-pulse" : ""
-                  }`}
-                  style={{ wordBreak: "break-word" }}
-                >
-                  {stat.value}
-                </div>
-                <div className="text-xs sm:text-sm text-foreground/60 font-medium line-clamp-2">{stat.label}</div>
-              </div>
-            ))}
+          <div className="relative mx-auto h-[390px] w-full max-w-[650px] lg:-mr-8 sm:h-[500px]">
+            {(heroTracks.length ? heroTracks : fallbackArtwork.map((image, index) => ({ id: `fallback-${index}`, title: ["Pulse Malone", "Nova Lane", "SYLO"][index], artist_name: ["Independent hip-hop", "A new world of pop", "Raw hunger. Real energy."][index], cover_url: image }))).map((track, index) => <Link key={track.id} href={track.id.startsWith("fallback-") ? "/explore" : `/track/${track.id}`} className={`absolute overflow-hidden rounded-2xl border border-white/10 bg-[#19191b] shadow-2xl transition-transform hover:-translate-y-2 ${index === 0 ? "left-0 top-14 h-[75%] w-[42%] -rotate-[7deg]" : index === 1 ? "left-[25%] top-0 z-10 h-[83%] w-[48%] rotate-[4deg]" : "right-0 top-20 h-[70%] w-[39%] rotate-[10deg]"}`}><img src={track.cover_url ?? fallbackArtwork[index]} alt={`${track.title} artwork`} className="h-full w-full object-cover opacity-80" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#000000] via-[#000000]/70 to-transparent px-4 pb-4 pt-16"><p className="text-sm font-medium text-[#f4f2ee]">{track.title}</p><p className="mt-1 text-[10px] text-[#96969f]">{track.artist_name || "Independent artist"}</p></div></Link>)}
+            <Link href={featuredTrack?.id ? `/track/${featuredTrack.id}` : "/explore"} className="absolute bottom-0 left-[10%] right-[4%] z-20 flex items-center gap-4 rounded-2xl border border-white/10 bg-[#19191b] p-3 shadow-2xl sm:p-4"><img src={featuredTrack?.cover_url || "/music-coin.jpg"} alt={`${featuredTrack?.title || "Featured song"} cover artwork`} className="size-12 rounded-lg object-cover" /><div className="min-w-0 flex-1"><p className="text-[9px] uppercase tracking-[0.2em] text-[#96969f]">Take a closer listen</p><p className="mt-1 truncate text-sm text-[#f4f2ee]">{featuredTrack?.title || "Explore the latest tracks"}</p><p className="text-[10px] text-[#96969f]">{featuredTrack?.artist_name || "Independent artists"}</p></div><div className="hidden gap-1 sm:flex">{[2,4,7,3,6,4,8,3].map((height, index) => <span key={index} className="w-1 rounded-full bg-[#FA003E]" style={{ height: `${height * 3}px` }} />)}</div><button type="button" aria-label={`${isPlaying ? "Pause" : "Play"} featured song`} onClick={(event) => { event.preventDefault(); event.stopPropagation(); toggleFeaturedTrack() }} disabled={!featuredTrack?.audio_url} className="flex size-10 items-center justify-center rounded-full bg-[#f4f2ee] text-[#000000] disabled:cursor-not-allowed disabled:opacity-50">{isPlaying ? <Pause className="size-4 fill-current" /> : <Play className="size-4 fill-current" />}</button></Link>
           </div>
         </div>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer group">
-        <div className="w-6 h-10 rounded-full border-2 border-foreground/20 flex items-start justify-center p-2 group-hover:border-accent/50 transition-colors">
-          <div className="w-1 h-2 bg-accent/60 rounded-full animate-pulse" />
-        </div>
-        <ArrowDown className="h-4 w-4 text-foreground/40 group-hover:text-accent/60 mx-auto mt-2 transition-colors" />
-      </div>
-    </section>
+      </section>
+      <div className="mx-auto grid max-w-[1512px] grid-cols-2 border-b border-white/[0.08] px-5 sm:grid-cols-4 sm:px-[4.5%]">{[
+        { icon: Music2, label: "Independent by nature" },
+        { icon: Sparkles, label: "Support goes direct" },
+        { icon: Play, label: "Pay as you listen" },
+        { icon: Sparkles, label: "Built on Base · Powered by x402" },
+      ].map(({ icon: Icon, label }) => <div key={label} className="flex items-center gap-3 border-r border-white/[0.08] px-3 py-6 text-[10px] text-[#96969f] first:pl-0 last:border-r-0 sm:px-6"><Icon className="size-4 text-[#f4f2ee]" />{label}</div>)}</div>
+    </>
   )
 }
