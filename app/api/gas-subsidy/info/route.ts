@@ -3,13 +3,19 @@ import { createClient } from "@supabase/supabase-js"
 import { createPublicClient, http, formatUnits, isAddress } from "viem"
 import { base } from "viem/chains"
 
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!supabaseUrl || !serviceRoleKey) throw new Error("Supabase server credentials are not configured")
+  return createClient(supabaseUrl, serviceRoleKey, { auth: { autoRefreshToken: false, persistSession: false } })
+}
 
 // Relayer wallet address - should have ETH for gas
 const RELAYER_ADDRESS = process.env.NEXT_PUBLIC_RELAYER_ADDRESS
 
 export async function GET() {
   try {
+    const supabase = getSupabaseAdmin()
     if (!RELAYER_ADDRESS || !isAddress(RELAYER_ADDRESS)) {
       console.warn("[v0] Relayer address not configured or invalid:", RELAYER_ADDRESS)
       return NextResponse.json({
