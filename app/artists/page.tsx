@@ -12,7 +12,7 @@ export default function ArtistsPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [genre, setGenre] = useState("")
-  const [sortBy, setSortBy] = useState<SortOption>("marketcap-high")
+  const [sortBy, setSortBy] = useState<SortOption>("followers-high")
   const [minEarnings, setMinEarnings] = useState(0)
   const [minTracks, setMinTracks] = useState(0)
 
