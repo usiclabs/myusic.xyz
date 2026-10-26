@@ -3,43 +3,43 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Music, Coins, TrendingUp, Wallet, Sparkles, ArrowRight, X } from 'lucide-react'
+import { Music, Coins, TrendingUp, Wallet, Sparkles, ArrowRight, X, Check } from "lucide-react"
 import { useWallet } from "@/lib/web3/wallet-context"
 
 const ONBOARDING_STORAGE_KEY = "usic-onboarding-completed"
 
 const steps = [
   {
-    title: "Welcome to USIC",
-    description: "The future of music streaming powered by Web3",
-    content:
-      "Experience a revolutionary music platform where artists earn directly from streams and fans collect exclusive song tokens.",
+    title: "Your music. Your upside.",
+    eyebrow: "THE MYUSIC STARTING POINT",
+    description: "A new way to experience music ownership.",
+    content: "Discover independent artists, stream their work, and participate in an economy where value moves directly between fans and creators.",
     icon: Music,
-    gradient: "from-accent/20 via-accent/10 to-transparent",
+    tag: "Explore first",
   },
   {
-    title: "Stream & Earn",
-    description: "Every stream pays artists instantly",
-    content:
-      "Artists receive micropayments in real-time for every second of music streamed. No middlemen, no delays—just direct payments on the blockchain.",
+    title: "Stream & earn.",
+    eyebrow: "EVERY SECOND MATTERS",
+    description: "Every stream pays artists instantly.",
+    content: "Artists receive micropayments in real-time for every second of music streamed. No middlemen, no delays—just direct payments onchain.",
     icon: Coins,
-    gradient: "from-blue-500/20 via-blue-500/10 to-transparent",
+    tag: "Artist-first",
   },
   {
-    title: "Collect Song Tokens",
-    description: "Own a piece of your favorite tracks",
-    content:
-      "Each song has its own tradeable token. Collect tokens from artists you love and watch their value grow as the music gains popularity.",
+    title: "Collect what moves you.",
+    eyebrow: "MUSIC WITH A STAKE",
+    description: "Own a piece of your favorite tracks.",
+    content: "Each song can have its own tradable token. Collect the artists you love and follow their story as more listeners discover them.",
     icon: TrendingUp,
-    gradient: "from-green-500/20 via-green-500/10 to-transparent",
+    tag: "Own the moment",
   },
   {
-    title: "Stake & Multiply",
-    description: "Earn rewards by staking $USI",
-    content:
-      "Stake your $USI tokens to earn a share of platform revenue. The more you stake, the more you earn from every stream on the platform.",
+    title: "Make your stake count.",
+    eyebrow: "THE LONGER PLAY",
+    description: "Earn rewards by staking $USI.",
+    content: "Stake your $USI tokens to share in platform revenue. The more you stake, the more you participate in every stream across MyUSIC.",
     icon: Sparkles,
-    gradient: "from-purple-500/20 via-purple-500/10 to-transparent",
+    tag: "Powered by $USI",
   },
 ]
 
@@ -49,10 +49,8 @@ export function OnboardingModal() {
   const { connect, isConnected } = useWallet()
 
   useEffect(() => {
-    // Check if user has completed onboarding
     const hasCompletedOnboarding = localStorage.getItem(ONBOARDING_STORAGE_KEY)
     if (!hasCompletedOnboarding) {
-      // Show onboarding after a short delay for better UX
       const timer = setTimeout(() => setOpen(true), 1000)
       return () => clearTimeout(timer)
     }
@@ -69,17 +67,12 @@ export function OnboardingModal() {
   }
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1)
-    } else {
-      handleComplete()
-    }
+    if (currentStep < steps.length - 1) setCurrentStep(currentStep + 1)
+    else handleComplete()
   }
 
   const handleBack = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
-    }
+    if (currentStep > 0) setCurrentStep(currentStep - 1)
   }
 
   const handleConnectWallet = async () => {
@@ -94,105 +87,38 @@ export function OnboardingModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogPortal>
-        <DialogOverlay className="bg-black/90 backdrop-blur-md" />
-        <DialogContent className="max-w-2xl border-0 bg-transparent p-0 shadow-none" showCloseButton={false}>
-          {/* Glassmorphic Container */}
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/80 backdrop-blur-xl">
-            {/* Animated Background Gradient */}
-            <div
-              className={`absolute inset-0 bg-gradient-to-br ${currentStepData.gradient} opacity-50 transition-all duration-700`}
-            />
+        <DialogOverlay className="bg-black/90 backdrop-blur-xl" />
+        <DialogContent className="max-w-5xl border-0 bg-transparent p-0 shadow-none" showCloseButton={false}>
+          <div className="relative overflow-hidden rounded-[24px] border border-white/15 bg-black shadow-2xl shadow-black/60">
+            <div className="absolute inset-x-0 top-0 h-px bg-[#fa003e]" />
+            <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 sm:px-7">
+              <div className="flex items-center gap-3"><div className="flex size-7 items-center justify-center rounded-full border border-[#fa003e]/60 text-[#fa003e]"><Music className="size-3.5" /></div><span className="text-sm font-semibold tracking-tight">MYUSIC</span><span className="hidden text-xs text-white/30 sm:inline">/</span><span className="hidden text-xs text-white/45 sm:inline">Your starting point</span></div>
+              <button onClick={handleSkip} className="rounded-full p-2 text-white/45 transition-colors hover:bg-white/10 hover:text-white" aria-label="Skip onboarding"><X className="size-4" /></button>
+            </div>
 
-            {/* Floating Orbs */}
-            <div className="absolute -left-20 -top-20 h-40 w-40 animate-pulse-slow rounded-full bg-accent/20 blur-3xl" />
-            <div className="absolute -bottom-20 -right-20 h-40 w-40 animate-pulse-slow rounded-full bg-blue-500/20 blur-3xl animation-delay-2000" />
+            <div className="grid md:grid-cols-[190px_1fr]">
+              <aside className="border-b border-white/10 p-4 md:border-b-0 md:border-r md:p-5">
+                <nav aria-label="Onboarding steps" className="flex gap-2 overflow-x-auto md:flex-col md:gap-1">
+                  {steps.map((step, index) => <button key={step.title} onClick={() => setCurrentStep(index)} className={`flex shrink-0 items-center gap-3 rounded-xl px-3 py-3 text-left text-xs transition-colors ${index === currentStep ? "bg-[#fa003e]/15 text-[#fa6688]" : "text-white/40 hover:bg-white/5 hover:text-white"}`}><span className={`flex size-7 items-center justify-center rounded-lg border text-[10px] ${index === currentStep ? "border-[#fa003e]/50 bg-[#fa003e]/15" : "border-white/10"}`}>{String(index + 1).padStart(2, "0")}</span><span className="hidden md:inline">{step.title.split(".")[0]}</span></button>)}
+                </nav>
+                <p className="mt-8 hidden text-xs leading-5 text-white/35 md:block">Your music.<br />Your upside.</p>
+              </aside>
 
-            {/* Content */}
-            <div className="relative z-10 p-8 sm:p-12">
-              {/* Close Button */}
-              <button
-                onClick={handleSkip}
-                className="absolute right-4 top-4 rounded-full p-2 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
-                aria-label="Skip onboarding"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              {/* Icon */}
-              <div className="mb-6 flex justify-center">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
-                  <Icon className="h-12 w-12 text-accent animate-float" />
+              <div className="p-5 sm:p-8 lg:p-10">
+                <div className="mb-8 flex h-44 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-[#090909] [background-image:radial-gradient(rgba(250,0,62,0.16)_1px,transparent_1px)] [background-size:18px_18px] sm:h-52">
+                  <div className="relative flex size-28 items-center justify-center rounded-full border border-[#fa003e]/50 bg-black shadow-[0_0_70px_rgba(250,0,62,0.22)] transition-transform duration-700 animate-in zoom-in"><div className="absolute inset-[-14px] rounded-full border border-[#fa003e]/20" /><div className="absolute inset-[-30px] rounded-full border border-white/10" /><Icon className="relative size-10 text-[#fa003e]" /></div>
                 </div>
-              </div>
 
-              {/* Title */}
-              <h2 className="mb-3 text-center text-3xl font-bold text-white sm:text-4xl">{currentStepData.title}</h2>
+                <div className="max-w-2xl animate-in fade-in slide-in-from-bottom-2 duration-500" key={currentStep}>
+                  <p className="mb-3 text-[10px] font-medium tracking-[0.22em] text-[#fa003e]">{currentStepData.eyebrow}</p>
+                  <h2 className="text-balance text-3xl font-semibold tracking-[-0.06em] text-white sm:text-4xl">{currentStepData.title}</h2>
+                  <p className="mt-3 text-base text-white/75">{currentStepData.description}</p>
+                  <p className="mt-4 max-w-xl text-sm leading-6 text-white/45">{currentStepData.content}</p>
+                  <div className="mt-5 flex flex-wrap gap-2"><span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[10px] text-white/55"><Check className="size-3 text-[#fa003e]" />{currentStepData.tag}</span>{currentStep === 0 && <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[10px] text-white/55">No wallet needed</span>}</div>
+                </div>
 
-              {/* Description */}
-              <p className="mb-4 text-center text-lg text-white/80">{currentStepData.description}</p>
-
-              {/* Content */}
-              <p className="mb-8 text-center text-base leading-relaxed text-white/60">{currentStepData.content}</p>
-
-              {/* Progress Indicators */}
-              <div className="mb-8 flex justify-center gap-2">
-                {steps.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentStep(index)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      index === currentStep ? "w-8 bg-accent" : "w-2 bg-white/20 hover:bg-white/40"
-                    }`}
-                    aria-label={`Go to step ${index + 1}`}
-                  />
-                ))}
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-                {/* Back Button */}
-                {currentStep > 0 && (
-                  <Button
-                    variant="ghost"
-                    onClick={handleBack}
-                    className="border border-white/10 bg-white/5 text-white backdrop-blur-sm hover:bg-white/10"
-                  >
-                    Back
-                  </Button>
-                )}
-
-                {/* Spacer for alignment when no back button */}
-                {currentStep === 0 && <div className="hidden sm:block" />}
-
-                {/* Next/Connect Button */}
-                {isLastStep ? (
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    <Button
-                      variant="outline"
-                      onClick={handleComplete}
-                      className="border-white/20 bg-white/5 text-white backdrop-blur-sm hover:bg-white/10"
-                    >
-                      Explore Platform
-                    </Button>
-                    {!isConnected && (
-                      <Button
-                        onClick={handleConnectWallet}
-                        className="gap-2 bg-accent text-white shadow-lg shadow-accent/25 hover:bg-accent/90"
-                      >
-                        <Wallet className="h-4 w-4" />
-                        Connect Wallet
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  <Button
-                    onClick={handleNext}
-                    className="gap-2 bg-accent text-white shadow-lg shadow-accent/25 hover:bg-accent/90"
-                  >
-                    Next
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                )}
+                <div className="mt-9 flex flex-col gap-4 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between"><button onClick={handleSkip} className="text-left text-xs text-white/45 transition-colors hover:text-white">Skip tour</button><div className="flex items-center justify-between gap-5"><span className="text-[10px] text-white/35">{String(currentStep + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}</span>{currentStep > 0 && <Button variant="ghost" onClick={handleBack} className="text-white/60 hover:bg-white/10 hover:text-white">Back</Button>}{isLastStep ? <div className="flex gap-2"><Button variant="outline" onClick={handleComplete} className="border-white/15 bg-transparent text-white hover:bg-white/10">Explore</Button>{!isConnected && <Button onClick={handleConnectWallet} className="gap-2 bg-[#fa003e] text-white shadow-lg shadow-[#fa003e]/20 hover:bg-[#d90036]"><Wallet className="size-4" />Connect</Button>}</div> : <Button onClick={handleNext} className="gap-2 bg-[#fa003e] text-white shadow-lg shadow-[#fa003e]/20 hover:bg-[#d90036]">{currentStep === 0 ? "Show me around" : "Continue"}<ArrowRight className="size-4" /></Button>}</div></div>
+                <p className="mt-4 text-center text-[10px] text-white/25">No rush. You can replay this tour anytime.</p>
               </div>
             </div>
           </div>

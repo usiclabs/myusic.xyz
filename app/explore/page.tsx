@@ -26,7 +26,7 @@ export default function ExplorePage() {
   const [tracks, setTracks] = useState<TrackWithStats[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [sortBy, setSortBy] = useState<SortOption>("newest")
+  const [sortBy, setSortBy] = useState<SortOption>("most_played")
   const [searchQuery, setSearchQuery] = useState("")
   const [filter, setFilter] = useState<FilterOption>("all")
   const [page, setPage] = useState(1)
