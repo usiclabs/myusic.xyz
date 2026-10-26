@@ -40,7 +40,7 @@ async function getPlatformMetrics() {
   const { data: streamHistory } = await supabase
     .from("streams")
     .select("started_at, chunks_played, total_paid")
-    .order("started_at", { ascending: true })
+    .order("started_at", { ascending: false })
     .limit(1000)
 
   // Get top tracks by streams

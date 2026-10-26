@@ -15,21 +15,23 @@ interface AnalyticsChartProps {
 
 export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
   const chartData = useMemo(() => {
-    // Group data by date
+    // Use an ISO date key so grouping and sorting stay consistent across server and browser locales.
     const grouped = data.reduce(
       (acc, item) => {
-        const date = new Date(item.started_at).toLocaleDateString()
+        const parsedDate = new Date(item.started_at)
+        if (Number.isNaN(parsedDate.getTime())) return acc
+        const date = parsedDate.toISOString().slice(0, 10)
         if (!acc[date]) {
           acc[date] = { date, plays: 0, earnings: 0 }
         }
-        acc[date].plays += item.chunks_played
-        acc[date].earnings += Number(item.total_paid)
+        acc[date].plays += Number(item.chunks_played) || 0
+        acc[date].earnings += Number(item.total_paid) || 0
         return acc
       },
       {} as Record<string, { date: string; plays: number; earnings: number }>,
     )
 
-    return Object.values(grouped).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    return Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date))
   }, [data])
 
   const chartConfig = {
@@ -81,6 +83,10 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.2} />
           <XAxis
             dataKey="date"
+            tickFormatter={(date: string) => {
+              const [year, month, day] = date.split("-")
+              return `${month}/${day}`
+            }}
             stroke="hsl(var(--muted-foreground))"
             fontSize={10}
             tickLine={false}
