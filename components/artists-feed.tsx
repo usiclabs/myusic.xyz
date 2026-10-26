@@ -125,7 +125,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
           <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-primary/10 mb-4 animate-pulse">
             <Users className="h-12 w-12 text-primary" />
           </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent">
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">
             No Artists Found
           </h2>
           <p className="text-muted-foreground text-lg max-w-md mx-auto">
@@ -140,7 +140,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
     <>
       <div
         ref={containerRef}
-        className="h-screen overflow-y-scroll overflow-x-clip snap-y snap-mandatory scroll-smooth hide-scrollbar"
+        className="h-screen overflow-y-scroll overflow-x-clip snap-y snap-mandatory scroll-smooth hide-scrollbar bg-background"
         style={{ scrollbarWidth: "none" }}
       >
         {artists.map((artist, index) => {
@@ -167,10 +167,10 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
                       className="object-cover"
                       priority={index === 0}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/90" />
+                    <div className="absolute inset-0 bg-background/80" />
                   </>
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background/80" />
+                  <div className="absolute inset-0 bg-background" />
                 )}
               </div>
 
@@ -221,7 +221,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
                     className="grid grid-cols-3 gap-3 md:gap-6 max-w-2xl animate-fade-in-up"
                     style={{ animationDelay: "200ms" }}
                   >
-                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/15 hover:scale-110 transition-all duration-300 group">
+                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-none bg-card/80 border border-border hover:border-primary/60 transition-colors duration-300 group">
                       <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 mb-2 md:mb-3 group-hover:scale-110 transition-transform relative">
                         <div className="absolute inset-0 rounded-full bg-primary/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                         <DollarSign className="h-5 w-5 md:h-7 md:w-7 text-primary relative z-10" />
@@ -232,7 +232,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
                       <span className="text-xs md:text-sm text-white/70 mt-1">USDC Earned</span>
                     </div>
 
-                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/15 hover:scale-110 transition-all duration-300 group">
+                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-none bg-card/80 border border-border hover:border-primary/60 transition-colors duration-300 group">
                       <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 mb-2 md:mb-3 group-hover:scale-110 transition-transform relative">
                         <div className="absolute inset-0 rounded-full bg-primary/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Music className="h-5 w-5 md:h-7 md:w-7 text-primary relative z-10" />
@@ -241,7 +241,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
                       <span className="text-xs md:text-sm text-white/70 mt-1">Tracks</span>
                     </div>
 
-                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/15 hover:scale-110 transition-all duration-300 group">
+                    <div className="flex flex-col items-center text-center p-4 md:p-6 rounded-none bg-card/80 border border-border hover:border-primary/60 transition-colors duration-300 group">
                       <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary/20 mb-2 md:mb-3 group-hover:scale-110 transition-transform relative">
                         <div className="absolute inset-0 rounded-full bg-primary/30 blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Users className="h-5 w-5 md:h-7 md:w-7 text-primary relative z-10" />
@@ -253,7 +253,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
 
                   {artist.profile_token_address && profileTokenMetrics[artist.wallet_address] && (
                     <div
-                      className="flex items-center gap-3 p-4 md:p-6 rounded-2xl bg-green-500/10 backdrop-blur-xl border border-green-500/20 max-w-2xl animate-fade-in-up"
+                      className="flex items-center gap-3 p-4 md:p-6 rounded-none bg-card border border-primary/30 max-w-2xl animate-fade-in-up"
                       style={{ animationDelay: "250ms" }}
                     >
                       <div className="flex-1">
@@ -279,7 +279,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
                             symbol: artist.artist_name?.toUpperCase().slice(0, 4),
                           })
                         }}
-                        className="px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold text-sm md:text-base flex items-center gap-2 hover:scale-105 active:scale-95 transition-all duration-300 shadow-lg"
+                        className="px-4 md:px-6 py-2 md:py-3 rounded-none bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm md:text-base flex items-center gap-2 transition-colors"
                       >
                         Swap
                       </button>
@@ -293,7 +293,7 @@ export function ArtistsFeed({ artists }: ArtistsFeedProps) {
                   >
                     <Button
                       size="lg"
-                      className="h-12 md:h-14 px-6 md:px-8 rounded-full bg-black/40 hover:bg-black/60 hover:scale-110 active:scale-95 backdrop-blur-xl border border-white/10 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.8)] text-base md:text-lg font-semibold text-white w-full md:w-auto relative group"
+                      className="h-12 md:h-14 px-6 md:px-8 rounded-none bg-primary hover:bg-primary/90 border border-primary transition-colors text-base md:text-lg font-semibold text-primary-foreground w-full md:w-auto relative group"
                     >
                       <span className="relative z-10">View Profile</span>
                     </Button>
