@@ -2,7 +2,12 @@ import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { updateInvestmentWalletBalance } from "@/lib/agents/investment-wallet-service"
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!supabaseUrl || !serviceRoleKey) throw new Error("Supabase server credentials are not configured")
+  return createClient(supabaseUrl, serviceRoleKey, { auth: { autoRefreshToken: false, persistSession: false } })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +16,8 @@ export async function POST(request: NextRequest) {
     if (!agentId || !ownerAddress || !amount) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
+
+    const supabase = getSupabaseAdmin()
 
     // Verify ownership
     const { data: agent } = await supabase

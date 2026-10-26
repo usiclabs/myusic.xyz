@@ -2,7 +2,18 @@ import { privateKeyToAccount } from "viem/accounts"
 import { createClient } from "@supabase/supabase-js"
 import crypto from "crypto"
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error("Supabase server credentials are not configured")
+  }
+
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  })
+}
 
 // Encryption helpers (same as MM agent)
 function encryptData(data: string): string {
@@ -34,6 +45,7 @@ function decryptData(encryptedData: string): string {
 }
 
 export async function createOrGetInvestmentWallet(agentId: string) {
+  const supabase = getSupabaseAdmin()
   // Check if wallet already exists
   const { data: existingWallet } = await supabase
     .from("investment_agent_wallets")
@@ -78,6 +90,7 @@ export async function createOrGetInvestmentWallet(agentId: string) {
 }
 
 export async function getInvestmentWalletAccount(agentId: string) {
+  const supabase = getSupabaseAdmin()
   const { data: wallet } = await supabase
     .from("investment_agent_wallets")
     .select("*")
@@ -91,6 +104,7 @@ export async function getInvestmentWalletAccount(agentId: string) {
 }
 
 export async function updateInvestmentWalletBalance(agentId: string, usdcBalance?: number, ethBalance?: number) {
+  const supabase = getSupabaseAdmin()
   const updates: any = { last_used_at: new Date().toISOString() }
   if (usdcBalance !== undefined) updates.usdc_balance = usdcBalance
   if (ethBalance !== undefined) updates.eth_balance = ethBalance
