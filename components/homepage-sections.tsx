@@ -1,21 +1,52 @@
 "use client"
 
+import { useRef, useState } from "react"
 import Link from "next/link"
-import { ArrowUpRight, Check, Heart, Sparkles, Users, Wallet } from "lucide-react"
+import useSWR from "swr"
+import { ArrowUpRight, Check, Heart, Pause, Play, Sparkles, Users, Wallet } from "lucide-react"
 
-const voices = [
-  { name: "Nova Lane", detail: "A new world of pop", image: "/abstract-soundscape.png" },
-  { name: "SYLO", detail: "Raw hunger. Real energy.", image: "/music-coin.jpg" },
-  { name: "Pulse Malone", detail: "Independent hip-hop", image: "/diverse-group-making-music.png" },
-  { name: "P.S. Kaguya", detail: "Electronic / alt", image: "/video-thumbnail.png" },
+const fetcher = (url: string) => fetch(url).then((response) => response.json())
+
+type LandingTrack = {
+  id: string
+  title: string
+  artist_name?: string | null
+  cover_url?: string | null
+  audio_url?: string | null
+}
+
+const fallbackVoices: LandingTrack[] = [
+  { id: "", title: "Nova Lane", artist_name: "A new world of pop", cover_url: "/abstract-soundscape.png" },
+  { id: "", title: "SYLO", artist_name: "Raw hunger. Real energy.", cover_url: "/music-coin.jpg" },
+  { id: "", title: "Pulse Malone", artist_name: "Independent hip-hop", cover_url: "/diverse-group-making-music.png" },
+  { id: "", title: "P.S. Kaguya", artist_name: "Electronic / alt", cover_url: "/video-thumbnail.png" },
 ]
 
 export function HomepageSections() {
+  const { data } = useSWR<LandingTrack[]>("/api/tracks/trending?time=all", fetcher, { revalidateOnFocus: false })
+  const tracks = data?.filter((track) => track.cover_url || track.audio_url).slice(0, 4) ?? fallbackVoices
+  const [playingId, setPlayingId] = useState<string | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  const togglePlayback = (track: LandingTrack) => {
+    if (!track.audio_url) return
+    if (playingId === track.id) {
+      audioRef.current?.pause()
+      setPlayingId(null)
+      return
+    }
+    if (audioRef.current) audioRef.current.pause()
+    const audio = new Audio(track.audio_url)
+    audio.onended = () => setPlayingId(null)
+    audio.play().then(() => setPlayingId(track.id)).catch(() => setPlayingId(null))
+    audioRef.current = audio
+  }
+
   return (
     <div className="bg-[#000000] text-[#f4f2ee]">
       <section id="discover" className="mx-auto max-w-[1512px] scroll-mt-16 px-5 py-20 sm:px-[4.5%] lg:py-28">
         <div className="flex flex-wrap items-end justify-between gap-6 border-b border-white/[0.08] pb-8"><div><p className="mb-4 text-[10px] uppercase tracking-[0.22em] text-[#96969f]">A few voices to start with</p><h2 className="font-sans text-4xl font-medium tracking-[-0.05em] sm:text-5xl">Worth your first listen.</h2><p className="mt-4 text-sm text-[#96969f]">A new name. A different sound. A reason to come back.</p></div><Link href="/artists" className="text-sm text-[#f4f2ee] hover:text-[#FA003E]">Meet the artists <ArrowUpRight className="ml-2 inline size-4" /></Link></div>
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">{voices.map((voice) => <Link key={voice.name} href="/artists" className="group"><div className="relative aspect-[0.88] overflow-hidden rounded-2xl bg-[#19191b]"><img src={voice.image} alt={`${voice.name} artwork`} className="h-full w-full object-cover opacity-85 transition duration-500 group-hover:scale-105" /><span className="absolute bottom-3 right-3 flex size-9 items-center justify-center rounded-full bg-[#f4f2ee] text-[#000000]"><ArrowUpRight className="size-4" /></span></div><h3 className="mt-4 text-sm font-medium">{voice.name}</h3><p className="mt-1 text-xs text-[#96969f]">{voice.detail}</p></Link>)}</div>
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">{tracks.map((track) => <div key={`${track.id}-${track.title}`} className="group"><Link href={track.id ? `/track/${track.id}` : "/artists"} className="block"><div className="relative aspect-[0.88] overflow-hidden rounded-2xl bg-[#19191b]"><img src={track.cover_url || "/abstract-soundscape.png"} alt={`${track.title} artwork`} className="h-full w-full object-cover opacity-85 transition duration-500 group-hover:scale-105" /><span className="absolute bottom-3 right-3 flex size-9 items-center justify-center rounded-full bg-[#f4f2ee] text-[#000000]"><ArrowUpRight className="size-4" /></span></div><h3 className="mt-4 text-sm font-medium">{track.title}</h3><p className="mt-1 text-xs text-[#96969f]">{track.artist_name || "Independent artist"}</p></Link><button type="button" aria-label={`${playingId === track.id ? "Pause" : "Play"} ${track.title}`} disabled={!track.audio_url} onClick={() => togglePlayback(track)} className="mt-3 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.16em] text-[#96969f] transition-colors hover:text-[#FA003E] disabled:cursor-not-allowed disabled:opacity-40"><span className="flex size-7 items-center justify-center rounded-full border border-white/15">{playingId === track.id ? <Pause className="size-3 fill-current" /> : <Play className="size-3 fill-current" />}</span>{track.audio_url ? playingId === track.id ? "Pause" : "Play" : "Details"}</button></div>)}</div>
       </section>
 
       <section id="how-it-works" className="border-y border-white/[0.08] px-5 py-16 sm:px-[4.5%] lg:py-20"><div className="mx-auto grid max-w-[1512px] gap-12 lg:grid-cols-[0.8fr_1.2fr]"><h2 className="max-w-sm font-sans text-4xl font-medium tracking-[-0.05em] sm:text-5xl">A better kind of listening.</h2><div className="grid gap-8 sm:grid-cols-3">{[["01","Find your sound.","Discover new voices and follow the music that finds you."],["02","Make it matter.","Support artists directly with a small payment when you listen."],["03","Stay for the story.","Keep up with the people, process, and work behind every track."]].map(([number,title,description]) => <div key={number} className="border-t border-white/[0.12] pt-4"><p className="text-xs text-[#FA003E]">{number}</p><h3 className="mt-8 text-lg">{title}</h3><p className="mt-3 text-sm leading-6 text-[#96969f]">{description}</p></div>)}</div></div></section>
