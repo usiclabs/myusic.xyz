@@ -40,7 +40,7 @@ async function getPlatformMetrics() {
   const { data: streamHistory } = await supabase
     .from("streams")
     .select("started_at, chunks_played, total_paid")
-    .order("started_at", { ascending: true })
+    .order("started_at", { ascending: false })
     .limit(1000)
 
   // Get top tracks by streams
@@ -152,16 +152,6 @@ async function getPlatformMetrics() {
     .order("last_played_at", { ascending: false })
     .limit(50)
 
-  console.log("[v0] [Analytics] Recent streams fetched:", recentStreams?.length || 0)
-  console.log(
-    "[v0] [Analytics] Streams with payments:",
-    recentStreams?.filter((s) => Number(s.total_paid) > 0).length || 0,
-  )
-  console.log(
-    "[v0] [Analytics] Sample paid stream:",
-    recentStreams?.find((s) => Number(s.total_paid) > 0),
-  )
-
   // Get auto-investment transactions
   const { data: autoInvestTxs } = await supabase
     .from("auto_investment_transactions")
@@ -215,9 +205,6 @@ async function getPlatformMetrics() {
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, 30)
 
-  console.log("[v0] [Analytics] Combined activity items:", allActivity.length)
-  console.log("[v0] [Analytics] Activity with payments:", allActivity.filter((a) => Number(a.total_paid) > 0).length)
-
   return {
     totalTracks: totalTracks || 0,
     totalArtists: uniqueArtists,
@@ -237,16 +224,14 @@ export default async function AnalyticsPage() {
   const metrics = await getPlatformMetrics()
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-8 overflow-x-hidden">
-      <div className="container mx-auto px-4 py-6 max-w-7xl overflow-x-hidden">
+    <div className="min-h-screen overflow-x-hidden bg-black pb-24 text-white md:pb-8">
+      <div className="mx-auto max-w-[1280px] overflow-x-hidden px-5 py-8 sm:px-8 lg:py-10">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            Platform Analytics
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Real-time insights into USI's performance and growth
-          </p>
+        <div className="mb-8 border-b border-[#1f1f1f] pb-8">
+          <p className="mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[#8c8c8c]"><span className="size-1.5 rounded-full bg-[#fa003e]" />MYUSIC / THE NUMBERS</p>
+          <h1 className="text-balance text-4xl font-bold tracking-[-0.07em] text-white sm:text-[45px]">The music. <span className="text-[#fa003e]">In numbers.</span></h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-[#8c8c8c]">An open view of the streams, creators, and support behind MyUSIC.</p>
+          <div className="mt-5 flex flex-wrap items-center gap-3 text-[10px] text-[#666]"><span className="rounded-full border border-[#1f1f1f] bg-[#090909] px-3 py-1.5">Captured MyUSIC data</span><span>Source: Supabase · refreshed on request</span></div>
         </div>
 
         {/* Platform Metrics Heading */}
@@ -258,8 +243,8 @@ export default async function AnalyticsPage() {
         </div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8 max-w-full">
-          <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 p-4 sm:p-6 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+        <div className="mb-8 grid max-w-full grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[#1f1f1f] bg-[#1f1f1f] lg:grid-cols-4">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-primary/10">
                 <Music className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -270,7 +255,7 @@ export default async function AnalyticsPage() {
             <div className="text-xs sm:text-sm text-muted-foreground">Total Tracks</div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-accent/20 p-4 sm:p-6 hover:border-accent/40 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-accent/10">
                 <Users className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
@@ -281,7 +266,7 @@ export default async function AnalyticsPage() {
             <div className="text-xs sm:text-sm text-muted-foreground">Active Artists</div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-green-500/20 p-4 sm:p-6 hover:border-green-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-green-500/10">
                 <Play className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
@@ -292,7 +277,7 @@ export default async function AnalyticsPage() {
             <div className="text-xs sm:text-sm text-muted-foreground">Total Streams</div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-yellow-500/10 via-yellow-500/5 to-transparent border-yellow-500/20 p-4 sm:p-6 hover:border-yellow-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/10">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-yellow-500/10">
                 <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500" />
@@ -303,7 +288,7 @@ export default async function AnalyticsPage() {
             <div className="text-xs sm:text-sm text-muted-foreground">Total Revenue (USDC)</div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-pink-500/10 via-pink-500/5 to-transparent border-pink-500/20 p-4 sm:p-6 hover:border-pink-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-pink-500/10">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-pink-500/10">
                 <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
@@ -314,7 +299,7 @@ export default async function AnalyticsPage() {
             <div className="text-xs sm:text-sm text-muted-foreground">Total Likes</div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20 p-4 sm:p-6 hover:border-blue-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-blue-500/10">
                 <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
@@ -325,7 +310,7 @@ export default async function AnalyticsPage() {
             <div className="text-xs sm:text-sm text-muted-foreground">Unique Listeners</div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent border-purple-500/20 p-4 sm:p-6 hover:border-purple-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-purple-500/10">
                 <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
@@ -336,7 +321,7 @@ export default async function AnalyticsPage() {
             <div className="text-xs sm:text-sm text-muted-foreground">Total Follows</div>
           </Card>
 
-          <Card className="bg-gradient-to-br from-orange-500/10 via-orange-500/5 to-transparent border-orange-500/20 p-4 sm:p-6 hover:border-orange-500/40 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/10">
+          <Card className="bg-[#090909] p-4 sm:p-6 transition-colors hover:bg-[#141414]">
             <div className="flex items-start justify-between mb-2">
               <div className="p-2 rounded-lg bg-orange-500/10">
                 <Upload className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />

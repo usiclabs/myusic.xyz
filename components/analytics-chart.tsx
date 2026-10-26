@@ -15,27 +15,31 @@ interface AnalyticsChartProps {
 
 export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
   const chartData = useMemo(() => {
-    // Group data by date
+    // Use an ISO date key so grouping and sorting stay consistent across server and browser locales.
     const grouped = data.reduce(
       (acc, item) => {
-        const date = new Date(item.started_at).toLocaleDateString()
+        const parsedDate = new Date(item.started_at)
+        if (Number.isNaN(parsedDate.getTime())) return acc
+        const date = parsedDate.toISOString().slice(0, 10)
         if (!acc[date]) {
           acc[date] = { date, plays: 0, earnings: 0 }
         }
-        acc[date].plays += item.chunks_played
-        acc[date].earnings += Number(item.total_paid)
+        acc[date].plays += Number(item.chunks_played) || 0
+        acc[date].earnings += Number(item.total_paid) || 0
         return acc
       },
       {} as Record<string, { date: string; plays: number; earnings: number }>,
     )
 
-    return Object.values(grouped).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    return Object.values(grouped).sort((a, b) => a.date.localeCompare(b.date))
   }, [data])
+
+  const lineColor = type === "plays" ? "#fa003e" : "#05df72"
 
   const chartConfig = {
     value: {
       label: type === "plays" ? "Plays" : "Earnings",
-      color: "hsl(142 76% 56%)", // Bright green
+      color: type === "plays" ? "#fa003e" : "#05df72",
     },
   }
 
@@ -52,11 +56,11 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
     return (
       <g>
         {/* Outer glow pulse */}
-        <circle cx={cx} cy={cy} r={6} fill="hsl(142 76% 56%)" opacity={0.2} className="animate-ping" />
+        <circle cx={cx} cy={cy} r={6} fill={lineColor} opacity={0.2} className="animate-ping" />
         {/* Middle glow */}
-        <circle cx={cx} cy={cy} r={4} fill="hsl(142 76% 56%)" opacity={0.4} />
+        <circle cx={cx} cy={cy} r={4} fill={lineColor} opacity={0.4} />
         {/* Inner dot */}
-        <circle cx={cx} cy={cy} r={2} fill="hsl(142 76% 56%)" />
+        <circle cx={cx} cy={cy} r={2} fill={lineColor} />
       </g>
     )
   }
@@ -67,8 +71,8 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
         <AreaChart data={chartData} margin={{ left: 0, right: 0, top: 5, bottom: 5 }}>
           <defs>
             <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(142 76% 56%)" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="hsl(142 76% 56%)" stopOpacity={0} />
+              <stop offset="5%" stopColor={lineColor} stopOpacity={0.4} />
+              <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
             </linearGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="coloredBlur" />
@@ -81,6 +85,10 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.2} />
           <XAxis
             dataKey="date"
+            tickFormatter={(date: string) => {
+              const [year, month, day] = date.split("-")
+              return `${month}/${day}`
+            }}
             stroke="hsl(var(--muted-foreground))"
             fontSize={10}
             tickLine={false}
@@ -94,12 +102,12 @@ export function AnalyticsChart({ data, type }: AnalyticsChartProps) {
           <Area
             type="monotone"
             dataKey={type === "plays" ? "plays" : "earnings"}
-            stroke="hsl(142 76% 56%)"
+            stroke={lineColor}
             fill="url(#fillValue)"
             strokeWidth={2}
             filter="url(#glow)"
             dot={<CustomDot />}
-            activeDot={{ r: 5, fill: "hsl(142 76% 56%)", stroke: "hsl(142 76% 56%)", strokeWidth: 2 }}
+            activeDot={{ r: 5, fill: lineColor, stroke: lineColor, strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>
