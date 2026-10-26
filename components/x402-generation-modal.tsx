@@ -47,17 +47,6 @@ const ERC20_ABI = [
     inputs: [{ name: "account", type: "address" }],
     outputs: [{ type: "uint256" }],
   },
-  {
-    name: "transferFrom",
-    type: "function",
-    stateMutability: "nonpayable",
-    inputs: [
-      { name: "from", type: "address" },
-      { name: "to", type: "address" },
-      { name: "amount", type: "uint256" },
-    ],
-    outputs: [{ type: "bool" }],
-  },
 ] as const
 
 export function X402GenerationModal({ isOpen, onClose, onPaymentComplete }: X402GenerationModalProps) {
@@ -220,6 +209,7 @@ export function X402GenerationModal({ isOpen, onClose, onPaymentComplete }: X402
 
       console.log("[v0] Approving USDC spend to:", relayerAddress)
 
+      // Approve the relayer to spend USDC
       const approveTxHash = await walletClient.writeContract({
         address: usdcAddress,
         abi: ERC20_ABI,
@@ -254,78 +244,36 @@ export function X402GenerationModal({ isOpen, onClose, onPaymentComplete }: X402
     setStep("processing")
 
     try {
-      console.log("[v0] Starting x402 payment for address:", address)
+      console.log("[v0] Starting payment for address:", address, "Smart wallet:", isSmartWallet)
 
-      if (!relayerAddress) {
-        throw new Error("Payment recipient not configured")
-      }
+      const endpoint = isSmartWallet ? "/api/x402/generate/smart-wallet-transfer" : "/api/x402/generate/transfer"
 
-      if (!window.ethereum) {
-        throw new Error("Web3 wallet not available")
-      }
-
-      const walletClient = createWalletClient({
-        chain: base,
-        transport: custom(window.ethereum),
-      })
-
-      const publicClient = createPublicClient({
-        chain: base,
-        transport: http(),
-      })
-
-      const usdcAddress = USDC_ADDRESS[8453]
-
-      console.log("[v0] User wallet executing USDC transfer to platform wallet:", relayerAddress)
-
-      const txHash = await walletClient.writeContract({
-        address: usdcAddress,
-        abi: ERC20_ABI,
-        functionName: "transferFrom",
-        args: [address as `0x${string}`, relayerAddress as `0x${string}`, GENERATION_PRICE],
-        account: address as `0x${string}`,
-      })
-
-      console.log("[v0] Transfer tx submitted to blockchain:", txHash)
-
-      // Wait for on-chain confirmation
-      const receipt = await publicClient.waitForTransactionReceipt({
-        hash: txHash,
-        confirmations: 1,
-      })
-
-      if (receipt.status !== "success") {
-        throw new Error("Transaction failed on blockchain")
-      }
-
-      console.log("[v0] Transfer confirmed on blockchain, verifying payment with server...")
-
-      const verifyResponse = await fetch("/api/x402/generate/transfer", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           from: address,
-          txHash,
-          nonce,
+          nonce: nonce || `gen-${Date.now()}`,
         }),
       })
 
-      if (!verifyResponse.ok) {
-        const errorData = await verifyResponse.json()
-        throw new Error(errorData.error || "Payment verification failed")
+      const data = await response.json()
+
+      console.log("[v0] Transfer response status:", response.status, "data:", data)
+
+      if (!response.ok) {
+        throw new Error(data.error || data.details || "Payment failed")
       }
 
-      const verifyData = await verifyResponse.json()
-
-      if (!verifyData.success) {
-        throw new Error("Payment verification did not complete")
+      if (!data.success || !data.txHash) {
+        throw new Error(data.message || "Payment did not complete successfully")
       }
 
-      console.log("[v0] Payment verified and recorded:", txHash)
+      console.log("[v0] Payment transfer confirmed with tx:", data.txHash)
       setStep("complete")
 
+      // Wait a moment then trigger the generation
       setTimeout(() => {
-        console.log("[v0] Triggering generation after verified payment")
         onPaymentComplete()
         onClose()
       }, 1500)

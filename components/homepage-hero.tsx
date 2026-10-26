@@ -3,64 +3,39 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Play, Music, Sparkles, ArrowDown, Zap } from "lucide-react"
+import { Play, Music, Sparkles, ArrowDown, Zap, Activity } from "lucide-react"
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export function HomepageHero() {
   const [isVisible, setIsVisible] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [animatedStats, setAnimatedStats] = useState({
-    tracks: 0,
-    artists: 0,
-    paidOut: 0,
-  })
-
+  const [animatedStats, setAnimatedStats] = useState({ tracks: 0, artists: 0, paidOut: 0 })
   const { data: stats, isLoading } = useSWR("/api/stats/homepage", fetcher, {
     refreshInterval: 30000,
     revalidateOnFocus: true,
   })
 
-  useEffect(() => {
-    setIsVisible(true)
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  useEffect(() => setIsVisible(true), [])
 
   useEffect(() => {
     if (!stats) return
-
-    const duration = 2000
-    const steps = 60
-    const stepDuration = duration / steps
-
+    const duration = 1600
+    const steps = 48
     let currentStep = 0
     const interval = setInterval(() => {
-      currentStep++
+      currentStep += 1
       const progress = currentStep / steps
-
       setAnimatedStats({
         tracks: Math.floor(stats.tracks.raw * progress),
         artists: Math.floor(stats.artists.raw * progress),
         paidOut: Math.floor(stats.paidOut.raw * progress),
       })
-
       if (currentStep >= steps) {
         clearInterval(interval)
-        setAnimatedStats({
-          tracks: stats.tracks.raw,
-          artists: stats.artists.raw,
-          paidOut: stats.paidOut.raw,
-        })
+        setAnimatedStats({ tracks: stats.tracks.raw, artists: stats.artists.raw, paidOut: stats.paidOut.raw })
       }
-    }, stepDuration)
-
+    }, duration / steps)
     return () => clearInterval(interval)
   }, [stats])
 
@@ -71,152 +46,70 @@ export function HomepageHero() {
       if (value >= 1) return `$${value.toFixed(0)}`
       return `$${value.toFixed(2)}`
     }
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}K+`
-    return `${value}+`
+    return value >= 1000 ? `${(value / 1000).toFixed(1)}K+` : `${value}+`
   }
 
+  const statsList = [
+    { value: isLoading ? "..." : formatStat(animatedStats.tracks, "tracks"), label: "Tracks", icon: Music },
+    { value: isLoading ? "..." : formatStat(animatedStats.artists, "artists"), label: "Artists", icon: Sparkles },
+    { value: isLoading ? "..." : formatStat(animatedStats.paidOut, "paidOut"), label: "Paid out", icon: Zap },
+  ]
+
   return (
-    <section className="relative overflow-hidden min-h-screen flex items-center px-4 sm:px-6">
-      <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 opacity-30 transition-all duration-300"
-          style={{
-            background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(220, 38, 38, 0.15), transparent 50%)`,
-          }}
-        />
-      </div>
+    <section className="relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden border-b border-border/70 bg-background px-4 py-20 sm:px-6 lg:min-h-[760px]">
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[url('/grid.svg')] opacity-[0.035]" />
+      <div className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 h-px bg-border/30" />
 
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.02] animate-pulse-slow" />
+      <div className="container relative mx-auto max-w-7xl">
+        <div className="grid items-end gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
+          <div className="max-w-3xl">
+            <div className={`mb-8 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground transition-all duration-700 ${isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-accent/60 text-accent"><Sparkles className="h-3.5 w-3.5" /></span>
+              Built on Base <span className="text-border">/</span> Powered by X402
+            </div>
 
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float" />
-      <div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl animate-float"
-        style={{ animationDelay: "2s", animationDuration: "8s" }}
-      />
+            <h1 className={`max-w-4xl text-balance text-6xl font-bold leading-[0.92] tracking-[-0.06em] transition-all duration-700 delay-100 sm:text-8xl lg:text-[8.5rem] ${isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+              Music that <span className="text-accent">pays artists.</span>
+            </h1>
 
-      <div className="container relative py-24 md:py-40 z-10">
-        <div className="mx-auto max-w-5xl text-center">
-          <div
-            className={`mb-12 inline-flex items-center gap-2 rounded-full bg-card/20 backdrop-blur-md border border-accent/40 px-6 py-3 text-sm shadow-lg shadow-accent/20 transition-all duration-700 hover:shadow-accent/40 hover:scale-105 hover:border-accent/60 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <Sparkles className="h-4 w-4 text-accent animate-pulse" />
-            <span className="font-medium text-foreground">
-              Built on Base • Powered by X402 • $USI Ecosystem
-            </span>
-            <Zap className="h-4 w-4 text-accent animate-pulse" style={{ animationDelay: "0.5s" }} />
+            <p className={`mt-8 max-w-xl text-pretty text-lg leading-7 text-muted-foreground transition-all duration-700 delay-200 sm:text-xl ${isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+              Micropayments that move at the speed of sound. No subscriptions, no platform fees—artists get 100% of what you pay.
+            </p>
+
+            <div className={`mt-10 flex flex-col gap-3 transition-all duration-700 delay-300 sm:flex-row ${isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+              <Button size="lg" asChild className="h-12 rounded-md bg-accent px-6 text-accent-foreground hover:bg-accent/90">
+                <Link href="/explore"><Play className="mr-2 h-4 w-4" />Listen now</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild className="h-12 rounded-md border-border bg-transparent px-6 hover:border-accent/70 hover:bg-accent/5">
+                <Link href="/dashboard"><Music className="mr-2 h-4 w-4" />Upload your music</Link>
+              </Button>
+            </div>
           </div>
 
-          <h1
-            className={`font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-8 text-balance leading-[0.95] transition-all duration-700 delay-100 uppercase tracking-tight ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            Music that{" "}
-            <span className="text-accent drop-shadow-[0_0_20px_rgba(220,38,38,0.4)]">
-              pays artists
-            </span>
-          </h1>
-
-          <p
-            className={`text-2xl md:text-3xl text-foreground/90 mb-6 text-pretty leading-relaxed max-w-3xl mx-auto transition-all duration-700 delay-200 font-medium ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            Micropayments that move at the speed of sound.
-          </p>
-
-          <p
-            className={`text-lg md:text-xl text-foreground/70 mb-12 text-pretty leading-relaxed max-w-2xl mx-auto transition-all duration-700 delay-300 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            No subscriptions. No platform fees. Artists get 100% of what you pay.
-          </p>
-
-          <div
-            className={`flex flex-col sm:flex-row gap-4 justify-center mb-16 transition-all duration-700 delay-400 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <Button
-              size="lg"
-              asChild
-              className="gap-2 text-base px-8 py-2.5 h-auto rounded-full bg-accent text-white hover:bg-accent/90 hover:scale-105 hover:shadow-xl hover:shadow-accent/40 transition-all duration-300 group relative overflow-hidden shadow-lg shadow-accent/30"
-            >
-              <Link href="/explore">
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Play className="h-5 w-5 group-hover:scale-110 transition-transform relative z-10 fill-current" />
-                <span className="relative z-10 font-semibold">Listen Now</span>
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              asChild
-              className="gap-2 text-base px-8 py-2.5 h-auto rounded-full bg-background border-2 border-accent/40 text-accent hover:bg-accent/5 hover:border-accent/70 hover:scale-105 hover:shadow-lg hover:shadow-accent/20 transition-all duration-300 group relative overflow-hidden"
-            >
-              <Link href="/dashboard">
-                <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Music className="h-5 w-5 group-hover:rotate-12 transition-transform relative z-10" />
-                <span className="relative z-10 font-semibold">Upload Your Music</span>
-              </Link>
-            </Button>
-          </div>
-
-          <div
-            className={`grid grid-cols-3 gap-6 sm:gap-8 max-w-3xl mx-auto transition-all duration-700 delay-500 ${
-              isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            {[
-              {
-                value: isLoading ? "..." : formatStat(animatedStats.tracks, "tracks"),
-                label: "Tracks",
-                color: "accent",
-                icon: Music,
-              },
-              {
-                value: isLoading ? "..." : formatStat(animatedStats.artists, "artists"),
-                label: "Artists",
-                color: "accent",
-                icon: Sparkles,
-              },
-              {
-                value: isLoading ? "..." : formatStat(animatedStats.paidOut, "paidOut"),
-                label: "Paid Out",
-                color: "accent",
-                icon: Zap,
-              },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="text-center group cursor-default bg-background border border-accent/20 rounded-2xl p-4 sm:p-6 md:p-8 hover:border-accent/40 hover:shadow-xl hover:shadow-accent/15 transition-all duration-300 hover:scale-105"
-              >
-                <stat.icon
-                  className={`h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-${stat.color} mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform`}
-                />
-                <div
-                  className={`text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold text-white mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300 ${
-                    isLoading ? "animate-pulse" : ""
-                  }`}
-                  style={{ wordBreak: "break-word" }}
-                >
-                  {stat.value}
+          <div className={`border-l border-border/70 pl-6 transition-all duration-700 delay-300 sm:pl-8 ${isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
+            <div className="mb-8 flex items-center justify-between text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="flex items-center gap-2"><Activity className="h-3.5 w-3.5 text-accent" /> Open network</span>
+              <span className="text-accent">Live</span>
+            </div>
+            <p className="max-w-sm text-2xl font-medium leading-tight tracking-tight text-foreground sm:text-3xl">
+              Every stream is a payment. Every payment is instant.
+            </p>
+            <div className="mt-10 grid grid-cols-3 border-y border-border/70">
+              {statsList.map((stat) => (
+                <div key={stat.label} className="border-r border-border/70 py-5 pr-3 last:border-r-0 last:pl-3 sm:pr-5 sm:last:pl-5">
+                  <stat.icon className="mb-4 h-4 w-4 text-accent" />
+                  <div className={`text-xl font-semibold tracking-tight sm:text-2xl ${isLoading ? "animate-pulse" : ""}`}>{stat.value}</div>
+                  <div className="mt-1 text-[11px] uppercase tracking-[0.12em] text-muted-foreground">{stat.label}</div>
                 </div>
-                <div className="text-xs sm:text-sm text-foreground/60 font-medium line-clamp-2">{stat.label}</div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce cursor-pointer group">
-        <div className="w-6 h-10 rounded-full border-2 border-foreground/20 flex items-start justify-center p-2 group-hover:border-accent/50 transition-colors">
-          <div className="w-1 h-2 bg-accent/60 rounded-full animate-pulse" />
+        <div className="mt-20 flex items-center justify-between border-t border-border/70 pt-4 text-xs uppercase tracking-[0.16em] text-muted-foreground sm:mt-28">
+          <span>Streaming for the open internet</span>
+          <ArrowDown className="h-4 w-4 text-accent" />
         </div>
-        <ArrowDown className="h-4 w-4 text-foreground/40 group-hover:text-accent/60 mx-auto mt-2 transition-colors" />
       </div>
     </section>
   )

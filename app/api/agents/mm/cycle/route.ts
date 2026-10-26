@@ -37,6 +37,13 @@ export async function POST(request: Request) {
     })
   } catch (error: any) {
     console.error("[API] MM agent cycle error:", error)
-    return NextResponse.json({ error: error.message || "Failed to run MM cycle" }, { status: 500 })
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message || "Failed to run MM cycle",
+        messages: [`Error: ${error.message}`],
+      },
+      { status: 500 },
+    )
   }
 }

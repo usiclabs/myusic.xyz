@@ -20,13 +20,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ owns: true, trackId, address, source: "session" })
     }
 
+    // Fall back to payment history check
     const supabase = await createClient()
     const { data, error } = await supabase
-      .from("streams")
+      .from("x402_payments")
       .select("id")
-      .eq("listener_address", address.toLowerCase())
+      .eq("payer_address", address.toLowerCase())
       .eq("track_id", trackId)
-      .gt("total_paid", 0) // Only return streams where the user has actually paid (total_paid > 0)
+      .eq("status", "settled")
       .limit(1)
 
     if (error) {

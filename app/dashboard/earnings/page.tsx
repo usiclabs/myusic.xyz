@@ -2,11 +2,11 @@
 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { DollarSign, TrendingUp, Wallet, Zap, Download, Calendar, ArrowUpRight, ArrowDownRight, Shield, Gift } from "lucide-react"
+import { DollarSign, TrendingUp, Wallet, Zap, Download, Calendar, ArrowUpRight, ArrowDownRight } from "lucide-react"
 import { useWallet } from "@/lib/web3/wallet-context"
 import { useEffect, useState } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
-import { EmptyStateWalletConnect } from "@/components/empty-state-wallet-connect"
+import { WalletConnectPrompt } from "@/components/wallet-connect-prompt"
 import { formatUnits } from "viem"
 import { useReadContract } from "wagmi"
 import { USDC_ADDRESS, ERC20_ABI } from "@/lib/web3/contracts"
@@ -176,29 +176,14 @@ export default function EarningsPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen pb-32">
-        <EmptyStateWalletConnect
-          title="Connect Your Wallet"
-          description="Connect your wallet to view your earnings history and track your revenue from streams"
-          ctaText="Connect Wallet"
-          features={[
-            {
-              icon: <Shield className="h-5 w-5 text-accent" />,
-              title: "Secure",
-              description: "Your assets stay protected",
-            },
-            {
-              icon: <Zap className="h-5 w-5 text-accent" />,
-              title: "Fast",
-              description: "Quick connection in seconds",
-            },
-            {
-              icon: <Gift className="h-5 w-5 text-accent" />,
-              title: "Rewards",
-              description: "Earn $USI and exclusive perks",
-            },
-          ]}
-        />
+      <div className="min-h-screen pb-32 bg-black">
+        <main className="container py-12 px-4 sm:px-6">
+          <WalletConnectPrompt
+            title="Connect Your Wallet"
+            description="Please connect your wallet to view your earnings history"
+            icon={<DollarSign className="h-10 w-10 md:h-12 md:w-12 text-primary" />}
+          />
+        </main>
       </div>
     )
   }
@@ -270,7 +255,7 @@ export default function EarningsPage() {
               </div>
               <p className="text-sm text-muted-foreground">Period Earnings</p>
             </div>
-            <p className="text-3xl font-bold mb-2 text-white">{recentEarnings.toFixed(2)} USDC</p>
+            <p className="text-3xl font-bold mb-2">{recentEarnings.toFixed(2)} USDC</p>
             <div className="flex items-center gap-2 text-xs">
               {growthPercentage !== 0 && (
                 <span className={`flex items-center gap-1 ${growthPercentage > 0 ? "text-green-500" : "text-red-500"}`}>
@@ -289,7 +274,7 @@ export default function EarningsPage() {
               </div>
               <p className="text-sm text-muted-foreground">Lifetime Total</p>
             </div>
-            <p className="text-3xl font-bold mb-2 text-white">{totalEarnings.toFixed(2)} USDC</p>
+            <p className="text-3xl font-bold mb-2">{totalEarnings.toFixed(2)} USDC</p>
             <p className="text-xs text-muted-foreground">From {totalStreams.toLocaleString()} streams</p>
           </Card>
 
@@ -300,7 +285,7 @@ export default function EarningsPage() {
               </div>
               <p className="text-sm text-muted-foreground">Wallet Balance</p>
             </div>
-            <p className="text-3xl font-bold mb-2 text-white">{formattedWalletBalance.toFixed(2)} USDC</p>
+            <p className="text-3xl font-bold mb-2">{formattedWalletBalance.toFixed(2)} USDC</p>
             <p className="text-xs text-muted-foreground">Available now</p>
           </Card>
 
@@ -311,7 +296,7 @@ export default function EarningsPage() {
               </div>
               <p className="text-sm text-muted-foreground">Avg per Stream</p>
             </div>
-            <p className="text-3xl font-bold mb-2 text-white">{avgPerStream.toFixed(4)} USDC</p>
+            <p className="text-3xl font-bold mb-2">{avgPerStream.toFixed(4)} USDC</p>
             <p className="text-xs text-muted-foreground">Average earnings</p>
           </Card>
         </div>
