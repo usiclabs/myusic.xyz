@@ -79,11 +79,11 @@ export function FeaturedArtistsCarousel() {
   ]
 
   return (
-    <Card className="rounded-none p-6 bg-card border-border overflow-hidden shadow-none">
+    <Card className="p-6 bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-none border border-primary/40 bg-primary/10">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500">
             <Users className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -112,7 +112,7 @@ export function FeaturedArtistsCarousel() {
                   isCenter ? "md:scale-110 z-10" : "md:scale-95 opacity-60"
                 }`}
               >
-                <Card className="rounded-none p-4 border-border bg-background hover:border-primary/60 transition-colors duration-300 shadow-none">
+                <Card className="p-4 hover:bg-accent/50 transition-all duration-300 hover:shadow-lg">
                   <div className="flex flex-col items-center text-center space-y-3">
                     {/* Avatar */}
                     <Avatar className="h-20 w-20 ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all">

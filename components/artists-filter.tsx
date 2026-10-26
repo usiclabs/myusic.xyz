@@ -55,7 +55,7 @@ export function ArtistsFilter({
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent">
           Discover Artists
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -71,7 +71,7 @@ export function ArtistsFilter({
             placeholder="Find your favorite artist..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-12 h-11 rounded-none bg-card border-border focus:border-primary transition-colors"
+            className="pl-12 h-12 bg-card/50 backdrop-blur-xl border-border/50 focus:border-primary/50 transition-all duration-300"
           />
           {searchQuery && (
             <button
@@ -90,7 +90,7 @@ export function ArtistsFilter({
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as SortOption)}
-            className="w-full h-11 pl-4 pr-10 rounded-none bg-card border border-border text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors cursor-pointer appearance-none"
+            className="w-full h-12 pl-4 pr-10 rounded-lg bg-card/50 backdrop-blur-xl border border-border/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300 cursor-pointer appearance-none"
           >
             <optgroup label="Market Cap">
               <option value="marketcap-high">🚀 Highest Market Cap</option>
@@ -146,10 +146,10 @@ export function ArtistsFilter({
       </Button>
 
       {showFilters && (
-        <Card className="rounded-none bg-card border-border p-5 space-y-6 animate-slide-down shadow-none">
+        <Card className="bg-gradient-to-br from-card/80 to-card/50 backdrop-blur-xl border-border/50 p-6 space-y-6 animate-slide-down shadow-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-6 w-0.5 bg-primary" />
+              <div className="h-8 w-1 bg-gradient-to-b from-primary to-accent rounded-full" />
               <h3 className="font-semibold text-lg">Advanced Filters</h3>
             </div>
             {hasActiveFilters && (
