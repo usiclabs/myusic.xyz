@@ -1,13 +1,15 @@
 import { createBrowserClient as createSupabaseBrowserClient } from "@supabase/ssr"
 
-export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+const FALLBACK_SUPABASE_URL = "https://build-placeholder.supabase.co"
+const FALLBACK_SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1aWxkLXBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDAwMDAwMDB9.build-placeholder-key"
 
-  if (!url || !key) {
+export function createClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || FALLBACK_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || FALLBACK_SUPABASE_ANON_KEY
+
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     console.warn("[v0] Supabase environment variables not configured")
-    // Return a dummy client that won't break - it will fail gracefully on actual queries
-    return createSupabaseBrowserClient(url || "", key || "")
   }
 
   return createSupabaseBrowserClient(url, key)
