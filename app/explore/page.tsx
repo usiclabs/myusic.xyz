@@ -135,16 +135,11 @@ export default function ExplorePage() {
 
   return (
     <div className="min-h-screen bg-black pb-32">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float-delayed" />
-      </div>
-
       <main className="container relative z-10 py-12 px-4 sm:px-6">
         <div className="mb-12 animate-fade-in">
           <div className="flex items-center gap-3 mb-4">
-            <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent animate-gradient">
+            <Sparkles className="h-6 w-6 text-accent" />
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
               Explore Music
             </h1>
           </div>
@@ -157,7 +152,7 @@ export default function ExplorePage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
               <Input
                 placeholder="Search tracks, artists..."
-                className="pl-10 bg-card/50 backdrop-blur-xl border border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                className="pl-10 bg-card border-border focus:border-accent focus:ring-1 focus:ring-accent/30 transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -239,7 +234,7 @@ export default function ExplorePage() {
             ))}
           </div>
         ) : (
-          <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-12 text-center animate-fade-in">
+          <div className="bg-card border border-border p-12 text-center animate-fade-in">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6 animate-pulse">
               <Search className="h-10 w-10 text-primary" />
             </div>

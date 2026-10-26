@@ -257,7 +257,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen pb-32 bg-black">
       <main className="container py-12 px-4 sm:px-6">
-        <div className="relative mb-12 overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-accent/10 to-chart-3/20 border border-primary/20 p-8 md:p-12 animate-slide-up">
+        <div className="relative mb-12 overflow-hidden border border-border bg-card p-8 md:p-12 animate-slide-up">
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -266,7 +266,7 @@ export default function DashboardPage() {
                   <Sparkles className="h-5 w-5 text-primary" />
                   <span className="text-sm font-medium text-primary">Artist Dashboard</span>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-foreground">
                   {profile?.artist_name || "Welcome Back"}
                 </h1>
                 <p className="text-muted-foreground text-lg">Track your performance and manage your music</p>
@@ -291,10 +291,10 @@ export default function DashboardPage() {
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <Card
-            className="relative overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-xl border border-primary/20 shadow-lg p-6 hover-lift animate-slide-up group"
+            className="relative overflow-hidden bg-card border border-border p-6 hover-lift animate-slide-up group"
             style={{ animationDelay: "0.1s" }}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+            
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/20 border border-primary/30">
@@ -319,10 +319,10 @@ export default function DashboardPage() {
           </Card>
 
           <Card
-            className="relative overflow-hidden bg-gradient-to-br from-accent/10 to-accent/5 backdrop-blur-xl border border-accent/20 shadow-lg p-6 hover-lift animate-slide-up group"
+            className="relative overflow-hidden bg-card border border-border p-6 hover-lift animate-slide-up group"
             style={{ animationDelay: "0.2s" }}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+            
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent/20 border border-accent/30">
@@ -342,10 +342,10 @@ export default function DashboardPage() {
           </Card>
 
           <Card
-            className="relative overflow-hidden bg-gradient-to-br from-chart-3/10 to-chart-3/5 backdrop-blur-xl border border-chart-3/20 shadow-lg p-6 hover-lift animate-slide-up group"
+            className="relative overflow-hidden bg-card border border-border p-6 hover-lift animate-slide-up group"
             style={{ animationDelay: "0.3s" }}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-chart-3/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500" />
+            
             <div className="relative">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-chart-3/20 border border-chart-3/30">

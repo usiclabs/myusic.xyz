@@ -56,10 +56,10 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/80">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
         <div className="container flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-2 group p-1 sm:p-2">
-            <div className="relative h-10 w-10 sm:h-12 sm:w-12 transition-all group-hover:scale-110">
+            <div className="relative h-9 w-9 sm:h-10 sm:w-10 transition-opacity group-hover:opacity-80">
               <Image src="/images/usic-logo.png" alt="USIC Logo" fill className="object-contain" priority />
             </div>
           </Link>
@@ -156,7 +156,7 @@ export function Header() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-1.5 sm:gap-2 bg-primary/10 border-primary/20 hover:bg-primary/20 hover:scale-105 transition-all text-xs sm:text-sm h-8 sm:h-10 px-2 sm:px-3"
+                    className="gap-1.5 sm:gap-2 bg-background border-border hover:border-accent hover:text-accent transition-colors text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3"
                   >
                     <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                     <span className="font-mono">{displayName}</span>
@@ -180,7 +180,7 @@ export function Header() {
             ) : (
               <Button
                 size="sm"
-                className="gap-1.5 sm:gap-2 bg-accent hover:bg-accent/90 hover:scale-105 transition-all shadow-lg shadow-accent/25 text-xs sm:text-sm h-8 sm:h-10 px-3 sm:px-4 text-white"
+                className="gap-1.5 sm:gap-2 bg-accent hover:bg-accent/90 transition-colors text-xs sm:text-sm h-8 sm:h-9 px-3 sm:px-4 text-white"
                 onClick={handleConnectClick}
               >
                 <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
