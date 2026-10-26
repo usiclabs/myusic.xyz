@@ -3,6 +3,7 @@
 import { ProfileForm } from "@/components/profile-form"
 import {
   User,
+  Wallet,
   History,
   Heart,
   Users,
@@ -17,7 +18,6 @@ import {
 import { useWallet } from "@/lib/web3/wallet-context"
 import { useEffect, useState } from "react"
 import { ensureProfile } from "@/lib/supabase/helpers"
-import { WalletConnectPrompt } from "@/components/wallet-connect-prompt"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { ListeningHistory } from "@/components/listening-history"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -34,7 +34,7 @@ import type { Address } from "viem"
 import { RecentlyPlayed } from "@/components/recently-played"
 
 export default function ProfilePage() {
-  const { address, isConnected } = useWallet()
+  const { address, isConnected, connect } = useWallet()
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<any>(null)
   const [listeningHistory, setListeningHistory] = useState<any[]>([])
@@ -218,13 +218,28 @@ export default function ProfilePage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen pb-32">
-        <main className="container py-8 sm:py-12 px-4 sm:px-6">
-          <WalletConnectPrompt
-            title="Connect Your Wallet"
-            description="Please connect your wallet to manage your profile"
-            icon={<User className="h-10 w-10 md:h-12 md:w-12 text-primary" />}
-          />
+      <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(250,0,62,0.16),transparent_32%),radial-gradient(circle_at_15%_80%,rgba(250,0,62,0.07),transparent_28%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-96 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <main className="relative mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center px-5 py-14 sm:px-8">
+          <div className="grid w-full items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />MyUSIC / Profile</div>
+              <h1 className="max-w-xl text-balance text-5xl font-semibold tracking-[-0.07em] sm:text-7xl">Your identity<br /><span className="text-[#fa003e]">starts here.</span></h1>
+              <p className="mt-6 max-w-md text-base leading-7 text-white/55">Shape the artist or listener profile the MyUSIC community will know you by. Your wallet is your key to the room.</p>
+              <div className="mt-8 flex flex-wrap gap-3 text-[10px] uppercase tracking-[0.16em] text-white/45"><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Your name</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Your story</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Your music</span></div>
+            </div>
+            <div className="relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+              <div className="absolute -inset-8 rounded-[32px] bg-[#fa003e]/10 blur-3xl" />
+              <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#0a0a0a]/95 p-5 shadow-2xl shadow-black backdrop-blur-xl sm:p-7">
+                <div className="mb-6 flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Profile preview</p><h2 className="mt-1 text-xl tracking-[-0.04em]">Make it yours</h2></div><div className="flex size-10 items-center justify-center rounded-full border border-[#fa003e]/30 bg-[#fa003e]/10 text-[#fa003e]"><User className="size-4" /></div></div>
+                <div className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.035] p-4"><div className="relative flex size-16 shrink-0 items-center justify-center rounded-full border border-[#fa003e]/40 bg-[#fa003e]/10"><div className="absolute inset-[-7px] animate-pulse rounded-full border border-[#fa003e]/15" /><User className="size-6 text-[#fa003e]" /></div><div><p className="text-lg tracking-[-0.03em] text-white/80">Your profile</p><p className="mt-1 font-mono text-[10px] text-white/30">0x••••••••••••••••</p></div></div>
+                <div className="mt-3 grid grid-cols-3 gap-2"><div className="rounded-xl border border-white/10 bg-white/[0.02] p-3"><p className="text-[9px] uppercase tracking-wider text-white/30">Tracks</p><p className="mt-2 text-xl text-white/25">—</p></div><div className="rounded-xl border border-white/10 bg-white/[0.02] p-3"><p className="text-[9px] uppercase tracking-wider text-white/30">Followers</p><p className="mt-2 text-xl text-white/25">—</p></div><div className="rounded-xl border border-white/10 bg-white/[0.02] p-3"><p className="text-[9px] uppercase tracking-wider text-white/30">Likes</p><p className="mt-2 text-xl text-white/25">—</p></div></div>
+                <Button onClick={connect} className="mt-5 h-12 w-full gap-2 rounded-xl bg-[#fa003e] text-sm font-semibold text-white shadow-lg shadow-[#fa003e]/20 transition-all hover:-translate-y-0.5 hover:bg-[#d90036] hover:shadow-[#fa003e]/35"><Wallet className="size-4" />Connect wallet to build your profile</Button>
+                <p className="mt-4 text-center text-[10px] text-white/30">Your profile is linked to your wallet and stays yours.</p>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     )
