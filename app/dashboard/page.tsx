@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
   Music,
+  Wallet,
   TrendingUp,
   DollarSign,
   Upload,
@@ -27,7 +28,6 @@ import { createBrowserClient } from "@/lib/supabase/client"
 import { ensureProfile } from "@/lib/supabase/helpers"
 import type { Database } from "@/types/database"
 import { SkeletonCard, SkeletonStats } from "@/components/skeleton-loader"
-import { WalletConnectPrompt } from "@/components/wallet-connect-prompt"
 import { TokenizeProfileModal } from "@/components/tokenize-profile-modal"
 
 type Track = Database["public"]["Tables"]["tracks"]["Row"] & {
@@ -42,7 +42,7 @@ type Stream = Database["public"]["Tables"]["streams"]["Row"] & {
 }
 
 export default function DashboardPage() {
-  const { address, isConnected } = useWallet()
+  const { address, isConnected, connect } = useWallet()
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<any>(null)
   const [tracks, setTracks] = useState<Track[]>([])
@@ -203,13 +203,27 @@ export default function DashboardPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen pb-32 bg-black">
-        <main className="container py-12 px-4 sm:px-6">
-          <WalletConnectPrompt
-            title="Connect Your Wallet"
-            description="Please connect your wallet to access the dashboard"
-            icon={<Music className="h-10 w-10 md:h-12 md:w-12 text-primary" />}
-          />
+      <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(250,0,62,0.15),transparent_32%),radial-gradient(circle_at_10%_80%,rgba(250,0,62,0.08),transparent_28%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-96 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <main className="relative mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center px-5 py-14 sm:px-8">
+          <div className="grid w-full items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />MyUSIC / Artist workspace</div>
+              <h1 className="max-w-xl text-balance text-5xl font-semibold tracking-[-0.07em] sm:text-7xl">Your music.<br /><span className="text-[#fa003e]">Your command center.</span></h1>
+              <p className="mt-6 max-w-md text-base leading-7 text-white/55">Upload releases, watch your streams grow, and follow every payment from one focused artist dashboard.</p>
+              <div className="mt-8 flex flex-wrap gap-3 text-[10px] uppercase tracking-[0.16em] text-white/45"><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Release tools</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Live analytics</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Onchain earnings</span></div>
+            </div>
+            <div className="relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+              <div className="absolute -inset-8 rounded-[32px] bg-[#fa003e]/10 blur-3xl" />
+              <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#0a0a0a]/95 p-5 shadow-2xl shadow-black backdrop-blur-xl sm:p-7">
+                <div className="mb-6 flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Artist dashboard</p><h2 className="mt-1 text-xl tracking-[-0.04em]">Your next move</h2></div><div className="flex size-10 items-center justify-center rounded-full border border-[#fa003e]/30 bg-[#fa003e]/10 text-[#fa003e]"><Music className="size-4" /></div></div>
+                <div className="mb-4 grid grid-cols-2 gap-3"><div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><p className="text-[10px] uppercase tracking-[0.15em] text-white/35">Total streams</p><p className="mt-3 text-3xl text-white/25">—</p><div className="mt-2 h-1 rounded-full bg-[#fa003e]/30"><div className="h-1 w-2/3 rounded-full bg-[#fa003e]" /></div></div><div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><p className="text-[10px] uppercase tracking-[0.15em] text-white/35">Earnings</p><p className="mt-3 text-3xl text-white/25">$—</p><div className="mt-2 flex items-end gap-1"><span className="h-3 w-1 rounded-full bg-white/20" /><span className="h-5 w-1 rounded-full bg-white/25" /><span className="h-8 w-1 rounded-full bg-[#fa003e]/70" /><span className="h-6 w-1 rounded-full bg-white/25" /><span className="h-10 w-1 rounded-full bg-[#fa003e]" /></div></div></div>
+                <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-4"><div className="flex items-center gap-3"><div className="flex size-9 items-center justify-center rounded-xl bg-[#fa003e]/10 text-[#fa003e]"><Wallet className="size-4" /></div><div><p className="text-sm">Connect to unlock your workspace</p><p className="mt-1 text-xs text-white/35">Your artist data stays tied to your wallet.</p></div></div></div>
+                <Button onClick={connect} className="mt-5 h-12 w-full gap-2 rounded-xl bg-[#fa003e] text-sm font-semibold text-white shadow-lg shadow-[#fa003e]/20 transition-all hover:-translate-y-0.5 hover:bg-[#d90036] hover:shadow-[#fa003e]/35"><Wallet className="size-4" />Connect wallet to continue</Button>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     )
