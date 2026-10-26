@@ -1,258 +1,47 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Play, Heart, VideoIcon, Coins } from 'lucide-react'
 import Image from "next/image"
 import Link from "next/link"
-import type { TrackWithArtist } from "@/types/database"
+import { Heart, MoreHorizontal, Pause, Play, VideoIcon } from "lucide-react"
+import { useEffect, useState } from "react"
+import useSWR from "swr"
 import { useAudioPlayer } from "@/lib/audio-player-context"
-import { useState, useEffect } from "react"
 import { useWallet } from "@/lib/web3/wallet-context"
 import { AddToPlaylistModal } from "./add-to-playlist-modal"
 import { ReportTrackDialog } from "./report-track-dialog"
-import useSWR from "swr"
+import type { TrackWithArtist } from "@/types/database"
 
-interface TrackCardProps {
-  track: TrackWithArtist & {
-    total_earned?: number
-    play_count?: number
-    like_count?: number
-    content_type?: string
-    thumbnail_url?: string
-    token_address?: string
-    coin_address?: string
-  }
-  queue?: TrackWithArtist[]
-}
-
+interface TrackCardProps { track: TrackWithArtist & { total_earned?: number; play_count?: number; like_count?: number; content_type?: string; thumbnail_url?: string; token_address?: string; coin_address?: string }; queue?: TrackWithArtist[]; listView?: boolean }
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-export function TrackCard({ track, queue }: TrackCardProps) {
-  const { playTrack } = useAudioPlayer()
+function formatAddress(address: string) { return `${address.slice(0, 6)}...${address.slice(-4)}` }
+function formatPrice(track: TrackWithArtist) { const price = Number(track.price_per_chunk || 0); if (!price) return "Free"; return `${price < 0.01 ? price.toFixed(3) : price.toFixed(2)} USDC ${track.unlock_type === "full_song" ? "to unlock" : "/play"}` }
+
+export function TrackCard({ track, queue, listView = false }: TrackCardProps) {
+  const { currentTrack, isPlaying, playTrack, pause, resume } = useAudioPlayer()
   const { address } = useWallet()
   const [isLiked, setIsLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(track.like_count || 0)
   const [isLiking, setIsLiking] = useState(false)
   const [likesAvailable, setLikesAvailable] = useState(true)
-
   const tokenAddress = track.coin_address || track.token_address
+  const { data: tokenMetrics } = useSWR(tokenAddress ? `/api/token/metrics/${tokenAddress}` : null, fetcher, { refreshInterval: 30000 })
+  const active = currentTrack?.id === track.id
 
-  const { data: tokenMetrics } = useSWR(tokenAddress ? `/api/token/metrics/${tokenAddress}` : null, fetcher, {
-    refreshInterval: 30000,
-  })
-
-  useEffect(() => {
-    console.log("[v0] Track card rendered:", {
-      title: track.title,
-      token_address: track.token_address,
-      hasTokenAddress: !!track.token_address,
-    })
-  }, [track.id, track.token_address])
-
-  useEffect(() => {
-    if (tokenAddress) {
-      console.log("[v0] Token metrics for", track.title, ":", tokenMetrics)
-    }
-  }, [tokenMetrics, tokenAddress])
-
-  useEffect(() => {
-    if (address) {
-      checkIfLiked()
-    }
-  }, [address, track.id])
-
-  async function checkIfLiked() {
-    if (!address) return
-
-    try {
-      const response = await fetch("/api/likes/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userAddress: address, trackIds: [track.id] }),
-      })
-
-      if (!response.ok) {
-        setLikesAvailable(false)
-        return
-      }
-
-      const data = await response.json()
-      setIsLiked(data[track.id] || false)
-    } catch (error) {
-      console.error("Failed to check like status:", error)
-      setLikesAvailable(false)
-    }
-  }
+  useEffect(() => { if (!address) return; fetch("/api/likes/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userAddress: address, trackIds: [track.id] }) }).then(async (response) => { if (!response.ok) { setLikesAvailable(false); return }; const data = await response.json(); setIsLiked(Boolean(data[track.id])) }).catch(() => setLikesAvailable(false)) }, [address, track.id])
 
   async function toggleLike() {
     if (!address || isLiking || !likesAvailable) return
-
-    setIsLiking(true)
-    const wasLiked = isLiked
-
-    setIsLiked(!isLiked)
-    setLikeCount((prev) => (wasLiked ? prev - 1 : prev + 1))
-
-    try {
-      if (wasLiked) {
-        const response = await fetch(`/api/likes/${track.id}?userAddress=${address}`, {
-          method: "DELETE",
-        })
-
-        if (response.status === 503) {
-          setLikesAvailable(false)
-          setIsLiked(wasLiked)
-          setLikeCount((prev) => (wasLiked ? prev + 1 : prev - 1))
-          return
-        }
-      } else {
-        const response = await fetch(`/api/likes/${track.id}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userAddress: address }),
-        })
-
-        if (response.status === 503) {
-          setLikesAvailable(false)
-          setIsLiked(wasLiked)
-          setLikeCount((prev) => (wasLiked ? prev + 1 : prev - 1))
-          return
-        }
-      }
-    } catch (error) {
-      console.error("Failed to toggle like:", error)
-      setIsLiked(wasLiked)
-      setLikeCount((prev) => (wasLiked ? prev + 1 : prev - 1))
-    } finally {
-      setIsLiking(false)
-    }
+    const wasLiked = isLiked; setIsLiking(true); setIsLiked(!wasLiked); setLikeCount((count) => count + (wasLiked ? -1 : 1))
+    try { const response = await fetch(wasLiked ? `/api/likes/${track.id}?userAddress=${address}` : `/api/likes/${track.id}`, { method: wasLiked ? "DELETE" : "POST", headers: wasLiked ? undefined : { "Content-Type": "application/json" }, body: wasLiked ? undefined : JSON.stringify({ userAddress: address }) }); if (!response.ok) throw new Error("Like request failed") } catch { setIsLiked(wasLiked); setLikeCount((count) => count + (wasLiked ? 1 : -1)) } finally { setIsLiking(false) }
   }
 
-  const handlePlay = () => {
-    if (track.content_type === "audio") {
-      if (queue && queue.length > 0) {
-        playTrack(track, queue)
-      } else {
-        playTrack(track)
-      }
-    }
-  }
+  function handlePlay() { if (track.content_type !== "video") { if (active && isPlaying) pause(); else if (active) resume(); else playTrack(track, queue) } }
+  const artwork = track.content_type === "video" ? track.thumbnail_url || "/images/usic-logo.png" : track.cover_url || "/abstract-soundscape.png"
+  const title = track.title || "Untitled track"
+  const artist = track.artist?.artist_name || formatAddress(track.artist_id)
 
-  const thumbnailUrl =
-    track.content_type === "video"
-      ? track.thumbnail_url || "/images/usic-logo.png"
-      : track.cover_url || "/abstract-soundscape.png"
+  if (listView) return <article className="group flex items-center gap-4 rounded-[14px] border border-white/[0.08] bg-[#19191b] p-3 transition duration-300 hover:-translate-y-[3px]"><div className="relative size-16 shrink-0 overflow-hidden rounded-lg"><Image src={artwork} alt={`${title} artwork`} fill className="object-cover" sizes="64px" /><button type="button" aria-label={`${active && isPlaying ? "Pause" : "Play"} ${title}`} onClick={handlePlay} className="absolute inset-0 m-auto flex size-10 items-center justify-center rounded-full bg-[#f5f4f2] text-[#101011] opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">{active && isPlaying ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}</button></div><div className="min-w-0 flex-1"><Link href={`/track/${track.id}`} className="block truncate text-sm hover:text-[#fb3154]">{title}</Link><Link href={`/artist/${track.artist_id}`} className="mt-1 block truncate text-xs text-[#96969f] hover:text-[#f5f4f2]">{artist}</Link></div><span className="hidden text-xs text-[#96969f] sm:block">{formatPrice(track)}</span><button type="button" aria-label={`${isLiked ? "Remove" : "Save"} ${title}`} onClick={toggleLike} disabled={!address || isLiking} className={`flex size-10 items-center justify-center rounded-full border border-white/[0.08] ${isLiked ? "text-[#fb3154]" : "text-[#96969f]"}`}><Heart className={`size-4 ${isLiked ? "fill-current" : ""}`} /></button></article>
 
-  const isGif = thumbnailUrl?.toLowerCase().endsWith(".gif")
-
-  return (
-    <Card className="bg-card/50 backdrop-blur-xl border border-border/50 group overflow-hidden transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/30">
-      <div className="relative aspect-square overflow-hidden">
-        {tokenAddress && (
-          <div className="absolute top-2 left-2 z-10 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 p-1.5 rounded-full shadow-lg animate-shine">
-            <Coins className="h-4 w-4 text-yellow-950" />
-          </div>
-        )}
-        {track.content_type === "video" && (
-          <div className="absolute top-2 right-2 z-10 bg-black/80 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
-            <VideoIcon className="h-3 w-3 text-primary" />
-            <span className="text-xs font-medium text-white">VIDEO</span>
-          </div>
-        )}
-        {isGif ? (
-          <img
-            src={thumbnailUrl || "/placeholder.svg"}
-            alt={track.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            loading="lazy"
-          />
-        ) : (
-          <Image
-            src={thumbnailUrl || "/placeholder.svg"}
-            alt={track.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-sm flex items-center justify-center">
-          {track.content_type === "video" ? (
-            <Link href={`/track/${track.id}`}>
-              <Button
-                size="lg"
-                className="rounded-full h-16 w-16 p-0 shadow-2xl shadow-primary/50 animate-scale-in hover:scale-110 transition-transform"
-              >
-                <Play className="h-7 w-7 fill-current ml-1" />
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              size="lg"
-              className="rounded-full h-16 w-16 p-0 shadow-2xl shadow-primary/50 animate-scale-in hover:scale-110 transition-transform"
-              onClick={handlePlay}
-            >
-              <Play className="h-7 w-7 fill-current ml-1" />
-            </Button>
-          )}
-        </div>
-      </div>
-      <div className="p-4">
-        <Link href={`/track/${track.id}`}>
-          <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors line-clamp-1">
-            {track.title}
-          </h3>
-        </Link>
-        <Link href={`/artist/${track.artist_id}`}>
-          <p className="text-sm text-muted-foreground hover:text-foreground transition-colors line-clamp-1">
-            {track.artist.artist_name || formatAddress(track.artist_id)}
-          </p>
-        </Link>
-        {tokenAddress && tokenMetrics?.marketCap && (
-          <p className="text-xs font-bold mt-1 text-green-500 animate-pulse-green">
-            $
-            {tokenMetrics.marketCap >= 1000000
-              ? `${(tokenMetrics.marketCap / 1000000).toFixed(2)}M`
-              : tokenMetrics.marketCap >= 1000
-                ? `${(tokenMetrics.marketCap / 1000).toFixed(2)}K`
-                : tokenMetrics.marketCap.toFixed(2)}{" "}
-            MC
-          </p>
-        )}
-        {track.total_earned !== undefined && track.total_earned > 0 && (
-          <p className="text-xs font-medium mt-2 text-green-500 animate-green-glow">
-            {track.total_earned.toFixed(4)} USDC earned
-          </p>
-        )}
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-xs text-muted-foreground font-medium">
-            {track.unlock_type === "full_song"
-              ? `${track.price_per_chunk} USDC to unlock`
-              : `${track.price_per_chunk} USDC/play`}
-          </span>
-          <div className="flex items-center gap-1">
-            <AddToPlaylistModal trackId={track.id} trackTitle={track.title} />
-            <ReportTrackDialog trackId={track.id} trackTitle={track.title} />
-            {likesAvailable && (
-              <>
-                {likeCount > 0 && <span className="text-xs text-muted-foreground">{likeCount}</span>}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 hover:scale-110 transition-transform"
-                  onClick={toggleLike}
-                  disabled={!address || isLiking}
-                >
-                  <Heart className={`h-4 w-4 transition-all ${isLiked ? "fill-red-500 text-red-500 scale-110" : ""}`} />
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </Card>
-  )
-}
-
-function formatAddress(addr: string) {
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  return <article className="group overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#19191b] transition duration-300 hover:-translate-y-[3px]"><div className="relative aspect-square overflow-hidden bg-[#111113]"><Image src={artwork} alt={`${title} artwork`} fill className="object-cover transition duration-500 group-hover:scale-[1.035]" sizes="(max-width: 640px) 45vw, (max-width: 1024px) 24vw, 20vw" /><div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#19191b] to-transparent" />{track.content_type === "video" && <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-[#101011]/70 px-2 py-1 text-[8px] text-white"><VideoIcon className="size-3" /> VIDEO</span>}<button type="button" aria-label={`${isLiked ? "Remove" : "Save"} ${title}`} onClick={toggleLike} disabled={!address || isLiking} className={`absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-[#101011]/55 text-white backdrop-blur-sm ${isLiked ? "text-[#fb3154]" : ""}`}><Heart className={`size-4 ${isLiked ? "fill-current" : ""}`} /></button><button type="button" aria-label={`${active && isPlaying ? "Pause" : "Play"} ${title}`} onClick={handlePlay} className="absolute bottom-3 left-3 flex size-11 items-center justify-center rounded-full bg-[#f5f4f2] text-[#101011] opacity-100 transition duration-200 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#fb3154]">{active && isPlaying ? <Pause className="size-4 fill-current" /> : <Play className="ml-0.5 size-4 fill-current" />}</button></div><div className="p-3 sm:p-4"><Link href={`/track/${track.id}`} title={title} className="block truncate text-[12px] font-medium sm:text-[15px] hover:text-[#fb3154]">{title}</Link><Link href={`/artist/${track.artist_id}`} className="mt-1 block truncate text-[10px] text-[#96969f] sm:text-[11px] hover:text-[#f5f4f2]">{artist}</Link><div className="mt-3 flex items-center justify-between border-t border-white/[0.08] pt-3"><span className="truncate text-[9px] text-[#96969f] sm:text-[10px]">{formatPrice(track)}</span><div className="flex items-center gap-1"><AddToPlaylistModal trackId={track.id} trackTitle={title} /><ReportTrackDialog trackId={track.id} trackTitle={title} /><MoreHorizontal className="size-4 text-[#696970]" aria-hidden="true" /></div></div>{tokenAddress && tokenMetrics?.marketCap && <p className="mt-2 text-[9px] text-[#96969f]">{tokenMetrics.marketCap >= 1000 ? `${(tokenMetrics.marketCap / 1000).toFixed(1)}K` : tokenMetrics.marketCap.toFixed(2)} MC</p>}</div></article>
 }
