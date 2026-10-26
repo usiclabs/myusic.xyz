@@ -526,34 +526,32 @@ export default function SwapPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-black relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(220,38,38,0.15),transparent_50%),radial-gradient(ellipse_at_bottom,rgba(220,38,38,0.1),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
+      <div className="relative min-h-screen overflow-hidden bg-black text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(250,0,62,0.16),transparent_34%),radial-gradient(circle_at_15%_80%,rgba(250,0,62,0.08),transparent_28%)]" />
+        <div className="pointer-events-none absolute inset-0 opacity-40 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_80%)]" />
 
-        <div className="container relative mx-auto px-4 py-8 max-w-6xl">
-          <div className="flex flex-col items-center justify-center min-h-[80vh] space-y-8">
-            <div className="relative">
-              <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl animate-pulse" />
-              <div className="relative rounded-full bg-black border border-primary/30 p-8 backdrop-blur-xl">
-                <Wallet className="h-16 w-16 text-primary" />
+        <div className="relative mx-auto flex min-h-screen max-w-6xl items-center px-5 py-16 sm:px-8">
+          <div className="grid w-full items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />MyUSIC / Token Mixer</div>
+              <h1 className="max-w-xl text-balance text-5xl font-semibold tracking-[-0.07em] sm:text-7xl">Move value<br /><span className="text-[#fa003e]">between worlds.</span></h1>
+              <p className="mt-6 max-w-md text-base leading-7 text-white/55">Trade USDC or ETH for $USI with live Uniswap liquidity and transparent pricing, built directly into the music economy.</p>
+              <div className="mt-8 flex flex-wrap gap-3 text-[10px] uppercase tracking-[0.16em] text-white/45"><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Base network</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Uniswap V3</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Live quotes</span></div>
+            </div>
+
+            <div className="relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+              <div className="absolute -inset-8 rounded-[32px] bg-[#fa003e]/10 blur-3xl" />
+              <div className="relative rounded-[24px] border border-white/10 bg-[#0a0a0a]/90 p-4 shadow-2xl shadow-black backdrop-blur-xl sm:p-6">
+                <div className="mb-5 flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Ready to trade</p><h2 className="mt-1 text-xl tracking-[-0.04em]">Choose your route</h2></div><div className="flex size-10 items-center justify-center rounded-full border border-[#fa003e]/30 bg-[#fa003e]/10 text-[#fa003e]"><ArrowDownUp className="size-4" /></div></div>
+                <div className="space-y-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-white/20"><div className="mb-4 flex justify-between text-[10px] uppercase tracking-[0.15em] text-white/40"><span>You pay</span><span>— balance</span></div><div className="flex items-center justify-between"><span className="text-3xl text-white/25">0.00</span><span className="flex items-center gap-2 rounded-full border border-white/10 bg-black px-3 py-2 text-sm"><span className="size-5 rounded-full bg-[#2775ca]" />USDC<ChevronDown className="size-3 text-white/40" /></span></div></div>
+                  <div className="relative z-10 -my-5 flex justify-center"><div className="flex size-10 items-center justify-center rounded-xl border-4 border-[#0a0a0a] bg-[#fa003e] text-white shadow-lg shadow-[#fa003e]/30 transition-transform duration-300 hover:rotate-180"><ArrowDown className="size-4" /></div></div>
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 transition-colors hover:border-white/20"><div className="mb-4 flex justify-between text-[10px] uppercase tracking-[0.15em] text-white/40"><span>You receive</span><span>Live quote</span></div><div className="flex items-center justify-between"><span className="text-3xl text-white/25">0.00</span><span className="flex items-center gap-2 rounded-full border border-white/10 bg-black px-3 py-2 text-sm"><span className="flex size-5 items-center justify-center rounded-full bg-[#fa003e] text-[8px] font-bold">U</span>$USI</span></div></div>
+                </div>
+                <Button onClick={connect} className="mt-5 h-12 w-full gap-2 rounded-xl bg-[#fa003e] text-sm font-semibold text-white shadow-lg shadow-[#fa003e]/20 transition-all hover:-translate-y-0.5 hover:bg-[#d90036] hover:shadow-[#fa003e]/35"><Wallet className="size-4" />Connect wallet to continue</Button>
+                <p className="mt-4 text-center text-[10px] text-white/35">Your wallet stays in your control. No custody, no hidden routes.</p>
               </div>
             </div>
-            <div className="text-center space-y-4 max-w-md">
-              <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
-                Connect Your Wallet
-              </h1>
-              <p className="text-lg text-white/60 leading-relaxed">
-                Connect your wallet to access premium token swapping with live liquidity and real-time pricing.
-              </p>
-            </div>
-            <Button
-              onClick={connect}
-              size="lg"
-              className="gap-2 h-14 px-8 text-base font-semibold bg-primary hover:bg-primary/90 shadow-[0_0_50px_rgba(220,38,38,0.3)] transition-all hover:shadow-[0_0_60px_rgba(220,38,38,0.5)]"
-            >
-              <Wallet className="h-5 w-5" />
-              Connect Wallet
-            </Button>
           </div>
         </div>
       </div>

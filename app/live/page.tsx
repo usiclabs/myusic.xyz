@@ -101,24 +101,15 @@ export default function LivePage() {
   }, [address])
 
   return (
-    <div className="min-h-screen pb-32 bg-gradient-to-b from-black via-black to-background">
+    <div className="min-h-screen overflow-hidden bg-black pb-32 text-white">
       {/* Hero Section */}
-      <main className="container py-12 px-4 sm:px-6">
-        <div className="mb-12 animate-slide-up">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-8">
+      <main className="relative mx-auto max-w-7xl px-5 py-10 sm:px-8 lg:py-14"><div className="pointer-events-none absolute -top-32 right-0 size-[34rem] rounded-full bg-[#fa003e]/10 blur-3xl" /><div className="pointer-events-none absolute inset-x-0 top-0 h-72 opacity-30" />
+        <div className="relative z-10 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-red-500/30 blur-xl rounded-full animate-pulse" />
-                  <Radio className="h-10 w-10 text-red-500 relative" />
-                </div>
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
-                  Live Streams
-                </h1>
-              </div>
-              <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                Watch live performances, connect with artists in real-time, and experience music like never before
-              </p>
+              <div className="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="flex items-center gap-2 rounded-full border border-[#fa003e]/30 bg-[#fa003e]/10 px-3 py-1.5 text-[#fa6688]"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />Broadcasting now</span><span>MyUSIC / Live</span></div>
+              <h1 className="max-w-2xl text-balance text-5xl font-semibold tracking-[-0.07em] sm:text-7xl">Music, while<br /><span className="text-[#fa003e]">it&apos;s happening.</span></h1>
+              <p className="mt-6 max-w-xl text-base leading-7 text-white/55">Step into the room. Watch independent artists perform live, discover new sounds, and connect with the people making them.</p>
             </div>
 
             {isConnected && (
@@ -139,7 +130,7 @@ export default function LivePage() {
 
           {/* Stats Bar */}
           {(liveStreams.length > 0 || allStreams.length > 0) && (
-            <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-card/30 backdrop-blur-xl border border-border/50">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-2xl border border-white/10 bg-white/[0.035] p-4 backdrop-blur-xl">
               {liveStreams.length > 0 && (
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
@@ -172,7 +163,7 @@ export default function LivePage() {
         {liveStreams.length > 0 && (
           <div className="mb-16">
             <div className="flex items-center gap-3 mb-6">
-              <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white border-0 shadow-lg shadow-red-500/25 px-3 py-1.5">
+              <Badge className="border border-[#fa003e]/30 bg-[#fa003e]/10 px-3 py-1.5 text-[#fa6688] shadow-lg shadow-[#fa003e]/10">
                 <Radio className="h-3.5 w-3.5 mr-1.5 animate-pulse" />
                 LIVE NOW
               </Badge>
@@ -211,17 +202,12 @@ export default function LivePage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20">
-              <div className="relative inline-block mb-6">
-                <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse" />
-                <div className="relative bg-card/50 backdrop-blur-xl border border-border/50 rounded-full p-8">
-                  <Radio className="h-16 w-16 text-muted-foreground" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold mb-3">No streams yet</h3>
-              <p className="text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
-                Be the first to go live and share your music with the world
-              </p>
+            <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#090909] py-20 text-center sm:py-28">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(250,0,62,0.14),transparent_42%)]" />
+              <div className="relative mx-auto mb-7 flex size-24 items-center justify-center rounded-full border border-[#fa003e]/30 bg-[#fa003e]/10"><div className="absolute size-24 animate-ping rounded-full border border-[#fa003e]/20" /><Radio className="relative h-10 w-10 text-[#fa003e]" /></div>
+              <p className="mb-3 text-[10px] uppercase tracking-[0.22em] text-[#fa6688]">The room is quiet</p>
+              <h3 className="text-3xl font-semibold tracking-[-0.05em]">No one is live yet.</h3>
+              <p className="mx-auto mb-8 mt-3 max-w-md leading-7 text-white/50">Be the first signal in the room. Start a broadcast and let the next listener find you.</p>
               {isConnected && isEligible && (
                 <Button
                   size="lg"
