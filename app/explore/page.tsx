@@ -84,7 +84,7 @@ export default function ExplorePage() {
   const editorialTracks = spotlightTracks.length ? spotlightTracks : tracks.slice(0, 3)
   const totalPages = Math.max(1, Math.ceil(filteredTracks.length / PAGE_SIZE))
 
-  return <main className="min-h-screen overflow-x-hidden bg-[#101011] pb-28 text-[#f5f4f2]">
+  return <main className="min-h-screen overflow-x-hidden bg-black pb-28 text-[#f5f4f2]">
     <div className="mx-auto w-full max-w-[1512px] px-5 sm:px-[4.5%]">
       <section className="flex items-end justify-between gap-8 pb-8 pt-10 sm:pb-10 sm:pt-14 lg:pt-16">
         <div><p className="mb-4 text-[9px] uppercase tracking-[0.23em] text-[#96969f]">Independent sounds. Endless discovery.</p><h1 className="font-sans text-[34px] font-medium leading-[1.15] tracking-[-1.5px] sm:text-[48px] sm:tracking-[-2.4px]">Find your frequency.</h1><p className="mt-3 text-xs text-[#96969f] sm:text-sm">New voices. Different worlds. Your next repeat.</p></div>
