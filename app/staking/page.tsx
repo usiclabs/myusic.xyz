@@ -315,25 +315,32 @@ export default function StakingPage() {
   }
 
   if (!isConnected) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
-          <div className="rounded-full bg-primary/10 p-6">
-            <Wallet className="h-12 w-12 text-primary" />
+  return (
+  <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white">
+    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(250,0,62,0.16),transparent_32%),radial-gradient(circle_at_12%_80%,rgba(250,0,62,0.07),transparent_28%)]" />
+    <div className="pointer-events-none absolute inset-x-0 top-0 h-96 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+    <main className="relative mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center px-5 py-14 sm:px-8">
+      <div className="grid w-full items-center gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />MyUSIC / Staking vault</div>
+          <h1 className="max-w-xl text-balance text-5xl font-semibold tracking-[-0.07em] sm:text-7xl">Put your $USI<br /><span className="text-[#fa003e]">to work.</span></h1>
+          <p className="mt-6 max-w-md text-base leading-7 text-white/55">Stake into the MyUSIC economy, support the network, and earn a share of platform fees as the music moves.</p>
+          <div className="mt-8 flex flex-wrap gap-3 text-[10px] uppercase tracking-[0.16em] text-white/45"><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Stake $USI</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Earn fees</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Claim anytime</span></div>
+        </div>
+        <div className="relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
+          <div className="absolute -inset-8 rounded-[32px] bg-[#fa003e]/10 blur-3xl" />
+          <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#0a0a0a]/95 p-5 shadow-2xl shadow-black backdrop-blur-xl sm:p-7">
+            <div className="mb-6 flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Staking vault</p><h2 className="mt-1 text-xl tracking-[-0.04em]">Your position</h2></div><div className="flex size-10 items-center justify-center rounded-full border border-[#fa003e]/30 bg-[#fa003e]/10 text-[#fa003e]"><Lock className="size-4" /></div></div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><div className="mb-5 flex items-center justify-between"><p className="text-[10px] uppercase tracking-[0.15em] text-white/35">Staked balance</p><span className="rounded-full border border-[#fa003e]/25 bg-[#fa003e]/10 px-2.5 py-1 text-[9px] uppercase tracking-wider text-[#fa6688]">Not connected</span></div><p className="text-4xl tracking-[-0.06em] text-white/25">0.00 <span className="text-base text-white/30">$USI</span></p><div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full w-1/3 animate-pulse rounded-full bg-[#fa003e]" /></div><div className="mt-3 flex justify-between text-[10px] text-white/30"><span>Rewards accrued</span><span>— $USI</span></div></div>
+            <div className="mt-3 grid grid-cols-2 gap-3"><div className="rounded-xl border border-white/10 bg-white/[0.02] p-4"><p className="text-[9px] uppercase tracking-wider text-white/30">APY</p><p className="mt-2 text-xl text-white/25">—</p></div><div className="rounded-xl border border-white/10 bg-white/[0.02] p-4"><p className="text-[9px] uppercase tracking-wider text-white/30">Pool share</p><p className="mt-2 text-xl text-white/25">—</p></div></div>
+            <Button onClick={connect} className="mt-5 h-12 w-full gap-2 rounded-xl bg-[#fa003e] text-sm font-semibold text-white shadow-lg shadow-[#fa003e]/20 transition-all hover:-translate-y-0.5 hover:bg-[#d90036] hover:shadow-[#fa003e]/35"><Wallet className="size-4" />Connect wallet to stake</Button>
+            <p className="mt-4 text-center text-[10px] text-white/30">Your position stays onchain and in your control.</p>
           </div>
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold">Connect Your Wallet</h1>
-            <p className="text-muted-foreground max-w-md">
-              Connect your wallet to start staking $USI tokens and earn rewards from platform fees.
-            </p>
-          </div>
-          <Button onClick={connect} size="lg" className="gap-2">
-            <Wallet className="h-5 w-5" />
-            Connect Wallet
-          </Button>
         </div>
       </div>
-    )
+    </main>
+  </div>
+  )
   }
 
   if (!isTokenDeployed) {

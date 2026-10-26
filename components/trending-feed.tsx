@@ -338,9 +338,9 @@ export function TrendingFeed({ tracks }: TrendingFeedProps) {
                   <Button
                     size="lg"
                     onClick={() => handlePlayPause(track)}
-                    className="relative h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-primary to-accent hover:from-primary/90 hover:to-accent/90 hover:scale-110 active:scale-95 transition-all duration-300 shadow-2xl border-0 group overflow-hidden"
+                    className="relative h-20 w-20 rounded-full border-0 bg-[#fa003e] shadow-2xl shadow-[#fa003e]/35 transition-all duration-300 group overflow-hidden hover:scale-110 hover:bg-[#d90036] hover:shadow-[#fa003e]/55 active:scale-95 md:h-24 md:w-24"
                   >
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary to-accent blur-2xl opacity-75 group-hover:opacity-100 group-hover:blur-3xl transition-all duration-500 animate-pulse" />
+                    <div className="absolute inset-0 rounded-full bg-[#fa003e] blur-2xl opacity-45 transition-all duration-500 group-hover:opacity-75 group-hover:blur-3xl animate-pulse" />
                     <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     {isCurrentlyPlaying ? (
                       <Pause className="h-8 w-8 md:h-10 md:w-10 relative z-10 drop-shadow-lg" fill="currentColor" />

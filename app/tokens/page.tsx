@@ -815,39 +815,19 @@ export default function TokensPage() {
   }, [filteredTracks, fetchTokenMetrics])
 
   return (
-    <div className="min-h-screen bg-black pb-32">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-float-delayed" />
-      </div>
+    <div className="min-h-screen overflow-hidden bg-black pb-32 text-white">
+      <div className="pointer-events-none fixed inset-0 overflow-hidden"><div className="absolute -top-32 right-0 size-[34rem] rounded-full bg-[#fa003e]/10 blur-3xl" /><div className="absolute inset-x-0 top-0 h-96 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" /></div>
 
       <main className="container relative z-10 py-8 sm:py-12 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="mb-8 sm:mb-12 animate-fade-in">
-          <div className="flex items-center gap-3 mb-3 sm:mb-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-              <div className="relative bg-gradient-to-br from-primary to-primary/50 p-2 sm:p-3 rounded-xl">
-                <Coins className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-              </div>
-            </div>
-            <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-primary to-accent bg-clip-text text-transparent animate-gradient">
-                Tokenized Music
-              </h1>
-              <p className="text-sm sm:text-base text-muted-foreground mt-1">
-                Stream, trade, and provide liquidity for tokenized songs on Base
-              </p>
-            </div>
-          </div>
-        </div>
+        <div className="relative z-10 mb-8 border-b border-white/10 pb-8 sm:mb-10"><div className="mb-4 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />MyUSIC / Token market</div><h1 className="max-w-3xl text-balance text-5xl font-semibold tracking-[-0.07em] sm:text-7xl">Music you can<br /><span className="text-[#fa003e]">move with.</span></h1><p className="mt-5 max-w-xl text-base leading-7 text-white/55">Collect, trade, and provide liquidity for the songs and artists shaping the next music economy.</p><div className="mt-6 flex flex-wrap gap-3 text-[10px] uppercase tracking-[0.16em] text-white/45"><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Base network</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Live token data</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Artist-owned</span></div></div>
 
         <div
           className="grid grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fade-in-up"
           style={{ animationDelay: "100ms" }}
         >
-          <div className="glass-premium rounded-lg sm:rounded-xl p-3 sm:p-4 hover-lift">
+          <div className="border border-white/10 bg-[#090909] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#111]">
             <div className="flex flex-col gap-2">
-              <div className="bg-primary/10 p-1.5 sm:p-2 rounded-lg w-fit">
+              <div className="border border-[#fa003e]/25 bg-[#fa003e]/10 p-1.5 sm:p-2 rounded-lg w-fit">
                 <Music className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </div>
               <div>
@@ -858,9 +838,9 @@ export default function TokensPage() {
               </div>
             </div>
           </div>
-          <div className="glass-premium rounded-lg sm:rounded-xl p-3 sm:p-4 hover-lift">
+          <div className="border border-white/10 bg-[#090909] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#111]">
             <div className="flex flex-col gap-2">
-              <div className="bg-green-500/10 p-1.5 sm:p-2 rounded-lg w-fit">
+              <div className="border border-[#05df72]/25 bg-[#05df72]/10 p-1.5 sm:p-2 rounded-lg w-fit">
                 <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
               </div>
               <div>
@@ -879,9 +859,9 @@ export default function TokensPage() {
               </div>
             </div>
           </div>
-          <div className="glass-premium rounded-lg sm:rounded-xl p-3 sm:p-4 hover-lift">
+          <div className="border border-white/10 bg-[#090909] p-4 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#111]">
             <div className="flex flex-col gap-2">
-              <div className="bg-blue-500/10 p-1.5 sm:p-2 rounded-lg w-fit">
+              <div className="border border-white/15 bg-white/[0.04] p-1.5 sm:p-2 rounded-lg w-fit">
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
               </div>
               <div>
@@ -902,7 +882,7 @@ export default function TokensPage() {
           </div>
         </div>
 
-        <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+        <div className="relative z-10 mb-6 space-y-3 sm:mb-8 sm:space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-700" style={{ animationDelay: "200ms" }}>
           <div className="flex gap-2">
             <div className="relative flex-1 group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
