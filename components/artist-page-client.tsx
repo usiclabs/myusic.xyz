@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { CopyTokenAddressButton } from "@/components/copy-token-address-button"
 import { ProfileTokenSwapModal } from "@/components/profile-token-swap-modal"
 import { VerifiedBadge } from "@/components/verified-badge"
+import { SiFarcaster, SiX, SiTiktok } from "react-icons/si"
 import type { Address } from "viem"
 
 interface ArtistPageClientProps {
@@ -58,11 +59,13 @@ export function ArtistPageClient({
   return (
     <>
       <div className="min-h-screen overflow-hidden bg-black text-white">
+        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_80%_8%,rgba(250,0,62,0.12),transparent_28%)]" />
         <main className="relative z-10 mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:py-10">
+          <div className="animate-in fade-in duration-500">
           <div className="mb-6 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/40"><Link href="/artists" className="transition-colors hover:text-white">← All artists</Link><span>Artist profile · Base</span></div>
           {/* Artist Header */}
-          <div className="relative mb-8 overflow-hidden rounded-[20px] border border-white/10 bg-[#090909] p-5 sm:p-8 lg:min-h-[430px] lg:p-10">
-            {artist.avatar_url && <div className="absolute inset-y-0 right-0 hidden w-[48%] bg-cover bg-center lg:block" style={{ backgroundImage: `linear-gradient(90deg,#090909 0%,rgba(9,9,9,0.18) 50%,rgba(9,9,9,0.2)),linear-gradient(0deg,rgba(9,9,9,0.35),transparent 45%),url(${artist.avatar_url})` }} aria-hidden="true" />}
+          <div className="group relative mb-8 overflow-hidden rounded-[20px] border border-white/10 bg-[#090909] p-5 transition-all duration-700 hover:border-white/20 sm:p-8 lg:min-h-[430px] lg:p-10">
+            {artist.avatar_url && <div className="absolute inset-y-0 right-0 hidden w-[48%] bg-cover bg-center transition-transform duration-1000 group-hover:scale-105 lg:block" style={{ backgroundImage: `linear-gradient(90deg,#090909 0%,rgba(9,9,9,0.18) 50%,rgba(9,9,9,0.2)),linear-gradient(0deg,rgba(9,9,9,0.35),transparent 45%),url(${artist.avatar_url})` }} aria-hidden="true" />}
             <div className="relative z-10 lg:flex lg:min-h-[350px] lg:w-[58%] lg:flex-col lg:justify-center">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <Avatar className="h-24 w-24 border-2 border-[#fa003e]/50 sm:h-28 sm:w-28 lg:hidden">
@@ -75,7 +78,7 @@ export function ArtistPageClient({
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <p className="mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/45"><span className="size-1.5 rounded-full bg-[#fa003e]" />The artist</p><h1 className="text-5xl font-semibold tracking-[-0.07em] sm:text-6xl lg:text-7xl">{artist.artist_name || "Anonymous Artist"}<span className="text-[#fa003e]">.</span></h1>
+                      <p className="mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/45"><span className="size-1.5 rounded-full bg-[#fa003e]" />The artist</p><h1 className="animate-in slide-in-from-bottom-3 fade-in duration-700 text-5xl font-semibold tracking-[-0.07em] sm:text-6xl lg:text-7xl">{artist.artist_name || "Anonymous Artist"}<span className="text-[#fa003e]">.</span></h1>
                       {artist.verified && <VerifiedBadge size="lg" />}
                       {isCurrentlyLive && (
                         <div className="flex items-center gap-1.5 rounded-full border border-[#fa003e]/35 bg-[#fa003e]/10 px-3 py-1">
@@ -114,12 +117,10 @@ export function ArtistPageClient({
                         href={(artist as any).farcaster_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                        className="group/social flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[#fa003e] transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/45 hover:bg-[#fa003e]/10 hover:shadow-lg hover:shadow-[#fa003e]/10"
                         aria-label="Farcaster"
                       >
-                        <svg className="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M20.04 0H3.96A3.96 3.96 0 0 0 0 3.96v16.08A3.96 3.96 0 0 0 3.96 24h16.08A3.96 3.96 0 0 0 24 20.04V3.96A3.96 3.96 0 0 0 20.04 0zM8.4 18H6V8.4h2.4V18zm9.6 0h-2.4v-4.8c0-1.32-1.08-2.4-2.4-2.4s-2.4 1.08-2.4 2.4V18H8.4V8.4h2.4v1.2c.72-.96 1.92-1.6 3.2-1.6 2.64 0 4.8 2.16 4.8 4.8V18z" />
-                        </svg>
+                        <SiFarcaster className="size-5 transition-transform duration-300 group-hover/social:scale-110" aria-hidden="true" />
                       </a>
                     )}
                     {(artist as any).x_url && (
@@ -127,12 +128,10 @@ export function ArtistPageClient({
                         href={(artist as any).x_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                        className="group/social flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[#fa003e] transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/45 hover:bg-[#fa003e]/10 hover:shadow-lg hover:shadow-[#fa003e]/10"
                         aria-label="X (Twitter)"
                       >
-                        <svg className="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 8 12 11.82 4.18 8 12 4.18zM4 9.48l7 3.5v7.84l-7-3.5V9.48zm16 0v7.84l-7 3.5v-7.84l7-3.5z" />
-                        </svg>
+                        <SiX className="size-5 transition-transform duration-300 group-hover/social:scale-110" aria-hidden="true" />
                       </a>
                     )}
                     {(artist as any).zora_url && (
@@ -140,12 +139,10 @@ export function ArtistPageClient({
                         href={(artist as any).zora_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                        className="group/social flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[#fa003e] transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/45 hover:bg-[#fa003e]/10 hover:shadow-lg hover:shadow-[#fa003e]/10"
                         aria-label="Zora"
                       >
-                        <svg className="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 2L2 7v10l10 5 10-5V7l-10-5zm0 2.18L19.82 8 12 11.82 4.18 8 12 4.18zM4 9.48l7 3.5v7.84l-7-3.5V9.48zm16 0v7.84l-7 3.5v-7.84l7-3.5z" />
-                        </svg>
+                        <span className="font-mono text-sm font-bold transition-transform duration-300 group-hover/social:scale-110" aria-hidden="true">Z</span>
                       </a>
                     )}
                     {(artist as any).tiktok_url && (
@@ -153,12 +150,10 @@ export function ArtistPageClient({
                         href={(artist as any).tiktok_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                        className="group/social flex size-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-[#fa003e] transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/45 hover:bg-[#fa003e]/10 hover:shadow-lg hover:shadow-[#fa003e]/10"
                         aria-label="TikTok"
                       >
-                        <svg className="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                        </svg>
+                        <SiTiktok className="size-5 transition-transform duration-300 group-hover/social:scale-110" aria-hidden="true" />
                       </a>
                     )}
                   </div>
@@ -172,7 +167,7 @@ export function ArtistPageClient({
           <div
             className={`grid grid-cols-1 sm:grid-cols-${(artist as any).profile_token_address ? "2 lg:grid-cols-4" : "3"} gap-4 mb-8`}
           >
-            <div className="border border-white/10 bg-[#090909] p-5 transition-colors hover:border-white/20">
+            <div className="group border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <DollarSign className="h-5 w-5 text-primary" />
@@ -184,7 +179,7 @@ export function ArtistPageClient({
               </div>
             </div>
 
-            <div className="border border-white/10 bg-[#090909] p-5 transition-colors hover:border-white/20">
+            <div className="group border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-accent/10 rounded-lg">
                   <Music className="h-5 w-5 text-accent" />
@@ -196,7 +191,7 @@ export function ArtistPageClient({
               </div>
             </div>
 
-            <div className="border border-white/10 bg-[#090909] p-5 transition-colors hover:border-white/20">
+            <div className="group border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <Play className="h-5 w-5 text-primary" />
@@ -234,7 +229,7 @@ export function ArtistPageClient({
           </div>
 
           <Tabs defaultValue="tracks" className="w-full">
-            <TabsList className="mb-8 flex w-full justify-start gap-1 overflow-x-auto rounded-none border-b border-white/10 bg-transparent p-0">
+            <TabsList className="mb-8 flex w-full justify-start gap-1 overflow-x-auto rounded-none border-b border-white/10 bg-transparent p-0 scroll-smooth [scrollbar-width:none]">
               <TabsTrigger
                 value="tracks"
                 className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:border-b-2 data-[state=active]:border-[#fa003e] data-[state=active]:text-white"
@@ -295,7 +290,7 @@ export function ArtistPageClient({
               {tracks && tracks.length > 0 ? (
                 <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] md:grid md:grid-cols-3 md:overflow-visible">
                   {tracks.map((track) => (
-                    <div key={track.id} className="w-[245px] shrink-0 snap-start md:w-auto"><TrackCard track={track as any} /></div>
+                    <div key={track.id} className="w-[245px] shrink-0 snap-start transition-transform duration-300 hover:-translate-y-1 md:w-auto"><TrackCard track={track as any} /></div>
                   ))}
                 </div>
               ) : (
@@ -401,6 +396,7 @@ export function ArtistPageClient({
               <FollowingList following={following} />
             </TabsContent>
           </Tabs>
+          </div>
         </main>
       </div>
 
