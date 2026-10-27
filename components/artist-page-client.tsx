@@ -69,7 +69,7 @@ export function ArtistPageClient({
     <>
       <div className="min-h-screen overflow-hidden bg-black text-white">
         <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_80%_8%,rgba(250,0,62,0.12),transparent_28%)]" />
-        <main className="relative z-10 mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:py-10">
+        <main className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-8 sm:py-8 lg:py-10">
           <div className="motion-safe:animate-in motion-safe:fade-in duration-500">
           <div className="mb-6 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/40"><Link href="/artists" className="transition-colors hover:text-white">← All artists</Link><span>Artist profile · Base</span></div>
           {/* Artist Header */}
@@ -86,19 +86,12 @@ export function ArtistPageClient({
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <p className="mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/45"><span className="size-1.5 rounded-full bg-[#fa003e]" />The artist</p><h1 className="motion-safe:animate-in motion-safe:slide-in-from-bottom-3 motion-safe:fade-in duration-700 text-5xl font-semibold tracking-[-0.07em] sm:text-6xl lg:text-7xl">{artist.artist_name || "Anonymous Artist"}<span className="text-[#fa003e]">.</span></h1>
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/45"><span className="size-1.5 rounded-full bg-[#fa003e]" />The artist</p>
                       {artist.verified && <VerifiedBadge size="lg" />}
-                      {isCurrentlyLive && (
-                        <div className="flex items-center gap-1.5 rounded-full border border-[#fa003e]/35 bg-[#fa003e]/10 px-3 py-1">
-                          <div className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                          </div>
-                          <span className="text-xs font-semibold text-red-500 uppercase">Live</span>
-                        </div>
-                      )}
+                      {isCurrentlyLive && <div className="flex items-center gap-1.5 rounded-full border border-[#fa003e]/35 bg-[#fa003e]/10 px-2.5 py-1"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" /><span className="text-[10px] font-semibold uppercase tracking-wider text-[#fa6688]">Live</span></div>}
                     </div>
+                    <h1 className="motion-safe:animate-in motion-safe:slide-in-from-bottom-3 motion-safe:fade-in text-5xl font-semibold leading-[0.92] tracking-[-0.07em] duration-700 sm:text-6xl lg:text-7xl">{artist.artist_name || "Anonymous Artist"}<span className="text-[#fa003e]">.</span></h1>
                     <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-[10px] text-white/40"><span>{formatAddress(artist.wallet_address)}</span>{(artist as any).genre && <span className="font-sans rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 uppercase tracking-[0.16em] text-white/55">{(artist as any).genre}</span>}{(artist as any).location && <span className="flex items-center gap-1 font-sans text-white/45"><MapPin className="size-3" />{(artist as any).location}</span>}</div>
                     <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
                       <div className="flex items-center gap-1">
@@ -112,7 +105,7 @@ export function ArtistPageClient({
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2"><FollowButton artistAddress={address} initialFollowerCount={followerCount} size="lg" /><Button type="button" variant="outline" size="icon" onClick={copyProfileLink} aria-label={copied ? "Profile link copied" : "Copy profile link"} className="size-10 rounded-full border-white/15 bg-transparent text-white/70 hover:bg-white/10 hover:text-white">{copied ? <Check className="size-4 text-[#fa003e]" /> : <Share2 className="size-4" />}</Button></div>
+                  <div className="flex w-full items-center gap-2 sm:w-auto"><FollowButton artistAddress={address} initialFollowerCount={followerCount} size="lg" /><Button type="button" variant="outline" size="icon" onClick={copyProfileLink} aria-label={copied ? "Profile link copied" : "Copy profile link"} className="size-10 shrink-0 rounded-full border-white/15 bg-transparent text-white/70 transition-all hover:-translate-y-0.5 hover:bg-white/10 hover:text-white">{copied ? <Check className="size-4 text-[#fa003e]" /> : <Share2 className="size-4" />}</Button></div>
                 </div>
                 {artist.bio && <p className="text-muted-foreground leading-relaxed max-w-2xl mb-4">{artist.bio}</p>}
 
