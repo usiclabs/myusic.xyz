@@ -269,24 +269,24 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen pb-32 bg-black">
-      <main className="container py-12 px-4 sm:px-6">
-        <div className="relative mb-12 overflow-hidden border border-border bg-card p-8 md:p-12 animate-slide-up">
-          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+    <div className="min-h-screen overflow-hidden bg-black pb-32 text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.12),transparent_30%)]" />
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+      <main className="relative mx-auto max-w-7xl px-4 py-5 sm:px-8 sm:py-10">
+        <div className="relative mb-8 overflow-hidden rounded-[20px] border border-white/10 bg-[#090909] p-5 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 duration-700 sm:p-8 md:p-10">
+          <div className="pointer-events-none absolute inset-0 bg-[url('/grid.svg')] opacity-[0.06]" />
+          <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-[#fa003e]/10 blur-3xl" />
           <div className="relative z-10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium text-primary">Artist Dashboard</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-foreground">
-                  {profile?.artist_name || "Welcome Back"}
+                <div className="mb-4 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />MyUSIC / Artist dashboard</div>
+                <h1 className="text-balance text-4xl font-semibold leading-[0.95] tracking-[-0.07em] sm:text-6xl">
+                  {profile?.artist_name || "Welcome Back"}<span className="text-[#fa003e]">.</span>
                 </h1>
-                <p className="text-muted-foreground text-lg">Track your performance and manage your music</p>
+                <p className="mt-4 max-w-xl text-base leading-7 text-white/50">Track your performance, manage releases, and follow every payment from one focused artist workspace.</p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button size="lg" asChild className="bg-primary hover:bg-primary/90">
+              <div className="mt-6 flex w-full flex-col gap-3 sm:mt-0 sm:w-auto sm:flex-row">
+                <Button size="lg" asChild className="bg-[#fa003e] text-white shadow-lg shadow-[#fa003e]/20 transition-all hover:-translate-y-0.5 hover:bg-[#d90036] hover:shadow-[#fa003e]/35">
                   <Link href="/dashboard/upload">
                     <Upload className="h-5 w-5 mr-2" />
                     Upload Track
@@ -305,7 +305,7 @@ export default function DashboardPage() {
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           <Card
-            className="relative overflow-hidden bg-card border border-border p-6 hover-lift animate-slide-up group"
+            className="relative overflow-hidden border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 group"
             style={{ animationDelay: "0.1s" }}
           >
             
@@ -333,7 +333,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card
-            className="relative overflow-hidden bg-card border border-border p-6 hover-lift animate-slide-up group"
+            className="relative overflow-hidden border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 group"
             style={{ animationDelay: "0.2s" }}
           >
             
@@ -356,7 +356,7 @@ export default function DashboardPage() {
           </Card>
 
           <Card
-            className="relative overflow-hidden bg-card border border-border p-6 hover-lift animate-slide-up group"
+            className="relative overflow-hidden border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 group"
             style={{ animationDelay: "0.3s" }}
           >
             
@@ -380,7 +380,7 @@ export default function DashboardPage() {
 
           {profile?.profile_token_address ? (
             <Card
-              className="bg-gradient-to-br from-chart-4/20 to-chart-4/10 backdrop-blur-xl border border-chart-4/30 shadow-lg p-6 hover-lift transition-all h-full animate-slide-up group"
+              className="border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d] h-full motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 group"
               style={{ animationDelay: "0.5s" }}
             >
               <div className="flex items-start justify-between mb-3">
@@ -409,7 +409,7 @@ export default function DashboardPage() {
               className="animate-slide-up group text-left"
               style={{ animationDelay: "0.5s" }}
             >
-              <Card className="bg-gradient-to-br from-chart-4/20 to-chart-4/10 backdrop-blur-xl border border-chart-4/30 shadow-lg p-6 hover-lift transition-all h-full">
+              <Card className="border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d] h-full motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 group">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-4/30 border border-chart-4/40 group-hover:scale-110 transition-transform">
                     <Coins className="h-5 w-5 text-chart-4" />
@@ -425,7 +425,7 @@ export default function DashboardPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Link href="/dashboard/analytics" className="animate-slide-up group" style={{ animationDelay: "0.1s" }}>
-            <Card className="bg-card/50 backdrop-blur-xl border border-border/50 shadow-lg p-6 hover-lift transition-all h-full">
+            <Card className="border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-[#0d0d0d] h-full">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/20 border border-primary/30 group-hover:scale-110 transition-transform">
                   <BarChart3 className="h-5 w-5 text-primary" />
@@ -438,7 +438,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/earnings" className="animate-slide-up group" style={{ animationDelay: "0.2s" }}>
-            <Card className="bg-card/50 backdrop-blur-xl border border-border/50 shadow-lg p-6 hover-lift transition-all h-full">
+            <Card className="border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-[#0d0d0d] h-full">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-3/20 border border-chart-3/30 group-hover:scale-110 transition-transform">
                   <DollarSign className="h-5 w-5 text-chart-3" />
@@ -451,7 +451,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/profile" className="animate-slide-up group" style={{ animationDelay: "0.3s" }}>
-            <Card className="bg-card/50 backdrop-blur-xl border border-border/50 shadow-lg p-6 hover-lift transition-all h-full">
+            <Card className="border border-white/10 bg-[#090909] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-white/25 hover:bg-[#0d0d0d] h-full">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 border border-accent/30 group-hover:scale-110 transition-transform">
                   <Users className="h-5 w-5 text-accent" />
@@ -464,7 +464,7 @@ export default function DashboardPage() {
           </Link>
 
           <Link href="/dashboard/upload" className="animate-slide-up group" style={{ animationDelay: "0.4s" }}>
-            <Card className="bg-gradient-to-br from-primary/20 to-accent/10 backdrop-blur-xl border border-primary/30 shadow-lg p-6 hover-lift transition-all h-full">
+            <Card className="border border-[#fa003e]/30 bg-[#fa003e]/[0.06] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/55 hover:bg-[#fa003e]/10 h-full">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/30 border border-primary/40 group-hover:scale-110 transition-transform">
                   <Upload className="h-5 w-5 text-primary" />
@@ -488,7 +488,7 @@ export default function DashboardPage() {
                 <Link href="/dashboard/analytics">View All</Link>
               </Button>
             </div>
-            <Card className="bg-card/50 backdrop-blur-xl border border-border/50 shadow-lg p-6 animate-slide-up">
+            <Card className="border border-white/10 bg-[#090909] p-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 sm:p-6">
               <div className="space-y-4">
                 {recentActivity.slice(0, 5).map((activity, i) => (
                   <div
