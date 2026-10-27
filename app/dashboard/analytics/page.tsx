@@ -27,7 +27,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 type DateRange = "7d" | "30d" | "90d" | "all"
 
 export default function AnalyticsPage() {
-  const { address, isConnected } = useWallet()
+  const { address, isConnected, connect } = useWallet()
   const [loading, setLoading] = useState(true)
   const [dateRange, setDateRange] = useState<DateRange>("30d")
   const [stats, setStats] = useState({
@@ -194,13 +194,19 @@ export default function AnalyticsPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen pb-32 bg-gradient-to-b from-black via-black to-primary/5">
-        <main className="container py-12 px-4 sm:px-6">
-          <WalletConnectPrompt
-            title="Connect Your Wallet"
-            description="Please connect your wallet to view detailed analytics and performance metrics"
-            icon={<TrendingUp className="h-10 w-10 md:h-12 md:w-12 text-primary" />}
-          />
+      <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white">
+        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.14),transparent_30%)]" />
+        <div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <main className="relative mx-auto flex min-h-[calc(100vh-8rem)] max-w-6xl items-center px-4 py-8 sm:px-8 sm:py-14">
+          <div className="grid w-full items-center gap-10 lg:grid-cols-[1fr_0.9fr] lg:gap-16">
+            <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 duration-700">
+              <div className="mb-5 flex items-center gap-3 text-[10px] uppercase tracking-[0.24em] text-white/45"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" />MyUSIC / Artist intelligence</div>
+              <h1 className="text-balance text-5xl font-semibold leading-[0.94] tracking-[-0.07em] sm:text-7xl">Know what your<br /><span className="text-[#fa003e]">sound is doing.</span></h1>
+              <p className="mt-5 max-w-md text-base leading-7 text-white/50">Turn streams into signals. Follow plays, listeners, earnings, and the moments that move your music forward.</p>
+              <div className="mt-7 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.16em] text-white/45"><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Live plays</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Audience insight</span><span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-2">Earnings</span></div>
+            </div>
+            <div className="relative motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-5 duration-700 delay-150"><div className="absolute -inset-8 rounded-[32px] bg-[#fa003e]/10 blur-3xl" /><div className="relative rounded-[22px] border border-white/10 bg-[#090909] p-4 shadow-2xl shadow-black sm:p-6"><div className="mb-5 flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.2em] text-white/40">Performance overview</p><h2 className="mt-1 text-xl tracking-[-0.04em]">Your signals</h2></div><div className="flex size-10 items-center justify-center rounded-full border border-[#fa003e]/30 bg-[#fa003e]/10 text-[#fa003e]"><TrendingUp className="size-4" /></div></div><div className="grid grid-cols-2 gap-2"><div className="rounded-xl border border-white/10 bg-white/[0.03] p-3"><p className="text-[9px] uppercase tracking-wider text-white/30">Total plays</p><p className="mt-2 text-2xl text-white/25">—</p><div className="mt-2 h-1 rounded-full bg-white/10"><div className="h-1 w-2/3 animate-pulse rounded-full bg-[#fa003e]/70" /></div></div><div className="rounded-xl border border-white/10 bg-white/[0.03] p-3"><p className="text-[9px] uppercase tracking-wider text-white/30">Listeners</p><p className="mt-2 text-2xl text-white/25">—</p><div className="mt-3 flex items-end gap-1"><span className="h-3 w-1 rounded-full bg-white/20" /><span className="h-5 w-1 rounded-full bg-[#fa003e]/60" /><span className="h-8 w-1 rounded-full bg-[#fa003e]" /><span className="h-6 w-1 rounded-full bg-white/20" /></div></div></div><div className="mt-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-3"><div className="flex items-center gap-3"><Activity className="size-4 text-[#fa003e]" /><p className="text-xs text-white/45">Connect to unlock your performance data.</p></div></div><Button onClick={connect} className="mt-4 h-12 w-full rounded-xl bg-[#fa003e] text-sm font-semibold text-white shadow-lg shadow-[#fa003e]/20 transition-all hover:-translate-y-0.5 hover:bg-[#d90036]">Connect wallet to view analytics</Button></div></div>
+          </div>
         </main>
       </div>
     )
