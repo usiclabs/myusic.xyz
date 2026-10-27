@@ -295,10 +295,12 @@ export default function DiscoverPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black pb-24 md:pb-32">
+    <div className="relative min-h-screen overflow-hidden bg-black pb-24 text-white md:pb-32">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.12),transparent_30%)]" />
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
       {!loading && !error && featuredTracks.length > 0 && <WallpaperCarousel tracks={featuredTracks} />}
 
-      <div className="flex gap-6 container px-4 md:px-6">
+      <div className="relative flex gap-6 px-4 md:container md:px-6">
         <main className="flex-1 py-6 md:py-8 space-y-8 md:space-y-12 min-w-0">
           {!loading && !error && <section className="animate-fade-in">{/* <StoriesCarousel /> */}</section>}
 
@@ -307,26 +309,24 @@ export default function DiscoverPage() {
           {!loading && !error && newReleases.length === 0 && <EmptyState />}
 
           {!loading && !error && newReleases.length > 0 && (
-            <section ref={categoriesRef} data-section="categories" className="space-y-4 md:space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl md:text-3xl font-bold">Browse All</h2>
-              </div>
+            <section ref={categoriesRef} data-section="categories" className="space-y-4 md:space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 duration-700">
+              <div className="flex items-end justify-between"><div><p className="mb-2 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">Find your next listen</p><h2 className="text-3xl font-semibold tracking-[-0.06em] md:text-4xl">Browse the signal</h2></div><span className="hidden text-[10px] uppercase tracking-[0.18em] text-white/30 sm:block">Curated pathways</span></div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 {categories.map((category, index) => (
                   <Link key={category.id} href={category.href}>
                     <Card
-                      className={`relative overflow-hidden bg-gradient-to-br ${category.gradient} border-0 cursor-pointer group transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-primary/30 active:scale-95`}
+                      className="group relative cursor-pointer overflow-hidden border border-white/10 bg-[#090909] transition-all duration-300 hover:-translate-y-1 hover:border-[#fa003e]/45 hover:bg-[#0d0d0d] hover:shadow-xl hover:shadow-[#fa003e]/10 active:scale-[0.98]"
                       style={{
                         animation: `fade-in 0.5s ease-out ${index * 0.1}s both`,
                       }}
                     >
                       <div className="p-4 md:p-6 h-32 md:h-40 flex flex-col justify-between">
                         <div className="space-y-1 md:space-y-2">
-                          <div className="text-white transform group-hover:scale-110 transition-transform">
+                          <div className="flex size-10 items-center justify-center rounded-xl border border-[#fa003e]/25 bg-[#fa003e]/10 text-[#fa003e] transition-transform duration-300 group-hover:scale-110">
                             {category.icon}
                           </div>
-                          <h3 className="text-base md:text-xl font-bold text-white">{category.name}</h3>
-                          <p className="text-xs md:text-sm text-white/80 line-clamp-2">{category.description}</p>
+                          <h3 className="text-base font-semibold tracking-[-0.02em] text-white md:text-xl">{category.name}</h3>
+                          <p className="text-xs leading-5 text-white/45 md:text-sm">{category.description}</p>
                         </div>
                       </div>
                       <div className="absolute -bottom-4 -right-4 opacity-20 group-hover:opacity-30 transition-opacity">
@@ -348,11 +348,11 @@ export default function DiscoverPage() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold">New Releases</h2>
-                  <p className="text-sm md:text-base text-foreground/70 mt-1">Fresh tracks just dropped</p>
+                  <h2 className="text-3xl font-semibold tracking-[-0.06em] md:text-4xl">New Releases</h2>
+                  <p className="mt-1 text-sm leading-6 text-white/45 md:text-base">Fresh tracks just dropped</p>
                 </div>
                 <Link href="/explore?sort=newest">
-                  <Button variant="ghost" className="gap-2 hover:text-primary text-sm md:text-base">
+                  <Button variant="ghost" className="gap-2 text-sm text-white/55 transition-colors hover:text-[#fa003e] md:text-base">
                     See all
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -399,11 +399,11 @@ export default function DiscoverPage() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold">Trending Now</h2>
+                  <h2 className="text-3xl font-semibold tracking-[-0.06em] md:text-4xl">Trending Now</h2>
                   <p className="text-sm md:text-base text-foreground/70 mt-1">What everyone's listening to</p>
                 </div>
                 <Link href="/trending">
-                  <Button variant="ghost" className="gap-2 hover:text-primary text-sm md:text-base">
+                  <Button variant="ghost" className="gap-2 text-sm text-white/55 transition-colors hover:text-[#fa003e] md:text-base">
                     See all
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -450,7 +450,7 @@ export default function DiscoverPage() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold">Made For You</h2>
+                  <h2 className="text-3xl font-semibold tracking-[-0.06em] md:text-4xl">Made For You</h2>
                   <p className="text-sm md:text-base text-foreground/70 mt-1">Personalized picks just for you</p>
                 </div>
               </div>
@@ -489,7 +489,7 @@ export default function DiscoverPage() {
             <div className="space-y-12">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="h-40 bg-card/50 rounded-xl animate-pulse" />
+                  <div key={i} className="h-40 rounded-2xl border border-white/10 bg-white/[0.04] animate-pulse" />
                 ))}
               </div>
               {[1, 2, 3].map((section) => (

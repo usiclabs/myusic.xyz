@@ -23,7 +23,7 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
-  const autoplayRef = useRef<NodeJS.Timeout>()
+  const autoplayRef = useRef<NodeJS.Timeout | null>(null)
   const { playTrack } = useAudioPlayer()
 
   const goToSlide = useCallback((index: number) => {
@@ -157,8 +157,8 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
         </div>
       </div>
 
-      <div className="relative h-full flex items-end pb-16 md:pb-24">
-        <div className="container px-6 md:px-8 max-w-4xl">
+      <div className="relative flex h-full items-end pb-12 sm:pb-16 md:pb-24">
+        <div className="container max-w-4xl px-5 sm:px-6 md:px-8">
           <div
             className="space-y-4 md:space-y-6"
             style={{
@@ -168,19 +168,19 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
           >
             {/* Badge */}
             <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 backdrop-blur-xl border border-primary/40 shadow-lg shadow-primary/20"
+              className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-black/35 px-4 py-2 backdrop-blur-xl transition-colors hover:border-[#fa003e]/60 hover:bg-[#fa003e]/15"
               style={{
                 transform: `translateY(${-scrollProgress * 15}px)`,
                 opacity: 1 - scrollProgress * 0.4,
               }}
             >
-              <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-              <span className="text-sm font-bold text-primary tracking-wide">FEATURED</span>
+              <Sparkles className="size-4 animate-pulse text-[#fa003e]" />
+              <span className="text-xs font-semibold tracking-[0.2em] text-white">FEATURED</span>
             </div>
 
             {/* Title */}
             <h1
-              className="text-5xl md:text-7xl lg:text-8xl font-black text-white text-balance leading-[0.95] tracking-tight"
+              className="max-w-3xl text-balance text-5xl font-semibold leading-[0.9] tracking-[-0.07em] text-white sm:text-6xl md:text-7xl lg:text-8xl"
               style={{
                 transform: `translateY(${-scrollProgress * 20}px)`,
                 opacity: 1 - scrollProgress * 0.5,
@@ -193,7 +193,7 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
             {/* Artist */}
             <Link href={`/artist/${currentTrack.artist_id}`}>
               <p
-                className="text-xl md:text-3xl text-white/90 hover:text-primary transition-colors font-semibold"
+                className="text-xl font-medium tracking-[-0.03em] text-white/65 transition-colors hover:text-[#fa003e] md:text-3xl"
                 style={{
                   transform: `translateY(${-scrollProgress * 18}px)`,
                   opacity: 1 - scrollProgress * 0.4,
@@ -228,7 +228,7 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
 
             {/* Actions */}
             <div
-              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
+              className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4"
               style={{
                 transform: `translateY(${-scrollProgress * 12}px)`,
                 opacity: 1 - scrollProgress * 0.3,
@@ -236,7 +236,7 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
             >
               <Button
                 size="lg"
-                className="rounded-full px-8 h-14 text-lg font-bold shadow-2xl shadow-primary/50 hover:shadow-primary/70 hover:scale-105 active:scale-95 transition-all bg-primary hover:bg-primary/90"
+                className="h-14 w-full rounded-full bg-[#fa003e] px-8 text-lg font-semibold text-white shadow-2xl shadow-[#fa003e]/30 transition-all hover:-translate-y-0.5 hover:bg-[#d90036] hover:shadow-[#fa003e]/50 active:scale-[0.98] sm:w-auto"
                 onClick={() => playTrack(currentTrack, tracks)}
               >
                 <Play className="h-5 w-5 mr-2 fill-current" />
@@ -246,7 +246,7 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full rounded-full px-8 h-14 text-lg font-bold bg-white/10 backdrop-blur-xl border-2 border-white/30 hover:bg-white/20 hover:border-white/50 hover:scale-105 active:scale-95 transition-all"
+                  className="h-14 w-full rounded-full border border-white/20 bg-black/35 px-8 text-lg font-medium text-white/80 backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-white/45 hover:bg-white/10 hover:text-white active:scale-[0.98] sm:w-auto"
                 >
                   View Details
                 </Button>
@@ -267,11 +267,11 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
               aria-label={`Go to slide ${index + 1}`}
             >
               {/* Background track */}
-              <div className="h-1.5 w-8 bg-white/30 rounded-full overflow-hidden backdrop-blur-sm">
+              <div className="h-1 w-8 overflow-hidden rounded-full bg-white/25 backdrop-blur-sm sm:w-10">
                 {/* Progress fill */}
                 {isActive && (
                   <div
-                    className="h-full bg-primary rounded-full transition-all duration-100"
+                    className="h-full rounded-full bg-[#fa003e] transition-all duration-100"
                     style={{
                       width: `${scrollProgress * 100}%`,
                     }}
@@ -293,7 +293,7 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-black/60 hover:scale-110 active:scale-95 transition-all opacity-0 hover:opacity-100 focus:opacity-100"
+            className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full border border-white/20 bg-black/45 backdrop-blur-xl flex items-center justify-center text-white transition-all hover:scale-105 hover:border-[#fa003e]/60 hover:bg-[#fa003e]/20 active:scale-95 opacity-0 hover:opacity-100 focus:opacity-100"
             aria-label="Previous slide"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -302,7 +302,7 @@ export function WallpaperCarousel({ tracks }: WallpaperCarouselProps) {
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full bg-black/40 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white hover:bg-black/60 hover:scale-110 active:scale-95 transition-all opacity-0 hover:opacity-100 focus:opacity-100"
+            className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full border border-white/20 bg-black/45 backdrop-blur-xl flex items-center justify-center text-white transition-all hover:scale-105 hover:border-[#fa003e]/60 hover:bg-[#fa003e]/20 active:scale-95 opacity-0 hover:opacity-100 focus:opacity-100"
             aria-label="Next slide"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
