@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { TrackCard } from "@/components/track-card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import type { TrackWithArtist } from "@/types/database"
 import { DollarSign, Music, Play, Users, Radio, Sparkles, TrendingUp } from "lucide-react"
 import { FollowButton } from "@/components/follow-button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -58,34 +57,15 @@ export function ArtistPageClient({
 
   return (
     <>
-      <div className="min-h-screen relative">
-        {/* Blurred Background Layer */}
-        <div className="fixed inset-0 z-0">
-          {/* Avatar Background Image */}
-          {artist.avatar_url && (
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${artist.avatar_url})`,
-                filter: "blur(80px) brightness(0.4)",
-                transform: "scale(1.2)",
-              }}
-            />
-          )}
-          {/* Fallback gradient if no avatar */}
-          {!artist.avatar_url && (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/20" />
-          )}
-          {/* Dark overlay for readability */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-        </div>
-
-        {/* Content Layer */}
-        <main className="relative z-10 container py-12 px-4 sm:px-6">
+      <div className="min-h-screen overflow-hidden bg-black text-white">
+        <main className="relative z-10 mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:py-10">
+          <div className="mb-6 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/40"><Link href="/artists" className="transition-colors hover:text-white">← All artists</Link><span>Artist profile · Base</span></div>
           {/* Artist Header */}
-          <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-6 sm:p-8 mb-8">
+          <div className="relative mb-8 overflow-hidden rounded-[20px] border border-white/10 bg-[#090909] p-5 sm:p-8 lg:min-h-[430px] lg:p-10">
+            {artist.avatar_url && <div className="absolute inset-y-0 right-0 hidden w-[48%] bg-cover bg-center lg:block" style={{ backgroundImage: `linear-gradient(90deg,#090909 0%,rgba(9,9,9,0.18) 50%,rgba(9,9,9,0.2)),linear-gradient(0deg,rgba(9,9,9,0.35),transparent 45%),url(${artist.avatar_url})` }} aria-hidden="true" />}
+            <div className="relative z-10 lg:flex lg:min-h-[350px] lg:w-[58%] lg:flex-col lg:justify-center">
             <div className="flex flex-col md:flex-row items-start gap-6">
-              <Avatar className="h-32 w-32 border-4 border-primary/30">
+              <Avatar className="h-24 w-24 border-2 border-[#fa003e]/50 sm:h-28 sm:w-28 lg:hidden">
                 <AvatarImage src={artist.avatar_url || undefined} />
                 <AvatarFallback className="bg-primary/20 text-primary text-3xl">
                   {artist.artist_name?.[0]?.toUpperCase() || "A"}
@@ -95,10 +75,10 @@ export function ArtistPageClient({
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
-                      <h1 className="text-3xl md:text-4xl font-bold">{artist.artist_name || "Anonymous Artist"}</h1>
+                      <p className="mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/45"><span className="size-1.5 rounded-full bg-[#fa003e]" />The artist</p><h1 className="text-5xl font-semibold tracking-[-0.07em] sm:text-6xl lg:text-7xl">{artist.artist_name || "Anonymous Artist"}<span className="text-[#fa003e]">.</span></h1>
                       {artist.verified && <VerifiedBadge size="lg" />}
                       {isCurrentlyLive && (
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-red-500/20 border border-red-500/50 rounded-full">
+                        <div className="flex items-center gap-1.5 rounded-full border border-[#fa003e]/35 bg-[#fa003e]/10 px-3 py-1">
                           <div className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
@@ -107,7 +87,7 @@ export function ArtistPageClient({
                         </div>
                       )}
                     </div>
-                    <p className="text-muted-foreground mb-2">{formatAddress(artist.wallet_address)}</p>
+                    <p className="mt-3 font-mono text-[10px] text-white/40">{formatAddress(artist.wallet_address)}</p>
                     <div className="flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4 text-muted-foreground" />
@@ -186,12 +166,13 @@ export function ArtistPageClient({
               </div>
             </div>
           </div>
+          </div>
 
           {/* Stats Grid */}
           <div
             className={`grid grid-cols-1 sm:grid-cols-${(artist as any).profile_token_address ? "2 lg:grid-cols-4" : "3"} gap-4 mb-8`}
           >
-            <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-6">
+            <div className="border border-white/10 bg-[#090909] p-5 transition-colors hover:border-white/20">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <DollarSign className="h-5 w-5 text-primary" />
@@ -203,7 +184,7 @@ export function ArtistPageClient({
               </div>
             </div>
 
-            <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-6">
+            <div className="border border-white/10 bg-[#090909] p-5 transition-colors hover:border-white/20">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-accent/10 rounded-lg">
                   <Music className="h-5 w-5 text-accent" />
@@ -215,7 +196,7 @@ export function ArtistPageClient({
               </div>
             </div>
 
-            <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-6">
+            <div className="border border-white/10 bg-[#090909] p-5 transition-colors hover:border-white/20">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <Play className="h-5 w-5 text-primary" />
@@ -253,10 +234,10 @@ export function ArtistPageClient({
           </div>
 
           <Tabs defaultValue="tracks" className="w-full">
-            <TabsList className="grid w-full grid-cols-6 mb-8 bg-card/50 backdrop-blur-xl border border-border/50 p-1">
+            <TabsList className="mb-8 flex w-full justify-start gap-1 overflow-x-auto rounded-none border-b border-white/10 bg-transparent p-0">
               <TabsTrigger
                 value="tracks"
-                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:border-b-2 data-[state=active]:border-[#fa003e] data-[state=active]:text-white"
                 title="Tracks"
               >
                 <Music className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
@@ -264,7 +245,7 @@ export function ArtistPageClient({
               </TabsTrigger>
               <TabsTrigger
                 value="ai-creations"
-                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:border-b-2 data-[state=active]:border-[#fa003e] data-[state=active]:text-white"
                 title="AI Creations"
               >
                 <Sparkles className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
@@ -272,7 +253,7 @@ export function ArtistPageClient({
               </TabsTrigger>
               <TabsTrigger
                 value="live"
-                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:bg-primary/20 data-[state=active]:text-primary relative"
+                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:border-b-2 data-[state=active]:border-[#fa003e] data-[state=active]:text-white relative"
                 title="Live Streams"
               >
                 <Radio className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
@@ -286,7 +267,7 @@ export function ArtistPageClient({
               </TabsTrigger>
               <TabsTrigger
                 value="history"
-                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:border-b-2 data-[state=active]:border-[#fa003e] data-[state=active]:text-white"
                 title="Listening History"
               >
                 <Play className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
@@ -294,7 +275,7 @@ export function ArtistPageClient({
               </TabsTrigger>
               <TabsTrigger
                 value="followers"
-                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:border-b-2 data-[state=active]:border-[#fa003e] data-[state=active]:text-white"
                 title="Followers"
               >
                 <Users className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
@@ -302,7 +283,7 @@ export function ArtistPageClient({
               </TabsTrigger>
               <TabsTrigger
                 value="following"
-                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:bg-primary/20 data-[state=active]:text-primary"
+                className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 sm:py-2 min-h-[44px] data-[state=active]:border-b-2 data-[state=active]:border-[#fa003e] data-[state=active]:text-white"
                 title="Following"
               >
                 <Users className="h-5 w-5 sm:h-4 sm:w-4 shrink-0" />
@@ -312,9 +293,9 @@ export function ArtistPageClient({
 
             <TabsContent value="tracks">
               {tracks && tracks.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] md:grid md:grid-cols-3 md:overflow-visible">
                   {tracks.map((track) => (
-                    <TrackCard key={track.id} track={track as TrackWithArtist} />
+                    <div key={track.id} className="w-[245px] shrink-0 snap-start md:w-auto"><TrackCard track={track as any} /></div>
                   ))}
                 </div>
               ) : (
@@ -337,9 +318,9 @@ export function ArtistPageClient({
                       {aiTracks.length} AI-generated {aiTracks.length === 1 ? "track" : "tracks"}
                     </p>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                  <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 [scrollbar-width:none] md:grid md:grid-cols-3 md:overflow-visible">
                     {aiTracks.map((track) => (
-                      <TrackCard key={track.id} track={track as TrackWithArtist} />
+                      <TrackCard key={track.id} track={track as any} />
                     ))}
                   </div>
                 </div>
