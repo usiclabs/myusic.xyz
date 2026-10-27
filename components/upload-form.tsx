@@ -726,15 +726,15 @@ export function UploadForm({ prefillData }: UploadFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <Card className="bg-card/50 backdrop-blur-xl border border-border/50 p-6">
+    <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+      <Card className="border border-white/10 bg-[#090909] p-4 shadow-none transition-colors duration-300 hover:border-white/20 sm:p-6">
         <h2 className="text-xl font-semibold mb-6">Content Type</h2>
         <div className="flex gap-4">
           <button
             type="button"
             onClick={() => setContentType("audio")}
             className={`flex-1 p-6 rounded-lg border-2 transition-all ${
-              contentType === "audio" ? "border-accent bg-accent/10" : "border-border/50 bg-card/30 hover:border-border"
+              contentType === "audio" ? "border-[#fa003e] bg-[#fa003e]/10 text-white shadow-lg shadow-[#fa003e]/10" : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/25 hover:bg-white/[0.04]"
             }`}
           >
             <Music className="h-8 w-8 mx-auto mb-2" />
@@ -745,7 +745,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
             type="button"
             onClick={() => setContentType("video")}
             className={`flex-1 p-6 rounded-lg border-2 transition-all ${
-              contentType === "video" ? "border-accent bg-accent/10" : "border-border/50 bg-card/30 hover:border-border"
+              contentType === "video" ? "border-[#fa003e] bg-[#fa003e]/10 text-white shadow-lg shadow-[#fa003e]/10" : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/25 hover:bg-white/[0.04]"
             }`}
           >
             <Video className="h-8 w-8 mx-auto mb-2" />
@@ -755,7 +755,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
         </div>
       </Card>
 
-      <Card className="bg-card/50 backdrop-blur-xl border border-border/50 p-6">
+      <Card className="border border-white/10 bg-[#090909] p-4 shadow-none transition-colors duration-300 hover:border-white/20 sm:p-6">
         <h2 className="text-xl font-semibold mb-6">{contentType === "audio" ? "Track" : "Video"} Details</h2>
 
         <div className="space-y-4">
@@ -767,7 +767,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder={`Enter ${contentType} title`}
               required
-              className="bg-card/50 backdrop-blur-xl border border-border/50"
+              className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
             />
           </div>
 
@@ -780,7 +780,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                 accept="video/mp4,video/quicktime,video/x-msvideo,video/x-matroska,video/webm,.mp4,.mov,.avi,.mkv,.webm"
                 onChange={(e) => handleVideoFileChange(e.target.files?.[0] || null)}
                 required={!(prefilledVideoUrl && !videoFile)}
-                className="bg-card/50 backdrop-blur-xl border border-border/50"
+                className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
               />
               {videoFile && <p className="text-sm text-muted-foreground mt-2">{videoFile.name}</p>}
               {prefilledVideoUrl && !videoFile && (
@@ -833,7 +833,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                     accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/aac,audio/flac,audio/m4a,audio/x-m4a,.mp3,.wav,.ogg,.aac,.flac,.m4a"
                     onChange={(e) => setAudioFile(e.target.files?.[0] || null)}
                     required={!prefilledAudioUrl}
-                    className="bg-card/50 backdrop-blur-xl border border-border/50"
+                    className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
                   />
                   {audioFile && <p className="text-sm text-muted-foreground mt-2">{audioFile.name}</p>}
                   <p className="text-xs text-muted-foreground mt-2">Supported formats: MP3, WAV, OGG, AAC, FLAC, M4A</p>
@@ -874,7 +874,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                   type="file"
                   accept="image/*"
                   onChange={(e) => handleCoverFileChange(e.target.files?.[0] || null)}
-                  className="bg-card/50 backdrop-blur-xl border border-border/50"
+                  className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
                 />
                 {coverFile && (
                   <div className="mt-2 space-y-1">
@@ -889,7 +889,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
             )}
             {contentType === "video" && (
               <p className="text-xs text-muted-foreground mt-2">
-                💡 Tip: Upload an animated GIF for an eye-catching looping preview! Maximum size: 15MB. You can create
+                Tip: Upload an animated GIF for an eye-catching looping preview! Maximum size: 15MB. You can create
                 and compress GIFs using{" "}
                 <a
                   href="https://ezgif.com/video-to-gif"
@@ -921,8 +921,8 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                 onClick={() => setUnlockType("per_chunk")}
                 className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                   unlockType === "per_chunk"
-                    ? "border-accent bg-accent/10"
-                    : "border-border/50 bg-card/30 hover:border-border"
+                    ? "border-[#fa003e] bg-[#fa003e]/10 text-white shadow-lg shadow-[#fa003e]/10"
+                    : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/25 hover:bg-white/[0.04]"
                 }`}
               >
                 <div className="font-semibold mb-1">Per Segment</div>
@@ -933,8 +933,8 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                 onClick={() => setUnlockType("full_song")}
                 className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                   unlockType === "full_song"
-                    ? "border-accent bg-accent/10"
-                    : "border-border/50 bg-card/30 hover:border-border"
+                    ? "border-[#fa003e] bg-[#fa003e]/10 text-white shadow-lg shadow-[#fa003e]/10"
+                    : "border-white/10 bg-white/[0.02] text-white/60 hover:border-white/25 hover:bg-white/[0.04]"
                 }`}
               >
                 <div className="font-semibold mb-1">Full {contentType === "audio" ? "Song" : "Video"}</div>
@@ -958,7 +958,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
               onChange={(e) => setPricePerChunk(e.target.value)}
               placeholder={unlockType === "per_chunk" ? "0.005" : contentType === "video" ? "0.50" : "0.15"}
               required
-              className="bg-card/50 backdrop-blur-xl border border-border/50 font-mono text-sm"
+              className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 font-mono text-sm focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
             />
             <p className="text-sm text-muted-foreground mt-2">
               {unlockType === "per_chunk"
@@ -971,7 +971,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
         </div>
       </Card>
 
-      <Card className="bg-card/50 backdrop-blur-xl border border-border/50 p-6">
+      <Card className="border border-white/10 bg-[#090909] p-4 shadow-none transition-colors duration-300 hover:border-white/20 sm:p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Coins className="h-6 w-6 text-accent" />
@@ -992,7 +992,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
         </div>
 
         {!hasRequiredUSI && (
-          <div className="bg-muted/30 border border-border/50 rounded-lg p-4 mb-4">
+          <div className="mb-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <div className="flex items-start gap-3">
               <Lock className="h-5 w-5 text-muted-foreground mt-0.5" />
               <div className="flex-1">
@@ -1080,7 +1080,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                 onChange={(e) => setCoinName(e.target.value)}
                 placeholder={`e.g., ${title || "My Awesome Track"}`}
                 required={tokenizeTrack}
-                className="bg-card/50 backdrop-blur-xl border border-border/50"
+                className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
               />
               <p className="text-xs text-muted-foreground mt-1">The full name of your token</p>
             </div>
@@ -1094,7 +1094,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                 placeholder="e.g., TRACK"
                 maxLength={5}
                 required={tokenizeTrack}
-                className="bg-card/50 backdrop-blur-xl border border-border/50 font-mono uppercase"
+                className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 font-mono uppercase focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
               />
               <p className="text-xs text-muted-foreground mt-1">2-5 characters (auto-generated from title)</p>
             </div>
@@ -1114,7 +1114,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-accent/5 to-primary/5 border border-accent/20 rounded-lg p-4 space-y-4">
+            <div className="space-y-4 rounded-2xl border border-[#fa003e]/20 bg-[#fa003e]/[0.04] p-4 transition-colors hover:border-[#fa003e]/35">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Lock className="h-5 w-5 text-accent" />
@@ -1170,7 +1170,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
         )}
       </Card>
 
-      <Card className="bg-card/50 backdrop-blur-xl border border-border/50 p-6">
+      <Card className="border border-white/10 bg-[#090909] p-4 shadow-none transition-colors duration-300 hover:border-white/20 sm:p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Royalty Splits</h2>
           <Button type="button" variant="outline" size="sm" onClick={addRoyaltySplit} className="bg-transparent">
@@ -1192,7 +1192,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                   onChange={(e) => updateRoyaltySplit(index, "address", e.target.value)}
                   placeholder="0x..."
                   required
-                  className="bg-card/50 backdrop-blur-xl border border-border/50 font-mono text-sm"
+                  className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 font-mono text-sm focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
                 />
               </div>
               <div className="w-24">
@@ -1208,7 +1208,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
                   onChange={(e) => updateRoyaltySplit(index, "percentage", Number.parseInt(e.target.value) || 0)}
                   placeholder="%"
                   required
-                  className="bg-card/50 backdrop-blur-xl border border-border/50"
+                  className="border-white/10 bg-white/[0.03] text-white placeholder:text-white/25 focus:border-[#fa003e]/60 focus:ring-[#fa003e]/20"
                 />
               </div>
               {royaltySplits.length > 1 && (
@@ -1235,7 +1235,7 @@ export function UploadForm({ prefillData }: UploadFormProps) {
       </Card>
 
       {uploadProgress && (
-        <div className="bg-card/80 backdrop-blur-2xl border border-accent/50 p-4 rounded-lg">
+        <div className="motion-safe:animate-in motion-safe:fade-in rounded-2xl border border-[#fa003e]/35 bg-[#fa003e]/10 p-4">
           <div className="flex items-center gap-3">
             {(isLoading || isCoinCreating) && <Loader2 className="h-4 w-4 mr-2 animate-spin text-accent" />}
             <p className="text-sm text-accent">{uploadProgress}</p>
@@ -1254,22 +1254,22 @@ export function UploadForm({ prefillData }: UploadFormProps) {
       )}
 
       {error && (
-        <div className="bg-card/80 backdrop-blur-2xl border border-destructive/50 p-4 rounded-lg">
+        <div className="motion-safe:animate-in motion-safe:fade-in rounded-2xl border border-destructive/50 bg-destructive/10 p-4">
           <p className="text-sm text-destructive">{error}</p>
         </div>
       )}
 
-      <div className="flex gap-4">
+      <div className="sticky bottom-3 z-20 -mx-1 flex gap-3 border-t border-white/10 bg-black/90 px-1 py-3 backdrop-blur-xl sm:static sm:border-0 sm:bg-transparent sm:p-0">
         <Button
           type="button"
           variant="outline"
           onClick={() => router.back()}
           disabled={isLoading || isCoinCreating}
-          className="bg-transparent"
+          className="border-white/15 bg-transparent text-white/70 hover:bg-white/10 hover:text-white"
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={isLoading || isCoinCreating} className="flex-1">
+        <Button type="submit" disabled={isLoading || isCoinCreating} className="flex-1 bg-[#fa003e] text-white shadow-lg shadow-[#fa003e]/20 transition-all hover:-translate-y-0.5 hover:bg-[#d90036] hover:shadow-[#fa003e]/35">
           {isLoading || isCoinCreating ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />

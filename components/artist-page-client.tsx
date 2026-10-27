@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { TrackCard } from "@/components/track-card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DollarSign, Music, Play, Users, Radio, Sparkles, TrendingUp } from "lucide-react"
+import { Check, Copy, DollarSign, MapPin, Music, Play, Radio, Share2, Sparkles, TrendingUp, Users } from "lucide-react"
 import { FollowButton } from "@/components/follow-button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ListeningHistory } from "@/components/listening-history"
@@ -15,6 +15,7 @@ import { CopyTokenAddressButton } from "@/components/copy-token-address-button"
 import { ProfileTokenSwapModal } from "@/components/profile-token-swap-modal"
 import { VerifiedBadge } from "@/components/verified-badge"
 import { SiFarcaster, SiX, SiTiktok } from "react-icons/si"
+import { useAudioPlayer } from "@/lib/audio-player-context"
 import type { Address } from "viem"
 
 interface ArtistPageClientProps {
@@ -51,6 +52,14 @@ export function ArtistPageClient({
   aiTracks,
 }: ArtistPageClientProps) {
   const [showSwapModal, setShowSwapModal] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const { playTrack } = useAudioPlayer()
+
+  async function copyProfileLink() {
+    await navigator.clipboard.writeText(window.location.href)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1800)
+  }
 
   function formatAddress(addr: string) {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
@@ -60,8 +69,8 @@ export function ArtistPageClient({
     <>
       <div className="min-h-screen overflow-hidden bg-black text-white">
         <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_80%_8%,rgba(250,0,62,0.12),transparent_28%)]" />
-        <main className="relative z-10 mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:py-10">
-          <div className="animate-in fade-in duration-500">
+        <main className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-8 sm:py-8 lg:py-10">
+          <div className="motion-safe:animate-in motion-safe:fade-in duration-500">
           <div className="mb-6 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/40"><Link href="/artists" className="transition-colors hover:text-white">← All artists</Link><span>Artist profile · Base</span></div>
           {/* Artist Header */}
           <div className="group relative mb-8 overflow-hidden rounded-[20px] border border-white/10 bg-[#090909] p-5 transition-all duration-700 hover:border-white/20 sm:p-8 lg:min-h-[430px] lg:p-10">
@@ -77,21 +86,14 @@ export function ArtistPageClient({
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <p className="mb-3 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/45"><span className="size-1.5 rounded-full bg-[#fa003e]" />The artist</p><h1 className="animate-in slide-in-from-bottom-3 fade-in duration-700 text-5xl font-semibold tracking-[-0.07em] sm:text-6xl lg:text-7xl">{artist.artist_name || "Anonymous Artist"}<span className="text-[#fa003e]">.</span></h1>
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/45"><span className="size-1.5 rounded-full bg-[#fa003e]" />The artist</p>
                       {artist.verified && <VerifiedBadge size="lg" />}
-                      {isCurrentlyLive && (
-                        <div className="flex items-center gap-1.5 rounded-full border border-[#fa003e]/35 bg-[#fa003e]/10 px-3 py-1">
-                          <div className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                          </div>
-                          <span className="text-xs font-semibold text-red-500 uppercase">Live</span>
-                        </div>
-                      )}
+                      {isCurrentlyLive && <div className="flex items-center gap-1.5 rounded-full border border-[#fa003e]/35 bg-[#fa003e]/10 px-2.5 py-1"><span className="size-1.5 animate-pulse rounded-full bg-[#fa003e]" /><span className="text-[10px] font-semibold uppercase tracking-wider text-[#fa6688]">Live</span></div>}
                     </div>
-                    <p className="mt-3 font-mono text-[10px] text-white/40">{formatAddress(artist.wallet_address)}</p>
-                    <div className="flex items-center gap-4 text-sm">
+                    <h1 className="motion-safe:animate-in motion-safe:slide-in-from-bottom-3 motion-safe:fade-in text-5xl font-semibold leading-[0.92] tracking-[-0.07em] duration-700 sm:text-6xl lg:text-7xl">{artist.artist_name || "Anonymous Artist"}<span className="text-[#fa003e]">.</span></h1>
+                    <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-[10px] text-white/40"><span>{formatAddress(artist.wallet_address)}</span>{(artist as any).genre && <span className="font-sans rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 uppercase tracking-[0.16em] text-white/55">{(artist as any).genre}</span>}{(artist as any).location && <span className="flex items-center gap-1 font-sans text-white/45"><MapPin className="size-3" />{(artist as any).location}</span>}</div>
+                    <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4 text-muted-foreground" />
                         <span className="font-semibold">{followerCount}</span>
@@ -103,7 +105,7 @@ export function ArtistPageClient({
                       </div>
                     </div>
                   </div>
-                  <FollowButton artistAddress={address} initialFollowerCount={followerCount} size="lg" />
+                  <div className="flex w-full items-center gap-2 sm:w-auto"><FollowButton artistAddress={address} initialFollowerCount={followerCount} size="lg" /><Button type="button" variant="outline" size="icon" onClick={copyProfileLink} aria-label={copied ? "Profile link copied" : "Copy profile link"} className="size-10 shrink-0 rounded-full border-white/15 bg-transparent text-white/70 transition-all hover:-translate-y-0.5 hover:bg-white/10 hover:text-white">{copied ? <Check className="size-4 text-[#fa003e]" /> : <Share2 className="size-4" />}</Button></div>
                 </div>
                 {artist.bio && <p className="text-muted-foreground leading-relaxed max-w-2xl mb-4">{artist.bio}</p>}
 
@@ -163,6 +165,8 @@ export function ArtistPageClient({
           </div>
           </div>
 
+          {tracks[0] && <section aria-labelledby="featured-release" className="mb-8 overflow-hidden rounded-[20px] border border-white/10 bg-[#090909] p-5 sm:p-6"><div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[10px] uppercase tracking-[0.22em] text-[#fa003e]">Featured release</p><h2 id="featured-release" className="mt-2 text-2xl font-semibold tracking-[-0.05em]">Start with the latest sound.</h2><p className="mt-2 max-w-lg text-sm leading-6 text-white/45">A first listen from {artist.artist_name || "this artist"}, selected for the top of the profile.</p></div><Button type="button" onClick={() => playTrack(tracks[0], tracks)} className="shrink-0 gap-2 rounded-full bg-[#fa003e] text-white shadow-lg shadow-[#fa003e]/20 hover:bg-[#d90036]"><Play className="size-4 fill-current" />Play release</Button></div><div className="mt-5 flex items-center gap-4 border-t border-white/10 pt-4"><div className="flex size-12 items-center justify-center rounded-xl border border-[#fa003e]/25 bg-[#fa003e]/10 text-[#fa003e]"><Music className="size-5" /></div><div className="min-w-0"><p className="truncate text-sm text-white/85">{tracks[0].title || "Untitled track"}</p><p className="mt-1 text-xs text-white/35">Latest release · {totalPlays.toLocaleString()} total plays</p></div></div></section>}
+
           {/* Stats Grid */}
           <div
             className={`grid grid-cols-1 sm:grid-cols-${(artist as any).profile_token_address ? "2 lg:grid-cols-4" : "3"} gap-4 mb-8`}
@@ -174,7 +178,7 @@ export function ArtistPageClient({
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Earned</p>
-                  <p className="text-2xl font-bold">${totalEarnings.toFixed(2)}</p>
+                  <p className="text-2xl font-bold">${totalEarnings.toFixed(2)}</p><p className="mt-1 text-[10px] text-white/30">Lifetime creator earnings</p>
                 </div>
               </div>
             </div>
@@ -186,7 +190,7 @@ export function ArtistPageClient({
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Tracks</p>
-                  <p className="text-2xl font-bold">{tracks?.length || 0}</p>
+                  <p className="text-2xl font-bold">{tracks?.length || 0}</p><p className="mt-1 text-[10px] text-white/30">Published releases</p>
                 </div>
               </div>
             </div>
@@ -198,7 +202,7 @@ export function ArtistPageClient({
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Plays</p>
-                  <p className="text-2xl font-bold">{totalPlays}</p>
+                  <p className="text-2xl font-bold">{totalPlays.toLocaleString()}</p><p className="mt-1 text-[10px] text-white/30">All-time plays</p>
                 </div>
               </div>
             </div>
@@ -294,10 +298,7 @@ export function ArtistPageClient({
                   ))}
                 </div>
               ) : (
-                <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-12 text-center">
-                  <Music className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No tracks uploaded yet</p>
-                </div>
+                <div className="border border-dashed border-white/15 bg-[#090909] p-10 text-center sm:p-14"><div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl border border-[#fa003e]/25 bg-[#fa003e]/10 text-[#fa003e]"><Music className="size-5" /></div><h3 className="text-lg font-medium">The first release is coming.</h3><p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-white/40">There are no tracks here yet. Check back soon for new music from this artist.</p></div>
               )}
             </TabsContent>
 
@@ -320,10 +321,7 @@ export function ArtistPageClient({
                   </div>
                 </div>
               ) : (
-                <div className="bg-card/50 backdrop-blur-xl border border-border/50 rounded-xl p-12 text-center">
-                  <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No AI-generated tracks yet</p>
-                </div>
+                <div className="border border-dashed border-white/15 bg-[#090909] p-10 text-center sm:p-14"><div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl border border-[#fa003e]/25 bg-[#fa003e]/10 text-[#fa003e]"><Sparkles className="size-5" /></div><h3 className="text-lg font-medium">No AI creations yet.</h3><p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-white/40">When this artist experiments with generative sound, it will appear here.</p></div>
               )}
             </TabsContent>
 
