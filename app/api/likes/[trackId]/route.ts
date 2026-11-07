@@ -6,10 +6,10 @@ function isValidUUID(uuid: string): boolean {
   return uuidRegex.test(uuid)
 }
 
-export async function GET(request: NextRequest, { params }: { params: { trackId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ trackId: string }> }) {
   try {
     const supabase = await createClient()
-    const { trackId } = params
+    const { trackId } = await params
 
     if (!isValidUUID(trackId)) {
       return NextResponse.json({ error: "Invalid track ID format" }, { status: 400 })
@@ -33,10 +33,10 @@ export async function GET(request: NextRequest, { params }: { params: { trackId:
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { trackId: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ trackId: string }> }) {
   try {
     const supabase = await createClient()
-    const { trackId } = params
+    const { trackId } = await params
 
     if (!isValidUUID(trackId)) {
       return NextResponse.json({ error: "Invalid track ID format" }, { status: 400 })
@@ -73,10 +73,10 @@ export async function POST(request: NextRequest, { params }: { params: { trackId
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { trackId: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ trackId: string }> }) {
   try {
     const supabase = await createClient()
-    const { trackId } = params
+    const { trackId } = await params
 
     if (!isValidUUID(trackId)) {
       return NextResponse.json({ error: "Invalid track ID format" }, { status: 400 })

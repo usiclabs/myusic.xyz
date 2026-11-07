@@ -4,9 +4,9 @@ import { createAdminClient } from "@/lib/supabase/admin"
 
 const ADMIN_ADDRESSES = (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES || "").toLowerCase().split(",")
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id: streamId } = params
+    const { id: streamId } = await params
     console.log("[v0] [Admin] Attempting to end stream:", streamId)
 
     // Get wallet address from headers

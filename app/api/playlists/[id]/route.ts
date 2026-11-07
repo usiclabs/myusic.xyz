@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
 
   console.log("[v0] Fetching playlist:", id)
 
@@ -22,12 +22,13 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
         )
       `)
       .eq("id", id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error("[v0] Error fetching playlist:", error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
+    if (!playlist) return NextResponse.json({ error: "Playlist not found" }, { status: 404 })
 
     console.log("[v0] Found playlist with", playlist.playlist_tracks?.length || 0, "tracks")
 
@@ -38,8 +39,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
 
   try {
     const body = await request.json()
@@ -71,8 +72,8 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
 
   console.log("[v0] Deleting playlist:", id)
 

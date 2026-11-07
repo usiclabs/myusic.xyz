@@ -1,10 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
-    const { id } = params
+    const { id } = await params
 
     const { data: track, error } = await supabase
       .from("tracks")
@@ -15,9 +15,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       `,
       )
       .eq("id", id)
-      .single()
+      .maybeSingle()
 
     if (error) throw error
+    if (!track) return NextResponse.json({ error: "Track not found" }, { status: 404 })
 
     return NextResponse.json(track)
   } catch (error) {
@@ -26,10 +27,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     // Verify ownership
@@ -71,10 +72,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
-    const { id } = params
+    const { id } = await params
 
     // Verify ownership
     const { data: track } = await supabase.from("tracks").select("artist_id").eq("id", id).single()

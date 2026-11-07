@@ -4,9 +4,9 @@ import { createClient } from "@/lib/supabase/server"
 const LIVEPEER_API_KEY = process.env.LIVEPEER_API_KEY || ""
 const LIVEPEER_API_URL = "https://livepeer.studio/api"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Get stream from database
     const supabase = await createClient()

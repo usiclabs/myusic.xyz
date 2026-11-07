@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 const ADMIN_ADDRESSES = (process.env.NEXT_PUBLIC_ADMIN_ADDRESSES || "").toLowerCase().split(",")
 
-export async function PATCH(request: NextRequest, { params }: { params: { address: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ address: string }> }) {
   try {
     const walletAddress = request.headers.get("x-wallet-address")
 
@@ -12,7 +12,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { addres
     }
 
     const { verified } = await request.json()
-    const { address } = params
+    const { address } = await params
 
     const supabase = await createClient()
 

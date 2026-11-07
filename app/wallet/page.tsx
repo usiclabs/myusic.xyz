@@ -95,7 +95,7 @@ export default function WalletPage() {
         .limit(20)
 
       if (error) throw error
-      return data as Stream[]
+      return data as unknown as Stream[]
     },
   )
 

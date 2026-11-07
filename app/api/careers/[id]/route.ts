@@ -2,11 +2,11 @@ import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
 // GET single job posting
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
 
-    const { data: job, error } = await supabase.from("job_postings").select("*").eq("id", params.id).single()
+    const { data: job, error } = await supabase.from("job_postings").select("*").eq("id", (await params).id).single()
 
     if (error) throw error
 
@@ -18,12 +18,12 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT update job posting
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
     const body = await request.json()
 
-    const { data, error } = await supabase.from("job_postings").update(body).eq("id", params.id).select().single()
+    const { data, error } = await supabase.from("job_postings").update(body).eq("id", (await params).id).select().single()
 
     if (error) throw error
 
@@ -35,11 +35,11 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE job posting
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
 
-    const { error } = await supabase.from("job_postings").delete().eq("id", params.id)
+    const { error } = await supabase.from("job_postings").delete().eq("id", (await params).id)
 
     if (error) throw error
 

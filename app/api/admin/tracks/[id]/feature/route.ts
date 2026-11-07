@@ -3,9 +3,9 @@ import { NextResponse } from "next/server"
 
 const ADMIN_ADDRESSES = process.env.NEXT_PUBLIC_ADMIN_ADDRESSES?.toLowerCase().split(",") || []
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params
+    const { id } = await params
     const walletAddress = request.headers.get("x-wallet-address")?.toLowerCase()
 
     console.log("[v0] Feature track request:", { id, walletAddress })

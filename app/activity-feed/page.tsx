@@ -665,7 +665,7 @@ export default function ActivityFeedPage() {
         )
       case "stream":
         const isPaidUnlock = activity.total_paid && activity.total_paid > 0
-        const displayAmount = isPaidUnlock ? activity.total_paid.toFixed(4) : null
+        const displayAmount = isPaidUnlock ? activity.total_paid?.toFixed(4) ?? null : null
 
         const cleanTrackTitle = activity.track_title?.trim() || ""
 

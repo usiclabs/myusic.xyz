@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { createServerClient } from "@/lib/supabase/server"
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { viewerAddress } = await request.json()
 
@@ -13,7 +13,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     // Insert view (unique constraint prevents duplicates)
     const { error: viewError } = await supabase.from("story_views").insert({
-      story_id: params.id,
+      story_id: (await params).id,
       viewer_address: viewerAddress,
     })
 
@@ -26,7 +26,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     const { error: updateError } = await supabase
       .from("stories")
       .update({ view_count: supabase.raw("view_count + 1") as any })
-      .eq("id", params.id)
+      .eq("id", (await params).id)
 
     if (updateError) {
       console.error("[Story View API] Error updating view count:", updateError)

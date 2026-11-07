@@ -19,7 +19,7 @@ const MINIMUM_USI_BALANCE = parseUnits("100000000", 18) // 100M $USI required
 
 export default function RewardsPage() {
   const { address, isConnected, chainId, connect } = useWallet()
-  const { addToast } = useToast()
+  const { toast } = useToast()
   const [streams, setStreams] = useState<RewardStream[]>([])
   const [claims, setClaims] = useState<RewardClaim[]>([])
   const [isLoadingStreams, setIsLoadingStreams] = useState(false)
@@ -111,7 +111,7 @@ export default function RewardsPage() {
     const withdrawable = withdrawableAmounts[stream.stream_id]
 
     if (!withdrawable || withdrawable === 0n) {
-      addToast({
+      toast({
         title: "No Rewards Available",
         description: "There are no rewards available to claim yet.",
         variant: "error",
@@ -140,7 +140,7 @@ export default function RewardsPage() {
 
       await updateStreamClaimedAmount(stream.stream_id, formatUnits(BigInt(newClaimedAmount), 18))
 
-      addToast({
+      toast({
         title: "Rewards Claimed!",
         description: `Successfully claimed ${Number.parseFloat(amount).toFixed(4)} $USI`,
         variant: "success",
@@ -150,7 +150,7 @@ export default function RewardsPage() {
       loadClaims()
     } catch (error) {
       console.error("Withdraw failed:", error)
-      addToast({
+      toast({
         title: "Claim Failed",
         description: error instanceof Error ? error.message : "Failed to claim rewards.",
         variant: "error",

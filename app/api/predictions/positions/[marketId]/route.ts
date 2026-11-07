@@ -1,9 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
-export async function GET(request: NextRequest, { params }: { params: { marketId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ marketId: string }> }) {
   try {
-    const { marketId } = params
+    const { marketId } = await params
     const searchParams = request.nextUrl.searchParams
     const address = searchParams.get("address")
 
