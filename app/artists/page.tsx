@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { createBrowserClient } from "@/lib/supabase/client"
 import { ArtistsFilter, type SortOption } from "@/components/artists-filter"
 import { ArtistsFeed } from "@/components/artists-feed"
+import { MyusicAtmosphere } from "@/components/myusic-page-primitives"
 
 type Artist = { wallet_address: string; artist_name: string | null; bio: string | null; avatar_url: string | null; genre?: string | null; created_at: string; totalEarned: number; trackCount: number; followerCount: number; totalStreams: number; profile_token_address?: string | null; marketCap?: number }
 
@@ -44,6 +45,6 @@ export default function ArtistsPage() {
     return 0
   })
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">Loading artists...</div>
-  return <div className="min-h-screen bg-background"><div className="mx-auto w-full max-w-[1512px] px-5 pt-6 sm:px-[4.5%]"><ArtistsFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} genre={genre} onGenreChange={setGenre} sortBy={sortBy} onSortChange={setSortBy} minEarnings={minEarnings} onMinEarningsChange={setMinEarnings} minTracks={minTracks} onMinTracksChange={setMinTracks} totalResults={filteredArtists.length} /></div><ArtistsFeed artists={filteredArtists} /></div>
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-black text-sm text-white/45">Loading artists...</div>
+  return <div className="relative min-h-screen overflow-hidden bg-black text-white"><MyusicAtmosphere /><div className="relative mx-auto w-full max-w-[1512px] px-5 pt-8 sm:px-[4.5%] sm:pt-12"><p className="mb-3 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">MyUSIC / Artists</p><h1 className="mb-8 text-5xl font-semibold tracking-[-0.07em] sm:text-6xl">Meet the<br /><span className="text-[#fa003e]">next wave.</span></h1><ArtistsFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} genre={genre} onGenreChange={setGenre} sortBy={sortBy} onSortChange={setSortBy} minEarnings={minEarnings} onMinEarningsChange={setMinEarnings} minTracks={minTracks} onMinTracksChange={setMinTracks} totalResults={filteredArtists.length} /></div><ArtistsFeed artists={filteredArtists} /></div>
 }

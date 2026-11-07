@@ -19,10 +19,10 @@ import {
   List,
   Sparkles,
   TrendingUp,
-  Zap,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import Image from "next/image"
+import { MyusicAtmosphere } from "@/components/myusic-page-primitives"
 
 type ActivityType =
   | "follow"
@@ -519,7 +519,7 @@ export default function ActivityFeedPage() {
       case "livestream_comment":
         return (
           <div className={wrapperClass}>
-            <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
+            <div className="absolute inset-0 bg-[#fa003e]/20 rounded-full animate-ping" />
             <MessageCircle className={`${iconClass} text-green-500 relative z-10`} />
           </div>
         )
@@ -778,38 +778,26 @@ export default function ActivityFeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden pb-32">
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-purple-500/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-pink-500/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-grid-white/[0.02]" />
-      </div>
+    <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white">
+      <MyusicAtmosphere />
 
-      <div className="container px-4 sm:px-6 lg:px-8 py-16 max-w-5xl">
+      <div className="container relative max-w-5xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-12">
-          <div className="flex items-start justify-between mb-6">
+          <div className="mb-6 flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-4 mb-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary via-purple-500 to-pink-500 rounded-2xl blur-2xl opacity-40" />
-                  <div className="relative bg-gradient-to-br from-primary/20 to-purple-500/20 backdrop-blur-xl p-4 rounded-2xl border border-white/10">
-                    <Zap className="h-8 w-8 text-white" />
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-5xl md:text-6xl font-bold text-white tracking-tight mb-2">Activity Feed</h1>
-                  <p className="text-lg text-white/60 tracking-wide">Real-time platform pulse</p>
-                </div>
+              <p className="mb-3 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">MyUSIC / Live signal</p>
+              <div>
+                <h1 className="text-balance text-5xl font-semibold leading-[0.94] tracking-[-0.07em] text-white md:text-6xl">Platform<br /><span className="text-[#fa003e]">pulse.</span></h1>
+                <p className="mt-4 text-base leading-7 text-white/45">Follow the moments moving music forward in real time.</p>
               </div>
 
-              <div className="flex items-center gap-4 ml-24">
-                <div className="flex items-center gap-2 bg-green-500/10 backdrop-blur-sm border border-green-500/20 rounded-full px-4 py-2">
+              <div className="mt-5 flex items-center gap-3">
+                <div className="flex min-h-11 items-center gap-2 rounded-full border border-[#fa003e]/25 bg-[#fa003e]/10 px-4 backdrop-blur-sm">
                   <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#fa003e] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#fa003e]" />
                   </span>
-                  <span className="text-sm text-green-400 font-medium tracking-wide">LIVE</span>
+                  <span className="text-sm font-medium text-[#fa003e] tracking-wide">LIVE</span>
                 </div>
                 <div className="h-1 w-1 rounded-full bg-white/20" />
                 <span className="text-sm text-white/40 tracking-wide">{filteredActivities.length} activities</span>
@@ -845,9 +833,9 @@ export default function ActivityFeedPage() {
               variant={filter === "all" ? "default" : "ghost"}
               size="sm"
               onClick={() => setFilter("all")}
-              className={`rounded-full px-6 py-2 h-auto font-medium tracking-wide transition-all duration-300 ${
+              className={`min-h-11 rounded-full px-5 font-medium tracking-wide transition-all duration-300 ${
                 filter === "all"
-                  ? "bg-white text-black hover:bg-white/90 shadow-lg shadow-white/20"
+                  ? "bg-[#fa003e] text-white hover:bg-[#d90036] shadow-lg shadow-[#fa003e]/20"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               }`}
             >
@@ -858,9 +846,9 @@ export default function ActivityFeedPage() {
               variant={filter === "social" ? "default" : "ghost"}
               size="sm"
               onClick={() => setFilter("social")}
-              className={`rounded-full px-6 py-2 h-auto font-medium tracking-wide transition-all duration-300 ${
+              className={`min-h-11 rounded-full px-5 font-medium tracking-wide transition-all duration-300 ${
                 filter === "social"
-                  ? "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/20"
+                  ? "bg-[#fa003e] text-white hover:bg-[#d90036] shadow-lg shadow-[#fa003e]/20"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               }`}
             >
@@ -871,9 +859,9 @@ export default function ActivityFeedPage() {
               variant={filter === "financial" ? "default" : "ghost"}
               size="sm"
               onClick={() => setFilter("financial")}
-              className={`rounded-full px-6 py-2 h-auto font-medium tracking-wide transition-all duration-300 ${
+              className={`min-h-11 rounded-full px-5 font-medium tracking-wide transition-all duration-300 ${
                 filter === "financial"
-                  ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-lg shadow-amber-500/20"
+                  ? "bg-[#fa003e] text-white hover:bg-[#d90036] shadow-lg shadow-[#fa003e]/20"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               }`}
             >
@@ -884,9 +872,9 @@ export default function ActivityFeedPage() {
               variant={filter === "live" ? "default" : "ghost"}
               size="sm"
               onClick={() => setFilter("live")}
-              className={`rounded-full px-6 py-2 h-auto font-medium tracking-wide transition-all duration-300 ${
+              className={`min-h-11 rounded-full px-5 font-medium tracking-wide transition-all duration-300 ${
                 filter === "live"
-                  ? "bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600 shadow-lg shadow-orange-500/20"
+                  ? "bg-[#fa003e] text-white hover:bg-[#d90036] shadow-lg shadow-[#fa003e]/20"
                   : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
               }`}
             >
@@ -925,14 +913,12 @@ export default function ActivityFeedPage() {
             {filteredActivities.map((activity, index) => (
               <Card
                 key={activity.id}
-                className="group relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/[0.07] hover:border-white/20 transition-all duration-500 overflow-hidden"
+                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#090909]/90 p-4 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:border-[#fa003e]/35 hover:bg-[#0d0d0d] sm:p-6"
                 style={{
                   animation: `slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${index * 0.05}s backwards`,
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-purple-500/0 to-pink-500/0 group-hover:from-primary/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-500 -z-10" />
-
-                <div className="flex items-start gap-6">
+                <div className="flex items-start gap-4 sm:gap-6">
                   {activity.user_has_profile ||
                   activity.user_address === "0xAI000000000000000000000000000000CURATOR1" ? (
                     <Link

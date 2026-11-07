@@ -13,6 +13,7 @@ import { formatUnits, parseUnits } from "viem"
 import { getUserStreams, getUserClaims, recordClaim, updateStreamClaimedAmount } from "@/lib/sablier/rewards"
 import type { RewardStream, RewardClaim } from "@/lib/sablier/rewards"
 import Link from "next/link"
+import { MyusicAtmosphere } from "@/components/myusic-page-primitives"
 
 const MINIMUM_USI_BALANCE = parseUnits("100000000", 18) // 100M $USI required
 
@@ -159,18 +160,18 @@ export default function RewardsPage() {
 
   if (!isConnected) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+      <div className="relative min-h-screen overflow-hidden bg-black px-4 py-8 text-white"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(250,0,62,0.16),transparent_35%)]" />
+        <div className="relative mx-auto flex min-h-[70vh] max-w-6xl flex-col items-center justify-center gap-6">
           <div className="rounded-full bg-red-500/10 p-6">
             <Wallet className="h-12 w-12 text-red-500" />
           </div>
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold">Connect Your Wallet</h1>
+            <h1 className="text-4xl font-semibold tracking-[-0.06em]">Unlock your rewards</h1>
             <p className="text-muted-foreground max-w-md">
               Connect your wallet to view and claim your streaming $USI rewards.
             </p>
           </div>
-          <Button onClick={connect} size="lg" className="gap-2 bg-red-500 hover:bg-red-600">
+          <Button onClick={connect} size="lg" className="min-h-12 gap-2 rounded-full bg-[#fa003e] px-7 text-white shadow-lg shadow-[#fa003e]/20 hover:bg-[#d90036]">
             <Wallet className="h-5 w-5" />
             Connect Wallet
           </Button>
@@ -182,18 +183,8 @@ export default function RewardsPage() {
   const walletBalance = tokenBalance ? formatUnits(tokenBalance, 18) : "0"
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl space-y-8">
-      <div className="space-y-2">
-        <div className="flex items-center gap-3">
-          <div className="rounded-full bg-red-500/10 p-3">
-            <Droplets className="h-6 w-6 text-red-500" />
-          </div>
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-bold">Streaming Rewards</h1>
-            <p className="text-muted-foreground">Claim your continuous $USI token rewards powered by Sablier</p>
-          </div>
-        </div>
-      </div>
+    <div className="relative min-h-screen overflow-hidden bg-black px-4 py-10 text-white"><MyusicAtmosphere /><div className="relative mx-auto max-w-6xl space-y-8">
+      <div><p className="mb-3 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">MyUSIC / Rewards</p><h1 className="text-5xl font-semibold tracking-[-0.07em] sm:text-6xl">Music that<br /><span className="text-[#fa003e]">keeps paying.</span></h1><p className="mt-4 text-base leading-7 text-white/45">Claim continuous $USI streaming rewards powered by Sablier.</p></div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className={isEligible ? "bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20" : ""}>
@@ -373,7 +364,7 @@ export default function RewardsPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </div></div>
   )
 }
 

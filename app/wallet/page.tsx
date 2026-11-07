@@ -12,6 +12,7 @@ import { USDC_ADDRESS, USI_TOKEN_ADDRESS, ERC20_ABI } from "@/lib/web3/contracts
 import { Copy, ExternalLink, WalletIcon, TrendingUp, Music, DollarSign } from "lucide-react"
 import Link from "next/link"
 import useSWR from "swr"
+import { MyusicAtmosphere } from "@/components/myusic-page-primitives"
 
 interface Stream {
   id: string
@@ -28,7 +29,7 @@ interface Stream {
 }
 
 export default function WalletPage() {
-  const { address, isConnected } = useWallet()
+  const { address, isConnected, connect } = useWallet()
   const publicClient = usePublicClient()
   const [copied, setCopied] = useState(false)
 
@@ -202,14 +203,14 @@ export default function WalletPage() {
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="p-8 text-center max-w-md">
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black p-4 text-white"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(250,0,62,0.16),transparent_35%)]" />
+        <Card className="relative max-w-md rounded-3xl border-white/10 bg-[#090909] p-8 text-center shadow-2xl shadow-black">
           <WalletIcon className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <h2 className="text-2xl font-bold mb-2">Connect Your Wallet</h2>
           <p className="text-muted-foreground mb-6">
             Connect your wallet to view your balances, payment history, and collected song tokens.
           </p>
-          <Button onClick={() => window.location.reload()} className="w-full">
+          <Button onClick={connect} className="min-h-12 w-full rounded-full bg-[#fa003e] text-white shadow-lg shadow-[#fa003e]/20 hover:bg-[#d90036]">
             Connect Wallet
           </Button>
         </Card>
@@ -218,22 +219,14 @@ export default function WalletPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8 pb-24">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="relative min-h-screen overflow-hidden bg-black p-4 pb-24 text-white sm:p-6 sm:pb-24 lg:p-8 lg:pb-24"><MyusicAtmosphere />
+      <div className="relative mx-auto max-w-7xl space-y-8">
         {/* Header */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
-              <WalletIcon className="h-6 w-6 text-accent" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">My Wallet</h1>
-              <p className="text-muted-foreground">Manage your tokens and view transaction history</p>
-            </div>
-          </div>
+          <div><p className="mb-3 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">MyUSIC / Wallet</p><h1 className="text-5xl font-semibold tracking-[-0.07em] sm:text-6xl">Your music.<br /><span className="text-[#fa003e]">Your value.</span></h1><p className="mt-4 text-base leading-7 text-white/45">Manage tokens, collected tracks, and payment history.</p></div>
 
           {/* Wallet Address */}
-          <Card className="p-4 bg-card/50 backdrop-blur-sm border-border/50">
+          <Card className="rounded-2xl border-white/10 bg-[#090909]/90 p-4 backdrop-blur-sm">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center flex-shrink-0">
@@ -264,7 +257,7 @@ export default function WalletPage() {
           <h2 className="text-xl font-bold mb-4">Token Balances</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {/* Portfolio Value */}
-            <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20 hover:border-purple-500/40 transition-all">
+            <Card className="rounded-2xl border-white/10 bg-[#090909] p-6 transition-all hover:border-[#fa003e]/35">
               <div className="flex items-center justify-between mb-4">
                 <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-purple-500" />
@@ -282,7 +275,7 @@ export default function WalletPage() {
             </Card>
 
             {/* USDC Balance */}
-            <Card className="p-6 bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20 hover:border-green-500/40 transition-all">
+            <Card className="rounded-2xl border-white/10 bg-[#090909] p-6 transition-all hover:border-[#fa003e]/35">
               <div className="flex items-center justify-between mb-4">
                 <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center">
                   <DollarSign className="h-6 w-6 text-green-500" />
@@ -298,7 +291,7 @@ export default function WalletPage() {
             </Card>
 
             {/* USI Balance */}
-            <Card className="p-6 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20 hover:border-accent/40 transition-all">
+            <Card className="rounded-2xl border-white/10 bg-[#090909] p-6 transition-all hover:border-[#fa003e]/35">
               <div className="flex items-center justify-between mb-4">
                 <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-accent" />
