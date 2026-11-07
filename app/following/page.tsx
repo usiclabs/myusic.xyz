@@ -18,44 +18,30 @@ type TrackWithStats = TrackWithArtist & {
 export default function FollowingPage() {
   const { address, isConnected } = useAccount()
   const [tracks, setTracks] = useState<TrackWithStats[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    console.log("[v0] Following page mounted")
-    console.log("[v0] Wallet connected:", isConnected)
-    console.log("[v0] Wallet address:", address)
-
     if (isConnected && address) {
       loadFollowingFeed()
-    } else {
-      setLoading(false)
     }
   }, [address, isConnected])
 
   async function loadFollowingFeed() {
     if (!address) return
 
-    console.log("[v0] Loading following feed for address:", address)
-
     setLoading(true)
     setError(null)
 
     try {
       const url = `/api/following?address=${address}`
-      console.log("[v0] Fetching from:", url)
-
       const response = await fetch(url)
-      console.log("[v0] Response status:", response.status)
 
       if (!response.ok) {
         throw new Error("Failed to load following feed")
       }
 
       const data = await response.json()
-      console.log("[v0] Received data:", data)
-      console.log("[v0] Number of tracks:", data.tracks?.length || 0)
-
       setTracks(data.tracks || [])
     } catch (error) {
       console.error("[v0] Failed to load following feed:", error)
@@ -68,8 +54,8 @@ export default function FollowingPage() {
   // Not connected state
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-black pb-32">
-        <main className="container py-12 px-4 sm:px-6">
+      <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.12),transparent_30%)]" /><div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <main className="container relative px-4 py-10 sm:px-6 sm:py-14">
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <UserPlus className="h-16 w-16 text-muted-foreground mb-4" />
             <h3 className="text-2xl font-bold mb-2">Connect Your Wallet</h3>
@@ -85,8 +71,8 @@ export default function FollowingPage() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-black pb-32">
-        <main className="container py-12 px-4 sm:px-6">
+      <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.12),transparent_30%)]" /><div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <main className="container relative px-4 py-10 sm:px-6 sm:py-14">
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <AlertCircle className="h-16 w-16 text-destructive mb-4" />
             <h3 className="text-2xl font-bold mb-2">Something went wrong</h3>
@@ -103,10 +89,10 @@ export default function FollowingPage() {
   // Empty state - not following anyone
   if (!loading && tracks.length === 0) {
     return (
-      <div className="min-h-screen bg-black pb-32">
-        <main className="container py-12 px-4 sm:px-6">
+      <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.12),transparent_30%)]" /><div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <main className="container relative px-4 py-10 sm:px-6 sm:py-14">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Following</h1>
+            <p className="mb-2 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">Your circle</p><h1 className="mb-2 text-5xl font-semibold tracking-[-0.07em]">Following</h1>
             <p className="text-foreground/70">Tracks from artists you follow</p>
           </div>
 
@@ -115,7 +101,7 @@ export default function FollowingPage() {
             <h3 className="text-2xl font-bold mb-2">No tracks yet</h3>
             <p className="text-foreground/70 mb-6 max-w-md">Start following artists to see their latest tracks here</p>
             <Link href="/artists">
-              <Button size="lg" className="rounded-full">
+              <Button size="lg" className="min-h-11 rounded-full bg-[#fa003e] px-6 text-white shadow-lg shadow-[#fa003e]/20 hover:bg-[#d90036]">
                 <UserPlus className="h-5 w-5 mr-2" />
                 Discover Artists
               </Button>
@@ -127,12 +113,12 @@ export default function FollowingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black pb-32">
+    <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white"><div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.12),transparent_30%)]" /><div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
       <main className="container py-12 px-4 sm:px-6 space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Following</h1>
+            <p className="mb-2 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">Your circle</p><h1 className="mb-2 text-5xl font-semibold tracking-[-0.07em]">Following</h1>
             <p className="text-foreground/70">
               {loading
                 ? "Loading..."
@@ -140,7 +126,7 @@ export default function FollowingPage() {
             </p>
           </div>
           <Link href="/artists">
-            <Button variant="outline" className="rounded-full bg-transparent">
+            <Button variant="outline" className="min-h-11 rounded-full border-white/15 bg-white/[0.03] text-white hover:border-[#fa003e]/50 hover:bg-[#fa003e]/10">
               <UserPlus className="h-4 w-4 mr-2" />
               Find Artists
             </Button>

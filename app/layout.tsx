@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Web3Provider } from "@/lib/web3/providers"
@@ -21,8 +21,8 @@ import { FarcasterBadge } from "@/components/farcaster-badge"
 import { EarningsToastListener } from "@/components/earnings-toast-listener"
 import "./globals.css"
 
-const geistSans = Geist({ subsets: ["latin"] })
-const geistMono = Geist_Mono({ subsets: ["latin"] })
+const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
   title: "MyUSIC - Web3 Music Streaming",
@@ -34,7 +34,6 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "MyUSIC",
   },
-  themeColor: "#0a0a0a",
   openGraph: {
     title: "MyUSIC - Web3 Music Streaming",
     description: "Blockchain-powered music streaming with micropayments and NFTs",
@@ -67,13 +66,22 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#0a0a0a",
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark bg-background ${geistSans.variable} ${geistMono.variable}`}>
       <head>
         <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="/icon-152.png" />
@@ -82,12 +90,8 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="MyUSIC" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
-        />
       </head>
-      <body className={`${geistSans.className} antialiased`}>
+      <body className="font-sans antialiased">
         <ErrorBoundary>
           <FarcasterProvider>
             <Web3Provider>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Music, Coins, TrendingUp, Wallet, Sparkles, ArrowRight, X, Check } from "lucide-react"
@@ -47,14 +48,18 @@ export function OnboardingModal() {
   const [open, setOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const { connect, isConnected } = useWallet()
+  const pathname = usePathname()
+  const isEntryRoute = pathname === "/" || pathname === "/discover"
 
   useEffect(() => {
+    if (!isEntryRoute) return
+
     const hasCompletedOnboarding = localStorage.getItem(ONBOARDING_STORAGE_KEY)
     if (!hasCompletedOnboarding) {
-      const timer = setTimeout(() => setOpen(true), 1000)
-      return () => clearTimeout(timer)
+      const timer = window.setTimeout(() => setOpen(true), 1000)
+      return () => window.clearTimeout(timer)
     }
-  }, [])
+  }, [isEntryRoute])
 
   const handleComplete = () => {
     localStorage.setItem(ONBOARDING_STORAGE_KEY, "true")
@@ -85,7 +90,7 @@ export function OnboardingModal() {
   const isLastStep = currentStep === steps.length - 1
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open && isEntryRoute} onOpenChange={setOpen}>
       <DialogPortal>
         <DialogOverlay className="bg-black/90 backdrop-blur-xl" />
         <DialogContent className="max-w-5xl border-0 bg-transparent p-0 shadow-none" showCloseButton={false}>
