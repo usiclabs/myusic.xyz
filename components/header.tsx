@@ -59,8 +59,7 @@ export function Header() {
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
         <div className="mx-auto flex h-16 max-w-[1512px] items-center justify-between px-5 sm:px-[4.5%]">
           <Link href="/" aria-label="MyUSIC home" className="flex min-h-11 items-center gap-2">
-            <Image src="/images/usic-logo.png" alt="" width={32} height={32} className="object-contain" />
-            <span className="text-2xl font-semibold tracking-[-.075em]">MyUSIC</span>
+            <Image src="/images/usic-logo.png" alt="MyUSIC home" width={36} height={36} className="object-contain" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-4 lg:gap-6">
