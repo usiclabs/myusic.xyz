@@ -1,167 +1,37 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { TrendingUp, DollarSign, Activity, BarChart3 } from "lucide-react"
+import { useState } from "react"
+import useSWR from "swr"
+import { usePathname } from "next/navigation"
+import { ArrowUpRight } from "lucide-react"
 import { TokenMetricsModal } from "@/components/token-metrics-modal"
 
-interface TickerData {
-  symbol: string
-  price: string
-  change: string
-  volume: string
-  marketCap: string
-  contractAddress: string
+const address = '0x987603A52d8B966E10FBD29DcB1A574049E25B07'
+const compactUSD = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: 'compact', maximumFractionDigits: 2 })
+function numeric(value: unknown) {
+  if ((typeof value !== 'string' && typeof value !== 'number') || String(value).trim() === '') return null
+  const number = Number(value)
+  return Number.isFinite(number) ? number : null
+}
+async function loadQuote(url: string) {
+  const response = await fetch(url)
+  if (!response.ok) throw new Error('Quote unavailable')
+  const { pairs } = await response.json()
+  const pair = Array.isArray(pairs) ? pairs.find(item => item.chainId === 'base' && item.baseToken?.address?.toLowerCase() === address.toLowerCase() && numeric(item.priceUsd) !== null) : null
+  if (!pair) return null
+  const price = numeric(pair.priceUsd)!, change = numeric(pair.priceChange?.h24), volume = numeric(pair.volume?.h24), cap = numeric(pair.marketCap)
+  return { symbol: '$USI', price: `$${price.toFixed(price < .01 ? 6 : price < 1 ? 4 : 2)}`, change: change === null ? '—' : `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`, volume: volume === null ? '—' : compactUSD.format(volume), marketCap: cap === null ? '—' : compactUSD.format(cap), contractAddress: address }
 }
 
 export function BlockchainTicker() {
-  const [data, setData] = useState<TickerData | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [modalOpen, setModalOpen] = useState(false)
-
-  useEffect(() => {
-    const fetchUSIData = async () => {
-      try {
-        const response = await fetch(
-          "https://api.dexscreener.com/latest/dex/tokens/0x987603A52d8B966E10FBD29DcB1A574049E25B07",
-        )
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch token data")
-        }
-
-        const result = await response.json()
-        const pair = result.pairs?.[0]
-
-        if (!pair) {
-          throw new Error("No pair data found")
-        }
-
-        const formatPrice = (price: string) => {
-          const num = Number.parseFloat(price)
-          if (num < 0.01) return `$${num.toFixed(6)}`
-          if (num < 1) return `$${num.toFixed(4)}`
-          return `$${num.toFixed(2)}`
-        }
-
-        const formatChange = (change: number) => {
-          const sign = change >= 0 ? "+" : ""
-          return `${sign}${change.toFixed(2)}%`
-        }
-
-        const formatVolume = (volume: string) => {
-          const num = Number.parseFloat(volume)
-          if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`
-          if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`
-          if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`
-          return `$${num.toFixed(2)}`
-        }
-
-        const formatMarketCap = (marketCap: string) => {
-          const num = Number.parseFloat(marketCap)
-          if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`
-          if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`
-          if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`
-          return `$${num.toFixed(2)}`
-        }
-
-        const updatedUSIData: TickerData = {
-          symbol: "$USI",
-          price: formatPrice(pair.priceUsd),
-          change: formatChange(pair.priceChange?.h24 || 0),
-          volume: formatVolume(pair.volume?.h24 || "0"),
-          marketCap: formatMarketCap(pair.fdv || pair.marketCap || "0"),
-          contractAddress: "0x987603A52d8B966E10FBD29DcB1A574049E25B07",
-        }
-
-        setData(updatedUSIData)
-        setIsLoading(false)
-      } catch (error) {
-        console.error("Failed to fetch $USI token data:", error)
-        setIsLoading(false)
-      }
-    }
-
-    fetchUSIData()
-    const interval = setInterval(fetchUSIData, 30000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  if (isLoading || !data) {
-    return (
-      <div className="sticky top-14 sm:top-16 z-40 w-full border-b border-border/40 bg-muted/30 backdrop-blur-xl">
-        <div className="h-8 flex items-center justify-center">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Activity className="h-3 w-3 animate-pulse" />
-            <span>Loading $USI token data...</span>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const isPositive = data.change.startsWith("+")
-
-  return (
-    <>
-      <div
-        className="sticky top-14 sm:top-16 z-40 w-full border-b border-border/40 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 backdrop-blur-xl overflow-hidden cursor-pointer hover:from-primary/10 hover:via-accent/10 hover:to-primary/10 transition-all duration-300"
-        onClick={() => setModalOpen(true)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            setModalOpen(true)
-          }
-        }}
-        aria-label="View detailed token metrics"
-      >
-        <div className="relative h-8 flex items-center">
-          <div className="animate-scroll-left flex items-center gap-8 whitespace-nowrap px-4">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="flex items-center gap-8">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-3 w-3 text-primary" />
-                  <span className="text-xs font-medium text-foreground">
-                    {data.symbol}: <span className="font-mono text-primary font-semibold">{data.price}</span>
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <TrendingUp className={`h-3 w-3 ${isPositive ? "text-green-500" : "text-red-500"}`} />
-                  <span className="text-xs font-medium text-foreground">
-                    24h:{" "}
-                    <span className={`font-mono font-semibold ${isPositive ? "text-green-500" : "text-red-500"}`}>
-                      {data.change}
-                    </span>
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="h-3 w-3 text-blue-400" />
-                  <span className="text-xs font-medium text-foreground">
-                    Volume: <span className="font-mono text-blue-400 font-semibold">{data.volume}</span>
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Activity className="h-3 w-3 text-primary" />
-                  <span className="text-xs font-medium text-foreground">
-                    Market Cap: <span className="font-mono text-primary">{data.marketCap}</span>
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-xs font-medium text-muted-foreground">Base Network</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <TokenMetricsModal open={modalOpen} onOpenChange={setModalOpen} tokenData={data} />
-    </>
-  )
+  const path = usePathname()
+  const financeView = /^\/(wallet|swap|staking|tokens|rewards|lp-manager)(\/|$)/.test(path || '')
+  const { data, error } = useSWR(financeView ? `https://api.dexscreener.com/latest/dex/tokens/${address}` : null, loadQuote, { refreshInterval: 30000 })
+  const [open, setOpen] = useState(false)
+  if (!financeView) return null
+  return <aside aria-label="Token market" className="border-b border-border bg-card text-card-foreground">
+    <div className="mx-auto flex min-h-11 max-w-[1512px] items-center justify-between gap-3 px-5 font-mono text-xs sm:px-[4.5%]"><span className="text-muted-foreground">Base / $USI</span>
+      {data && !error ? <button type="button" onClick={() => setOpen(true)} className="inline-flex min-h-11 items-center gap-3" aria-label="View detailed token metrics">{data.price}<span className="text-muted-foreground">{data.change} · 24h</span><ArrowUpRight size={16}/></button> : <span className="text-muted-foreground">{data === undefined && !error ? 'Checking quote…' : 'Quote unavailable'}</span>}
+    </div>{data && !error && <TokenMetricsModal open={open} onOpenChange={setOpen} tokenData={data} />}
+  </aside>
 }

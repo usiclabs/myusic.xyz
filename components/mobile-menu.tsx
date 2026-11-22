@@ -49,7 +49,7 @@ export function MobileMenu() {
       {/* Hamburger Menu Button - Mobile Only */}
       <button
         onClick={() => setIsOpen(true)}
-        className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-white/10 transition-all hover:scale-110 active:scale-95"
+        className="md:hidden flex items-center justify-center size-11 rounded-lg hover:bg-white/10 transition-all hover:scale-110 active:scale-95"
         aria-label="Open menu"
       >
         <Menu className="h-5 w-5 text-foreground" />
@@ -100,7 +100,7 @@ export function MobileMenu() {
                     setIsClosing(false)
                   }, 300)
                 }}
-                className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-white/10 transition-all hover:scale-110 active:scale-95"
+                className="flex items-center justify-center size-11 rounded-lg hover:bg-white/10 transition-all hover:scale-110 active:scale-95"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5 text-foreground" />

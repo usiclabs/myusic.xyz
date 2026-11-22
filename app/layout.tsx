@@ -25,8 +25,8 @@ const geistSans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
-  title: "MyUSIC - Web3 Music Streaming",
-  description: "Blockchain-powered music streaming with micropayments and NFTs",
+  title: "MyUSIC — Independent Music, Direct Artist Support",
+  description: "Discover independent tracks, follow the artists behind them, and support their music directly on MyUSIC.",
   generator: "v0.app",
   manifest: "/manifest.json",
   appleWebApp: {
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     title: "MyUSIC",
   },
   openGraph: {
-    title: "MyUSIC - Web3 Music Streaming",
-    description: "Blockchain-powered music streaming with micropayments and NFTs",
+    title: "MyUSIC — Independent Music, Direct Artist Support",
+    description: "Discover independent tracks, follow the artists behind them, and support their music directly on MyUSIC.",
     url: "https://myusic.xyz",
     siteName: "MyUSIC",
     images: [
@@ -52,8 +52,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MyUSIC - Web3 Music Streaming",
-    description: "Blockchain-powered music streaming with micropayments and NFTs",
+    title: "MyUSIC — Independent Music, Direct Artist Support",
+    description: "Discover independent tracks, follow the artists behind them, and support their music directly on MyUSIC.",
     images: ["https://myusic.xyz/og-image.png"],
   },
   other: {
