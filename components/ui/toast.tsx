@@ -8,7 +8,7 @@ export interface ToastProps {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
-  variant?: "default" | "success" | "error"
+  variant?: "default" | "success" | "error" | "destructive"
   duration?: number
 }
 
@@ -23,21 +23,17 @@ const ToastContext = React.createContext<ToastContextType | undefined>(undefined
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<ToastProps[]>([])
 
+  const removeToast = React.useCallback((id: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }, [])
+
   const addToast = React.useCallback((toast: Omit<ToastProps, "id">) => {
     const id = Math.random().toString(36).substring(7)
-    const newToast = { ...toast, id }
-    setToasts((prev) => [...prev, newToast])
+    setToasts((prev) => [...prev, { ...toast, id }])
 
-    // Auto remove after duration
     const duration = toast.duration || 5000
-    setTimeout(() => {
-      removeToast(id)
-    }, duration)
-  }, [])
-
-  const removeToast = React.useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id))
-  }, [])
+    window.setTimeout(() => removeToast(id), duration)
+  }, [removeToast])
 
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
@@ -66,7 +62,7 @@ function Toast({ title, description, variant = "default", onClose }: ToastProps 
         "pointer-events-auto rounded-lg border p-4 shadow-lg transition-all animate-in slide-in-from-bottom md:slide-in-from-right",
         "bg-background border-border backdrop-blur-sm",
         variant === "success" && "border-green-500/50 bg-green-500/10",
-        variant === "error" && "border-red-500/50 bg-red-500/10",
+        (variant === "error" || variant === "destructive") && "border-red-500/50 bg-red-500/10",
       )}
     >
       <div className="flex items-start gap-3">

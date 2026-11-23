@@ -31,10 +31,10 @@
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "My Library",
-      "short_name": "Library",
-      "description": "Your saved tracks and playlists",
-      "url": "/library",
+      "name": "Following",
+      "short_name": "Following",
+      "description": "Music and artists you follow",
+      "url": "/following",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]

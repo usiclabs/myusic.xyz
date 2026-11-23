@@ -57,11 +57,9 @@ export function Header() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-        <div className="container flex h-14 sm:h-16 items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-2 group p-1 sm:p-2">
-            <div className="relative h-9 w-9 sm:h-10 sm:w-10 transition-opacity group-hover:opacity-80">
-              <Image src="/images/usic-logo.png" alt="USIC Logo" fill className="object-contain" priority />
-            </div>
+        <div className="mx-auto flex h-16 max-w-[1512px] items-center justify-between px-5 sm:px-[4.5%]">
+          <Link href="/" aria-label="MyUSIC home" className="flex min-h-11 items-center gap-2">
+            <Image src="/images/usic-logo.png" alt="MyUSIC home" width={36} height={36} className="object-contain" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-4 lg:gap-6">
@@ -180,7 +178,7 @@ export function Header() {
             ) : (
               <Button
                 size="sm"
-                className="gap-1.5 sm:gap-2 bg-accent hover:bg-accent/90 transition-colors text-xs sm:text-sm h-8 sm:h-9 px-3 sm:px-4 text-white"
+                variant="outline" className="min-h-11 gap-2 rounded-full px-4 text-sm"
                 onClick={handleConnectClick}
               >
                 <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />

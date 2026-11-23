@@ -8,6 +8,7 @@ import { ArtistsFeed } from "@/components/artists-feed"
 type Artist = { wallet_address: string; artist_name: string | null; bio: string | null; avatar_url: string | null; genre?: string | null; created_at: string; totalEarned: number; trackCount: number; followerCount: number; totalStreams: number; profile_token_address?: string | null; marketCap?: number }
 
 export default function ArtistsPage() {
+  const [loadError, setLoadError] = useState(false)
   const [artists, setArtists] = useState<Artist[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
@@ -20,7 +21,7 @@ export default function ArtistsPage() {
     async function loadArtists() {
       const supabase = createBrowserClient()
       const { data, error } = await supabase.from("profiles").select("*").not("artist_name", "is", null)
-      if (error || !data) { setLoading(false); return }
+      if (error || !data) { setLoadError(true); setLoading(false); return }
       const addresses = data.map((artist) => artist.wallet_address.toLowerCase())
       const [{ data: tracks }, { data: streams }, { data: follows }] = await Promise.all([
         supabase.from("tracks").select("artist_id").in("artist_id", addresses),
@@ -32,7 +33,7 @@ export default function ArtistsPage() {
       setArtists(data.map((artist) => { const address = artist.wallet_address.toLowerCase(); return { ...artist, totalEarned: streams?.filter((stream: any) => stream.tracks?.artist_id?.toLowerCase() === address).reduce((sum: number, stream: any) => sum + (stream.total_paid || 0), 0) || 0, trackCount: trackCounts.get(address) || 0, followerCount: followerCounts.get(address) || 0, totalStreams: streamCounts.get(address) || 0 } }))
       setLoading(false)
     }
-    loadArtists()
+    loadArtists().catch(() => { setLoadError(true); setLoading(false) })
   }, [])
 
   const filteredArtists = artists.filter((artist) => artist.trackCount > 0 && (!searchQuery || artist.artist_name?.toLowerCase().includes(searchQuery.toLowerCase())) && (!genre || artist.genre?.trim().toLowerCase() === genre.toLowerCase()) && artist.totalEarned >= minEarnings && artist.trackCount >= minTracks).sort((a, b) => {
@@ -44,6 +45,5 @@ export default function ArtistsPage() {
     return 0
   })
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">Loading artists...</div>
-  return <div className="min-h-screen bg-background"><div className="mx-auto w-full max-w-[1512px] px-5 pt-6 sm:px-[4.5%]"><ArtistsFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} genre={genre} onGenreChange={setGenre} sortBy={sortBy} onSortChange={setSortBy} minEarnings={minEarnings} onMinEarningsChange={setMinEarnings} minTracks={minTracks} onMinTracksChange={setMinTracks} totalResults={filteredArtists.length} /></div><ArtistsFeed artists={filteredArtists} /></div>
+  return <main className="min-h-screen bg-background pb-24 text-foreground"><div className="relative mx-auto w-full max-w-[1512px] px-5 pt-8 sm:px-[4.5%] sm:pt-12"><p className="mb-3 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">MyUSIC / Artists</p><h1 className="mb-8 text-5xl font-semibold tracking-[-0.07em] sm:text-6xl">Meet the<br /><span className="text-[#fa003e]">next wave.</span></h1><ArtistsFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} genre={genre} onGenreChange={setGenre} sortBy={sortBy} onSortChange={setSortBy} minEarnings={minEarnings} onMinEarningsChange={setMinEarnings} minTracks={minTracks} onMinTracksChange={setMinTracks} totalResults={filteredArtists.length} /></div>{loading || loadError ? <p role="status" className="mx-auto max-w-[1512px] px-5 py-8 text-muted-foreground sm:px-[4.5%]">{loading ? 'Loading the artist directory…' : 'The artist directory is unavailable right now.'}</p> : <ArtistsFeed artists={filteredArtists} />}</main>
 }

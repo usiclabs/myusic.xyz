@@ -102,20 +102,17 @@ export default function SearchPage() {
   const totalResults = results.tracks.length + results.artists.length + results.playlists.length
 
   return (
-    <div className="min-h-screen bg-black pb-32">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
-      </div>
+    <div className="relative min-h-screen overflow-hidden bg-black pb-32 text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_78%_8%,rgba(250,0,62,0.12),transparent_30%)]" />
+      <div className="pointer-events-none fixed inset-x-0 top-0 h-96 opacity-20 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
 
-      <main className="container relative z-10 py-12 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto">
+      <main className="container relative z-10 px-4 py-10 sm:px-6 sm:py-14">
+        <div className="mx-auto max-w-4xl">
           {/* Search Header */}
-          <div className="mb-8 animate-fade-in">
-            <div className="flex items-center gap-3 mb-4">
-              <Search className="h-8 w-8 text-primary" />
-              <h1 className="text-4xl md:text-5xl font-bold">Search</h1>
-            </div>
-            <p className="text-muted-foreground text-lg">Find tracks, artists, and playlists</p>
+          <div className="mb-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-3 duration-700">
+            <p className="mb-3 text-[10px] uppercase tracking-[0.24em] text-[#fa003e]">MyUSIC / Search</p>
+            <h1 className="text-balance text-5xl font-semibold leading-[0.94] tracking-[-0.07em] md:text-6xl">Find your next<br /><span className="text-[#fa003e]">signal.</span></h1>
+            <p className="mt-4 text-base leading-7 text-white/45">Search tracks, artists, and playlists across MyUSIC.</p>
           </div>
 
           {/* Search Input */}
@@ -124,10 +121,13 @@ export default function SearchPage() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 placeholder="Search for tracks, artists, playlists..."
-                className="pl-12 pr-12 h-14 text-lg bg-card/50 backdrop-blur-xl border border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
+                className="h-14 rounded-2xl border-white/10 bg-[#090909]/90 pl-12 pr-14 text-base text-white shadow-2xl shadow-black placeholder:text-white/30 focus-visible:border-[#fa003e]/60 focus-visible:ring-[#fa003e]/20"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && performSearch()}
+                onKeyDown={(e) => {
+                  if (e.nativeEvent.isComposing || e.keyCode === 229) return
+                  if (e.key === "Enter") performSearch()
+                }}
                 onFocus={() => query.length >= 2 && setShowSuggestions(true)}
               />
               {query && (
@@ -137,7 +137,7 @@ export default function SearchPage() {
                     setResults({ tracks: [], artists: [], playlists: [] })
                     setSuggestions([])
                   }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-1 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full text-white/40 transition-colors hover:bg-white/5 hover:text-white"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -175,7 +175,7 @@ export default function SearchPage() {
             <Button
               variant={filter === "all" ? "default" : "outline"}
               onClick={() => setFilter("all")}
-              className="gap-2"
+              className="h-11 gap-2 rounded-full border-white/10 px-4 data-[state=active]:bg-[#fa003e]"
             >
               <TrendingUp className="h-4 w-4" />
               All
@@ -183,7 +183,7 @@ export default function SearchPage() {
             <Button
               variant={filter === "tracks" ? "default" : "outline"}
               onClick={() => setFilter("tracks")}
-              className="gap-2"
+              className="h-11 gap-2 rounded-full border-white/10 px-4 data-[state=active]:bg-[#fa003e]"
             >
               <Music className="h-4 w-4" />
               Tracks
@@ -191,7 +191,7 @@ export default function SearchPage() {
             <Button
               variant={filter === "artists" ? "default" : "outline"}
               onClick={() => setFilter("artists")}
-              className="gap-2"
+              className="h-11 gap-2 rounded-full border-white/10 px-4 data-[state=active]:bg-[#fa003e]"
             >
               <User className="h-4 w-4" />
               Artists
@@ -199,7 +199,7 @@ export default function SearchPage() {
             <Button
               variant={filter === "playlists" ? "default" : "outline"}
               onClick={() => setFilter("playlists")}
-              className="gap-2"
+              className="h-11 gap-2 rounded-full border-white/10 px-4 data-[state=active]:bg-[#fa003e]"
             >
               <ListMusic className="h-4 w-4" />
               Playlists
